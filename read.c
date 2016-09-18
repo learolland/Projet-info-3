@@ -316,14 +316,21 @@ object sfs_read_atom( char *input, uint *here )
 {
 
     uint i = *here;
-    uint j = 0;
-    if(input[i] == '0'|| '1' || '2' || '3' || '4' || '5' || '6' || '7' || '8' ||'9' )
+    string tmp_chaine;
+    if(test_integer(input[i] == 1))
     {
-	while(input[i++] != '\0')
-	{	 
-	    i++; 
+    	strcpy(input[i],tmp_chaine);
+    	here++;
+	while(input[*here] != '\0')
+	{
+		if(test_integer(input[*here]==1))
+		{
+			strcat(tmp_chaine,input[*here]);
+			else printf("ce n'est pas un entier\n");
+		}
+	    here++; 
 	}
-	num entier->this.integer = 0;
+	
 	if(i-*here>0)
 	{
 	    while(i-*here==0)
@@ -338,6 +345,22 @@ object sfs_read_atom( char *input, uint *here )
     }
     /*object atom = NULL;*/
 
+}
+
+
+int test_integer (char charctere)
+{
+	if(charactere ==  '0'|| '1' || '2' || '3' || '4' || '5' || '6' || '7' || '8' ||'9' )
+	return 1;
+	else return 0;
+}
+
+num chaine_vers_integer (string chaine)
+{
+	int l = 0;
+	while (chaine[l]!='\0')
+	l++;
+	
 }
 
 object sfs_read_pair( char *stream, uint *i ) {
