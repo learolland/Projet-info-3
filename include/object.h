@@ -46,7 +46,7 @@ object make_object( uint type );
 object make_nil( void );
 object make_boolean( uint true_false  );
 object make_symbol( string symbol );
-object make_integer( num integer);
+object make_integer( uint integer);
 object make_character( char character);
 object make_string( string chaine);
 
