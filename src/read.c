@@ -323,10 +323,12 @@ object sfs_read( char *input, uint *here )
     }
 }
 
-num make_num_integer (void)
+num make_num_integer (uint nombre) /* modifiable facilement pour gérer les autres types de nombres (?)*/
 {
-	return NULL;
-	
+	num num_entier ;
+	num_entier.numtype = NUM_INTEGER ; 
+	num_entier.that.integer = (int)nombre;
+	return num_entier;
 }
 
 
@@ -358,9 +360,8 @@ object sfs_read_atom( char *input, uint *here )
 			i--;
 			j++;
 		}
-		num *tmp_integer = calloc(1,sizeof(tmp_integer)) ;
-		tmp_integer->this.integer = integer;
-		return make_integer(*tmp_integer);  
+		num tmp_integer = make_num_integer(integer) ;
+		return make_integer(tmp_integer);  
 		
 	}
     /*object atom = NULL;*/
