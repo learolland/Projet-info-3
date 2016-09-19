@@ -327,7 +327,7 @@ num make_num_integer (uint nombre) /* modifiable facilement pour gérer les autr
 {
 	num num_entier ;
 	num_entier.numtype = NUM_INTEGER ; 
-	num_entier.that.integer = (int)nombre;
+	num_entier.this.integer = (int)nombre;
 	return num_entier;
 }
 
@@ -382,4 +382,5 @@ object sfs_read_pair( char *stream, uint *i ) {
     object pair = NULL;
 
     return pair;
+}
 }
