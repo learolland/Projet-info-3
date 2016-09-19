@@ -323,6 +323,11 @@ object sfs_read( char *input, uint *here )
     }
 }
 
+num make_num_integer (void)
+{
+	return NULL;
+	
+}
 
 
 object sfs_read_atom( char *input, uint *here ) 
