@@ -323,15 +323,15 @@ object sfs_read( char *input, uint *here )
     }
 }
 
-num make_num_integer (uint nombre) /* modifiable facilement pour gérer les autres types de nombres (?)*/
+/*num make_num_integer (uint nombre) /* modifiable facilement pour gérer les autres types de nombres (?)
 {
 	num num_entier ;
 	num_entier.numtype = NUM_INTEGER ; 
 	num_entier.this.integer = (int)nombre;
 	return num_entier;
-}
+}*/
 
-num string_to_integer(char *input, uint *here)
+uint string_to_integer(char *input, uint *here)
 {
 	uint i = *here;
 	string tmp_chaine;
@@ -357,8 +357,7 @@ num string_to_integer(char *input, uint *here)
 			i--;
 			j++;
 		}
-		num tmp_integer = make_num_integer(integer) ;
-		return tmp_integer;
+		return integer;
 }
 
 object sfs_read_atom( char *input, uint *here ) 
