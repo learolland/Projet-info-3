@@ -291,7 +291,7 @@ uint  sfs_get_sexpr( char *input, FILE *fp ) {
     return S_OK;
 }
 
-
+/************* TEST DES CARACTERES ****************/
 
 int test_integer (char charactere)
 {
@@ -300,37 +300,17 @@ int test_integer (char charactere)
 	else return 0;
 }
 
-
-
-object sfs_read( char *input, uint *here ) 
+int test_character (char* input, uint *here)
 {
-/*cree une pair*/
-    if ( input[*here] == '(' ) 			
-    {
-        if ( input[(*here)+1] == ')' ) 
-	{
-            *here += 2;
-            return nil;
-    	}
-        else {
-            (*here)++;
-            return sfs_read_pair( input, here );
-        }
-    }
-    else 					/*cree un atome */
-    {
-        return sfs_read_atom( input, here );
-    }
+	int i = *here;
+	if(input[i] == '#'&& input[i++]!='t' && input[i++]!='f' )
+	return 1;
+	else return 0;
 }
 
-/*num make_num_integer (uint nombre)  modifiable facilement pour gérer les autres types de nombres (?)
-{
-	num num_entier ;
-	num_entier.numtype = NUM_INTEGER ; 
-	num_entier.this.integer = (int)nombre;
-	return num_entier;
-}*/
 
+
+/*****************FONCTIONS DE CONVERSTION*************/
 uint string_to_integer(char *input, uint *here)
 {
 	uint i = *here;
@@ -361,26 +341,64 @@ uint string_to_integer(char *input, uint *here)
 		return integer;
 }
 
+
+
+
+
+/**************     READ      *****************/
+object sfs_read( char *input, uint *here ) 
+{
+/*cree une pair*/
+    if ( input[*here] == '(' ) 			
+    {
+        if ( input[(*here)+1] == ')' ) 
+	{
+            *here += 2;
+            return nil;
+    	}
+        else {
+            (*here)++;
+            return sfs_read_pair( input, here );
+        }
+    }
+    else 					/*cree un atome */
+    {
+        return sfs_read_atom( input, here );
+    }
+}
+
+/*num make_num_integer (uint nombre)  modifiable facilement pour gérer les autres types de nombres (?)
+{
+	num num_entier ;
+	num_entier.numtype = NUM_INTEGER ; 
+	num_entier.this.integer = (int)nombre;
+	return num_entier;
+}*/
+
+
+
+
 object sfs_read_atom( char *input, uint *here ) 
 {
 	uint i = *here;
 	if(test_integer(input[i] == 1))
 	{
-		uint integer = string_to_integer(input,here);
+		uint integer = string_to_integer(input,here); /*test si la suite est tj un chiffre*/
 		return make_integer(integer);
 	}
+	if(test_character(input,here) ==1))
+	{
+		char character = input[i+1];
+		return make_character(character);
+	}
+	
+	here++;
     /*object atom = NULL;*/
 
 }
 
 
-num chaine_vers_integer (string chaine)
-{
-	int l = 0;
-	while (chaine[l]!='\0')
-	l++;
-	
-}
+
 
 object sfs_read_pair( char *stream, uint *i ) 
 {
