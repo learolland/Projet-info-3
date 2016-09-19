@@ -365,8 +365,8 @@ object sfs_read_atom( char *input, uint *here )
 	uint i = *here;
 	if(test_integer(input[i] == 1))
 	{
-		num tmp_integer = string_to_integer(*input,*here);
-		return make_integer(tmp_integer);  
+		uint integer = string_to_integer(*input,*here);
+		return make_integer(integer);
 	}
     /*object atom = NULL;*/
 
@@ -388,21 +388,3 @@ object sfs_read_pair( char *stream, uint *i )
 
     return pair;
 }
-<<<<<<< Updated upstream
-
-=======
-<<<<<<< Updated upstream
-}
-=======
-<<<<<<< Updated upstream
-=======
-
-
-
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
->>>>>>> Stashed changes
->>>>>>> Stashed changes
->>>>>>> Stashed changes
