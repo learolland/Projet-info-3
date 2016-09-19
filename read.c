@@ -320,6 +320,7 @@ object sfs_read_atom( char *input, uint *here )
 
     uint i = *here;
     string tmp_chaine;
+    int integer = 0; 
     if(test_integer(input[i] == 1))
     {
     	strcpy(input[i],tmp_chaine);
