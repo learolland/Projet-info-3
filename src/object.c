@@ -57,11 +57,11 @@ object make_symbol( string symbol )
 }
 
 
-object make_integer( num integer)
+object make_integer(uint integer)
 {
     object t = make_object(SFS_NUMBER);
     t->this.number.numtype = NUM_INTEGER;
-    t->this.number.this.integer = integer;
+    t->this.number.this.integer = (int)integer;
 
     return t;
 }
