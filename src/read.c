@@ -392,12 +392,4 @@ object sfs_read_pair( char *stream, uint *i )
 
 
 
-int main()
-{
-    string chaine = "(512)";
-    object t = sfs_read(&chaine,0);
-    
-    
-}
-
 
