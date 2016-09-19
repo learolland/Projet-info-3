@@ -357,6 +357,7 @@ uint string_to_integer(char *input, uint *here)
 			i--;
 			j++;
 		}
+		printf("integer = %d\n",integer);
 		return integer;
 }
 
