@@ -353,8 +353,8 @@ object sfs_read_atom( char *input, uint *here )
 			i--;
 			j++;
 		}
-		num num_integer = malloc(sizeof(*num_integer)) ;
-		num_integer->this.integer = integer;
+		num num_integer = calloc(1,sizeof(*num_integer)) ;
+		num_integer.this->integer = integer;
 		return make_integer(num_integer);  
 		
 	}
