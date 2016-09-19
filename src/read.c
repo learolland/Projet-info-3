@@ -323,7 +323,7 @@ object sfs_read( char *input, uint *here )
     }
 }
 
-/*num make_num_integer (uint nombre) /* modifiable facilement pour gérer les autres types de nombres (?)
+/*num make_num_integer (uint nombre)  modifiable facilement pour gérer les autres types de nombres (?)
 {
 	num num_entier ;
 	num_entier.numtype = NUM_INTEGER ; 
@@ -365,7 +365,7 @@ object sfs_read_atom( char *input, uint *here )
 	uint i = *here;
 	if(test_integer(input[i] == 1))
 	{
-		uint integer = string_to_integer(*input,*here);
+		uint integer = string_to_integer(input,here);
 		return make_integer(integer);
 	}
     /*object atom = NULL;*/
