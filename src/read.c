@@ -292,6 +292,16 @@ uint  sfs_get_sexpr( char *input, FILE *fp ) {
 }
 
 
+
+int test_integer (char charctere)
+{
+	if(charactere ==  '0'|| '1' || '2' || '3' || '4' || '5' || '6' || '7' || '8' ||'9' )
+	return 1;
+	else return 0;
+}
+
+
+
 object sfs_read( char *input, uint *here ) 
 {
 /*cree une pair*/
@@ -329,8 +339,9 @@ object sfs_read_atom( char *input, uint *here )
 			if(test_integer(input[*here]==1))
 			{
 				strcat(tmp_chaine,&input[*here]);
-				else printf("ce n'est pas un entier\n"); /* il faut sortir*/
 			}
+			else printf("ce n'est pas un entier\n"); /* il faut sortir*/
+		
 		   here++; 
 		}
 	
@@ -342,7 +353,7 @@ object sfs_read_atom( char *input, uint *here )
 			i--;
 			j++;
 		}
-		num num_integer = malloc(sizeof(num_integer)) ;
+		num num_integer = malloc(sizeof(*num_integer)) ;
 		num_integer->this.integer = integer;
 		return make_integer(num_integer);  
 		
@@ -351,13 +362,6 @@ object sfs_read_atom( char *input, uint *here )
 
 }
 
-
-int test_integer (char charctere)
-{
-	if(charactere ==  '0'|| '1' || '2' || '3' || '4' || '5' || '6' || '7' || '8' ||'9' )
-	return 1;
-	else return 0;
-}
 
 num chaine_vers_integer (string chaine)
 {
