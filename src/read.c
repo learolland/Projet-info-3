@@ -12,7 +12,11 @@
 #include <ctype.h>
 
 #include "read.h"
-
+/*void init (NULL)
+{
+	object boolean_true = make_boolean(TRUE);
+	object boolean_false = make_boolean(FALSE);
+} */
 
 
 void flip( uint *i ) {
@@ -288,28 +292,79 @@ uint  sfs_get_sexpr( char *input, FILE *fp ) {
 }
 
 
-object sfs_read( char *input, uint *here ) {
-
-    if ( input[*here] == '(' ) {
-        if ( input[(*here)+1] == ')' ) {
+object sfs_read( char *input, uint *here ) 
+{
+/*cree une pair*/
+    if ( input[*here] == '(' ) 			
+    {
+        if ( input[(*here)+1] == ')' ) 
+	{
             *here += 2;
             return nil;
-        }
+    	}
         else {
             (*here)++;
             return sfs_read_pair( input, here );
         }
     }
-    else {
+    else 					/*cree un atome */
+    {
         return sfs_read_atom( input, here );
     }
 }
 
-object sfs_read_atom( char *input, uint *here ) {
 
-    object atom = NULL;
 
-    return atom;
+object sfs_read_atom( char *input, uint *here ) 
+{
+	uint i = *here;
+	if(test_integer(input[i] == 1))
+	{
+		string tmp_chaine;
+		int integer = 0; 
+		strcpy(&input[i],tmp_chaine);
+		here++;
+		while(input[*here] != '\0')
+		{
+			if(test_integer(input[*here]==1))
+			{
+				strcat(tmp_chaine,&input[*here]);
+				else printf("ce n'est pas un entier\n"); /* il faut sortir*/
+			}
+		   here++; 
+		}
+	
+		uint j = 0;
+		i = *here - i;
+		while(tmp_chaine[j]!='\0')
+		{
+			integer = integer + tmp_chaine[j]*10^i; /* verifier si cela donne le bon nb (char == nb avec ascii) et si le 10^ fonctionne*/
+			i--;
+			j++;
+		}
+		num num_integer = malloc(sizeof(num_integer)) ;
+		num_integer->this.integer = integer;
+		return make_integer(num_integer);  
+		
+	}
+    /*object atom = NULL;*/
+
+}
+
+
+int test_integer (char charctere)
+{
+	if(charactere ==  '0'|| '1' || '2' || '3' || '4' || '5' || '6' || '7' || '8' ||'9' )
+	return 1;
+	else return 0;
+}
+
+num chaine_vers_integer (string chaine)
+{
+	int l = 0;
+	while (chaine[l]!='\0')
+	l++;
+	
 }
 
 object sfs_read_pair( char *stream, uint *i ) {
@@ -318,4 +373,6 @@ object sfs_read_pair( char *stream, uint *i ) {
 
     return pair;
 }
+
+
 
