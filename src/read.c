@@ -331,13 +331,10 @@ num make_num_integer (uint nombre) /* modifiable facilement pour gérer les autr
 	return num_entier;
 }
 
-
-object sfs_read_atom( char *input, uint *here ) 
+num string_to_integer(char *input, uint *here)
 {
 	uint i = *here;
-	if(test_integer(input[i] == 1))
-	{
-		string tmp_chaine;
+	string tmp_chaine;
 		int integer = 0; 
 		strcpy(&input[i],tmp_chaine);
 		here++;
@@ -361,8 +358,16 @@ object sfs_read_atom( char *input, uint *here )
 			j++;
 		}
 		num tmp_integer = make_num_integer(integer) ;
+		return tmp_integer;
+}
+
+object sfs_read_atom( char *input, uint *here ) 
+{
+	uint i = *here;
+	if(test_integer(input[i] == 1))
+	{
+		num tmp_integer = string_to_integer(char *input, uint *here);
 		return make_integer(tmp_integer);  
-		
 	}
     /*object atom = NULL;*/
 
@@ -377,10 +382,11 @@ num chaine_vers_integer (string chaine)
 	
 }
 
-object sfs_read_pair( char *stream, uint *i ) {
+object sfs_read_pair( char *stream, uint *i ) 
+{
 
     object pair = NULL;
 
     return pair;
 }
-}
+
