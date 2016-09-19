@@ -366,7 +366,7 @@ object sfs_read_atom( char *input, uint *here )
 	uint i = *here;
 	if(test_integer(input[i] == 1))
 	{
-		num tmp_integer = string_to_integer(char *input, uint *here);
+		num tmp_integer = string_to_integer(*input,*here);
 		return make_integer(tmp_integer);  
 	}
     /*object atom = NULL;*/
