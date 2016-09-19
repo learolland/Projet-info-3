@@ -353,9 +353,9 @@ object sfs_read_atom( char *input, uint *here )
 			i--;
 			j++;
 		}
-		num tmp_integer = calloc(1,sizeof(&tmp_integer)) ;
-		tmp_integer.this.integer = integer;
-		return make_integer(tmp_integer);  
+		num *tmp_integer = calloc(1,sizeof(tmp_integer)) ;
+		tmp_integer->this.integer = integer;
+		return make_integer(*tmp_integer);  
 		
 	}
     /*object atom = NULL;*/
