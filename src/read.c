@@ -293,9 +293,9 @@ uint  sfs_get_sexpr( char *input, FILE *fp ) {
 
 
 
-int test_integer (char charctere)
+int test_integer (char charactere)
 {
-	if(charactere ==  '0'|| '1' || '2' || '3' || '4' || '5' || '6' || '7' || '8' ||'9' )
+	if(charactere ==  '0'|| charactere == '1' || charactere == '2' ||charactere ==  '3' || charactere == '4' ||charactere ==  '5' ||charactere ==  '6' || charactere == '7' || charactere == '8' ||charactere == '9' )
 	return 1;
 	else return 0;
 }
