@@ -12,10 +12,10 @@
 #include <ctype.h>
 
 #include "read.h"
-init (void)
+void init (NULL)
 {
-object boolean_true = make_boolean(TRUE);
-object boolean_false = make_boolean(FALSE);
+	object boolean_true = make_boolean(TRUE);
+	object boolean_false = make_boolean(FALSE);
 } 
 
 
