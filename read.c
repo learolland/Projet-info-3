@@ -12,9 +12,12 @@
 #include <ctype.h>
 
 #include "read.h"
-
+init (void)
+{
 object boolean_true = make_boolean(TRUE);
 object boolean_false = make_boolean(FALSE);
+} 
+
 
 void flip( uint *i ) {
 
