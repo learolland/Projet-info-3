@@ -12,11 +12,11 @@
 #include <ctype.h>
 
 #include "read.h"
-void init (NULL)
+/*void init (NULL)
 {
 	object boolean_true = make_boolean(TRUE);
 	object boolean_false = make_boolean(FALSE);
-} 
+} */
 
 
 void flip( uint *i ) {
@@ -317,36 +317,36 @@ object sfs_read( char *input, uint *here )
 
 object sfs_read_atom( char *input, uint *here ) 
 {
-
-    uint i = *here;
-    string tmp_chaine;
-    int integer = 0; 
-    if(test_integer(input[i] == 1))
-    {
-    	strcpy(input[i],tmp_chaine);
-    	here++;
-	while(input[*here] != '\0')
+	uint i = *here;
+	if(test_integer(input[i] == 1))
 	{
-		if(test_integer(input[*here]==1))
+		string tmp_chaine;
+		int integer = 0; 
+		strcpy(&input[i],tmp_chaine);
+		here++;
+		while(input[*here] != '\0')
 		{
-			strcat(tmp_chaine,input[*here]);
-			else printf("ce n'est pas un entier\n");
+			if(test_integer(input[*here]==1))
+			{
+				strcat(tmp_chaine,&input[*here]);
+				else printf("ce n'est pas un entier\n"); /* il faut sortir*/
+			}
+		   here++; 
 		}
-	    here++; 
-	}
 	
-	if(i-*here>0)
-	{
-	    while(i-*here==0)
-	    {
-	    	integer = entier + input[*here+j]*10^(i-*here) ; /* verifier si cela donne le bon nb (char == nb avec ascii) et si le 10^ fonctionne*/
-		i--;
-		j++;
-	    }
-	    
-	}   
-	return make_integer(entier );  
-    }
+		uint j = 0;
+		i = *here - i;
+		while(tmp_chaine[j]!='\0')
+		{
+			integer = integer + tmp_chaine[j]*10^i; /* verifier si cela donne le bon nb (char == nb avec ascii) et si le 10^ fonctionne*/
+			i--;
+			j++;
+		}
+		num num_integer = malloc(sizeof(num_integer)) ;
+		num_integer->this.integer = integer;
+		return make_integer(num_integer);  
+		
+	}
     /*object atom = NULL;*/
 
 }
