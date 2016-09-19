@@ -16,6 +16,7 @@ extern "C" {
 #endif
 
 #include "number.h"
+#include "basic.h"
 
 
 typedef struct object_t {
@@ -32,7 +33,7 @@ typedef struct object_t {
         struct pair_t {
             struct object_t *car;
             struct object_t *cdr;
-        }                pair;
+        } pair;
 
         struct object_t *special;
 
@@ -43,6 +44,14 @@ typedef struct object_t {
 
 object make_object( uint type );
 object make_nil( void );
+object make_boolean( uint true_false  );
+object make_symbol( string symbol );
+object make_integer( num integer);
+object make_character( char character);
+object make_string( string chaine);
+
+
+
 
 #define SFS_NUMBER       0x00
 #define SFS_CHARACTER    0x01
