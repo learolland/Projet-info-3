@@ -389,3 +389,15 @@ object sfs_read_pair( char *stream, uint *i )
 
     return pair;
 }
+
+
+
+int main()
+{
+    string chaine = "(512)";
+    object t = sfs_read(&chaine,0);
+    
+    
+}
+
+
