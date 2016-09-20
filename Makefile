@@ -54,5 +54,5 @@ tarball :
 	make clean 
 	cd .. && tar -czvf scheme-`whoami`-`date +%d-%m-%H-%M`.tgz $(DIRNAME) && cd $(DIRNAME) && mv ../scheme-`whoami`-*.tgz .
 
-test : main.c src/read.o src/object.o 
+test : main.c src/read.o src/object.o src/eval.o src/mem.o
 	$(LD) $^ $(LFLAGS) -o test
