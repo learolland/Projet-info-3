@@ -34,12 +34,12 @@ void init_interpreter ( void )
 int main ( int argc, char *argv[] ) 
 {
     puts("hola ?\n");
-    string chaine = "(512)";
+    string chaine = "512";
     /*string tmp = "(152)";
     strcpy(*chaine,tmp);*/
     printf("main : %s\n",chaine);
     uint here = 1;
-    object t = sfs_read(&chaine,&here);
+    object t = sfs_read_atom(&chaine,&here);
     
    /*exit( EXIT_SUCCESS );*/
 }
