@@ -36,7 +36,7 @@ int main ( int argc, char *argv[] )
     puts("hola ?\n");
     char* chaine = malloc(sizeof(chaine));
     string tmp = "(152)";
-    strcpy(tmp,chaine);
+    strcpy(chaine,tmp);
     printf("main : %s\n",chaine);
     uint here = 1;
     object t = sfs_read_atom(chaine,&here);
