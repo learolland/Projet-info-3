@@ -354,7 +354,7 @@ object sfs_read( char *input, uint *here )
         if ( input[(*here)+1] == ')' ) 
 	{
             *here += 2;
-            return nil;
+            /*return nil;*/
     	}
         else {
             (*here)++;
