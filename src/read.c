@@ -347,6 +347,32 @@ uint string_to_integer(char *input, uint *here)
 
 
 /**************     READ      *****************/
+
+object sfs_read_atom( char *input, uint *here) 
+{
+	/*printf("atom :%s\n", *input);*/
+	pritnf("entree dans read_atom\n");
+/*	uint i = *here;
+	if(test_integer(input[i] == 1))
+	{
+		printf("sfs_read_atom : on lit un entier\n");
+		uint integer = string_to_integer(input,here); *//*test si la suite est tj un chiffre*/
+/*		return make_integer(integer);
+	}
+	if(test_character(input,here) ==1)
+	{
+		printf("sfs_read_atom : on lit un character\n");
+		char character = input[i+1];
+		return make_character(character);
+	}
+	
+	here++;*/
+    /*object atom = NULL;*/
+
+}
+
+
+
 object sfs_read( char *input, uint *here ) 
 {
 /*cree une pair*/
@@ -380,28 +406,7 @@ object sfs_read( char *input, uint *here )
 
 
 
-object sfs_read_atom( char *input, uint *here) 
-{
-	/*printf("atom :%s\n", *input);*/
-	pritnf("entree dans read_atom\n");
-/*	uint i = *here;
-	if(test_integer(input[i] == 1))
-	{
-		printf("sfs_read_atom : on lit un entier\n");
-		uint integer = string_to_integer(input,here); *//*test si la suite est tj un chiffre*/
-/*		return make_integer(integer);
-	}
-	if(test_character(input,here) ==1)
-	{
-		printf("sfs_read_atom : on lit un character\n");
-		char character = input[i+1];
-		return make_character(character);
-	}
-	
-	here++;*/
-    /*object atom = NULL;*/
 
-}
 
 
 
