@@ -38,8 +38,9 @@ int main ( int argc, char *argv[] )
     /*string tmp = "(152)";
     strcpy(*chaine,tmp);*/
     printf("main : %s\n",chaine);
-    uint here = 1;
-    object t = sfs_read_atom(chaine,&here);
+    uint* here = NULL;
+    *here =1
+    object t = sfs_read_atom(chaine,here);
     printf("%d\n",t->type);
     
    /*exit( EXIT_SUCCESS );*/
