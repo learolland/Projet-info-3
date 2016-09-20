@@ -33,8 +33,7 @@ void init_interpreter ( void )
 
 int main ( int argc, char *argv[] ) 
 {
-    puts("hola ?\n");
-    string chaine = "512";
+    char chaine[512] = "512";
     /*string tmp = "(152)";
     strcpy(*chaine,tmp);*/
     printf("main : %s\n",chaine);
