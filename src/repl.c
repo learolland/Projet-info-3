@@ -15,10 +15,10 @@
 #include <string.h>
 
 
-#include "src/object.h"
-#include "src/read.h"
-#include "src/eval.h"
-#include "src/print.h"
+#include "include/object.h"
+#include "include/read.h"
+#include "include/eval.h"
+#include "include/print.h"
 
 
 
