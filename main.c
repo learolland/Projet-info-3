@@ -17,7 +17,7 @@ int main ( int argc, char *argv[] )
     uint* here = malloc(sizeof(*here));
     *here = 1;
     printf(" %d\n",*here);
-    object t = make_object(0);
+    object t = malloc(sizeof(*object));
     t = sfs_read_atom(chaine,here);
     printf("%d\n",t->type);
     
