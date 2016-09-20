@@ -15,7 +15,7 @@ int main ( int argc, char *argv[] )
     printf("main : %s",chaine);
     uint* here = NULL;
     *here = 1;
-    printf(" %d\n",here);
+    printf(" %d\n",*here);
     object t = NULL;
     t = sfs_read_atom(chaine,here);
     printf("%d\n",t->type);
