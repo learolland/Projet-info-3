@@ -337,7 +337,7 @@ uint string_to_integer(char *input, uint *here)
 			i--;
 			j++;
 		}
-		printf("integer = %d\n",integer);
+		printf("string_to_integer = %d\n",integer);
 		return integer;
 }
 
@@ -383,11 +383,13 @@ object sfs_read_atom( char *input, uint *here )
 	uint i = *here;
 	if(test_integer(input[i] == 1))
 	{
+		printf("sfs_read_atom : on lit un entier\n");
 		uint integer = string_to_integer(input,here); /*test si la suite est tj un chiffre*/
 		return make_integer(integer);
 	}
 	if(test_character(input,here) ==1))
 	{
+		printf("sfs_read_atom : on lit un character\n");
 		char character = input[i+1];
 		return make_character(character);
 	}
