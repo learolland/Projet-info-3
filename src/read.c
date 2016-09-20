@@ -295,6 +295,7 @@ uint  sfs_get_sexpr( char *input, FILE *fp ) {
 
 int test_integer (char charactere)
 {
+	printf("entree dans test_integer\n");
 	if(charactere ==  '0'|| charactere == '1' || charactere == '2' ||charactere ==  '3' || charactere == '4' ||charactere ==  '5' ||charactere ==  '6' || charactere == '7' || charactere == '8' ||charactere == '9' )
 	return 1;
 	else return 0;
@@ -382,6 +383,7 @@ object sfs_read( char *input, uint *here )
 object sfs_read_atom( char *input, uint *here ) 
 {
 	uint i = *here;
+	pritnf("entree dans read_atom\n");
 	if(test_integer(input[i] == 1))
 	{
 		printf("sfs_read_atom : on lit un entier\n");
