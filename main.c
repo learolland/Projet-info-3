@@ -22,14 +22,14 @@
 
 
 
-object nil;
+/*object nil;
 
 void init_interpreter ( void ) 
 {
 
     nil      = make_nil();
 
-}
+}*/
 
 int main ( int argc, char *argv[] ) 
 {
