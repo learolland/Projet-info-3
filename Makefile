@@ -47,7 +47,7 @@ release : $(OBJ_RLS)
 %.rls : %.c
 	$(CC) $< $(CFLAGS_RLS) -c -o $(basename $<).rls
 
-clean : 
+clean2 : 
 	$(RM) $(TARGET) $(SRCDIR)/*.orig $(SRCDIR)/*.dbg $(SRCDIR)/*.rls $(GARBAGE) scheme-`whoami`-*.tgz
 
 tarball : 
