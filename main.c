@@ -34,13 +34,13 @@ void init_interpreter ( void )
 int main ( int argc, char *argv[] ) 
 {
     char *chaine = malloc(sizeof(*chaine));
-    *chaine = "512";
+    chaine[0] = "512";
     /*string tmp = "(152)";
     strcpy(*chaine,tmp);*/
     printf("main : %s\n",chaine);
     uint here = 1;
     object t ;
-    t = sfs_read_atom(&chaine,&here);
+    t = sfs_read_atom(chaine,&here);
     
    /*exit( EXIT_SUCCESS );*/
 }
