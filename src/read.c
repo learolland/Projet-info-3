@@ -382,8 +382,8 @@ object sfs_read( char *input, uint *here )
 
 object sfs_read_atom( char *input, uint *here ) 
 {
-	uint i = *here;
 	pritnf("entree dans read_atom\n");
+	uint i = *here;
 	if(test_integer(input[i] == 1))
 	{
 		printf("sfs_read_atom : on lit un entier\n");
