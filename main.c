@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "include/object.h"
+#include "include/mem.h"
 #include "include/read.h"
 #include "include/eval.h"
 #include "include/print.h"
