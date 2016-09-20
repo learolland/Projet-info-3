@@ -387,7 +387,7 @@ object sfs_read_atom( char *input, uint *here )
 		uint integer = string_to_integer(input,here); /*test si la suite est tj un chiffre*/
 		return make_integer(integer);
 	}
-	if(test_character(input,here) ==1))
+	if(test_character(input,here) ==1)
 	{
 		printf("sfs_read_atom : on lit un character\n");
 		char character = input[i+1];
