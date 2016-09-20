@@ -43,7 +43,7 @@ typedef struct object_t {
 
 
 object make_object( uint type );
-object make_nil( void );
+/*object make_nil( void );*/
 object make_boolean( uint true_false  );
 object make_symbol( string symbol );
 object make_integer( uint integer);
@@ -62,7 +62,7 @@ object make_string( string chaine);
 #define SFS_SYMBOL       0x06
 
 
-extern object nil;
+/*extern object nil;*/
 
 #ifdef __cplusplus
 }
