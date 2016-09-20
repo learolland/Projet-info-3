@@ -33,6 +33,7 @@ void init_interpreter ( void )
 
 int main ( int argc, char *argv[] ) 
 {
+    puts("hola ?\n");
     char* chaine = malloc(sizeof(chaine));
     string tmp = "(152)";
     strcpy(tmp,chaine);
