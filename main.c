@@ -38,5 +38,5 @@ int main ( int argc, char *argv[] )
     uint *here = 1;
     object t = sfs_read_atom(chaine,here);
     
-    exit( EXIT_SUCCESS );
+   // exit( EXIT_SUCCESS );
 }
