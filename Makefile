@@ -58,7 +58,7 @@ test : main.o src/read.o src/object.o src/eval.o src/mem.o
 	$(LD) $^ $(LFLAGS) -o test
 
 testdebug : main.o src/read.o src/object.o src/eval.o src/mem.o
-	$(CC) $< $(CFLAGS_DBG) -o testd $@ $^
+	$(CC) $< $(CFLAGS_DBG) -o $@ $^
 	
 clean:
 	rm *.o 
