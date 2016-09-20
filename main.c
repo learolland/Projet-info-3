@@ -34,9 +34,9 @@ void init_interpreter ( void )
 int main ( int argc, char *argv[] ) 
 {
     char* chaine = malloc(sizeof(chaine));
-    *chaine = "(152)";
-    uint *here = 1;
-    object t = sfs_read_atom(chaine,here);
+    chaine[0] = "(152)";
+    uint here = 1;
+    object t = sfs_read_atom(chaine,&here);
     
    // exit( EXIT_SUCCESS );
 }
