@@ -36,6 +36,7 @@ int main ( int argc, char *argv[] )
     char* chaine = malloc(sizeof(chaine));
     string tmp = "(152)";
     strcpy(tmp,chaine);
+    printf("main : %s\n",*chaine);
     uint here = 1;
     object t = sfs_read_atom(chaine,&here);
     
