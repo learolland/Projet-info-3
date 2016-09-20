@@ -21,7 +21,7 @@
 #include "include/print.h"
 
 
-
+/*
 object nil;
 
 void init_interpreter ( void ) 
@@ -40,3 +40,4 @@ int main ( int argc, char *argv[] )
     
     exit( EXIT_SUCCESS );
 }
+*/
