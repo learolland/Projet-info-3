@@ -12,8 +12,9 @@ int main ( int argc, char *argv[] )
 {
     char *chaine = malloc(sizeof(*chaine));
     scanf("%s",chaine);
-    printf("main : %s",*chaine);
-    uint* here = NULL;
+    printf("main : %s",chaine);
+    
+    uint* here = malloc(sizeof(*here));
     *here = 1;
     printf(" %d\n",*here);
     object t = NULL;
