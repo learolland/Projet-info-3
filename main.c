@@ -39,7 +39,7 @@ int main ( int argc, char *argv[] )
     strcpy(*chaine,tmp);*/
     printf("main : %s\n",chaine);
     uint here = 1;
-    object t = sfs_read_atom(&chaine,&here);
+    object t = sfs_read_atom(&(char)chaine,&here);
     
    /*exit( EXIT_SUCCESS );*/
 }
