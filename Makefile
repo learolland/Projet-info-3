@@ -56,3 +56,6 @@ tarball :
 
 test : main.c src/read.o src/object.o src/eval.o src/mem.o
 	$(LD) $^ $(LFLAGS) -o test
+
+clean:
+	rm *.o 
