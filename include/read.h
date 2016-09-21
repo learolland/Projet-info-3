@@ -24,7 +24,7 @@ enum {S_OK, S_KO, S_END};
 uint   sfs_get_sexpr( string input, FILE *fp );
 
 
-int test_integer (string charactere);
+int test_integer (char* charactere);
 
 uint string_to_integer( char *input, uint *here ); 
 
