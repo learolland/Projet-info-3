@@ -317,13 +317,17 @@ uint string_to_integer(char *input, uint *here)
 	uint i = *here;
 	string tmp_chaine;
 		int integer = 0; 
-		strcpy(&input[i],tmp_chaine);
+		strcpy(tmp_chaine,&input[i]);
+		printf("sti:\n tmp_chaine %c\n",tmp_chaine);
 		here++;
 		while(input[*here] != '\0')
 		{
+			printf("boucle %d, input : %c\n",*here,input[*here]);
 			if(test_integer(input[*here]==1))
 			{
 				strcat(tmp_chaine,&input[*here]);
+				printf("	test_integer = 1, tmp_chaine = %s\n",tmp_chaine);
+
 			}
 			else 
 			{
