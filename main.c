@@ -16,7 +16,7 @@ int main ( int argc, char *argv[] )
     printf("main : %s",chaine);
     
     uint* here = malloc(sizeof(*here));
-    *here = 1;
+    *here = 0;
     printf(" %d\n",*here);
     object t = sfs_malloc(sizeof(*t));
     uint d = test_integer(chaine[*here]);
