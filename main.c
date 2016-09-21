@@ -19,7 +19,7 @@ int main ( int argc, char *argv[] )
     *here = 1;
     printf(" %d\n",*here);
     object t = sfs_malloc(sizeof(*t));
-    uint d = string_to_integer(chaine,here);
+    uint d = test_integer(chaine[*here]);
     printf("%d\n",d);
     
    /*exit( EXIT_SUCCESS );*/
