@@ -318,7 +318,8 @@ uint string_to_integer(char *input, uint *here)
 	uint i = *here;
 	string tmp_chaine;
 	int integer = 0; 
-	strcpy(tmp_chaine,&input[i]);
+	/*strcpy(tmp_chaine,&input[i]);*/
+	tmp_chaine[0]=*input[i];
 	printf("sti:\n tmp_chaine %s\n",tmp_chaine);
 	here++;
 	while(input[*here] != '\0')
