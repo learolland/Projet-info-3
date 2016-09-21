@@ -325,7 +325,11 @@ uint string_to_integer(char *input, uint *here)
 			{
 				strcat(tmp_chaine,&input[*here]);
 			}
-			else printf("ce n'est pas un entier\n"); /* il faut sortir*/
+			else 
+			{
+				printf("ce n'est pas un entier\n");  
+				return -1;
+			}
 		
 		   here++; 
 		}
