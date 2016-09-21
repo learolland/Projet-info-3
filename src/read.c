@@ -296,6 +296,7 @@ uint  sfs_get_sexpr( char *input, FILE *fp ) {
 int test_integer (char charactere)
 {
 	printf("entree dans test_integer\n");
+	printf("%c\n",character);
 	if(charactere ==  '0'|| charactere == '1' || charactere == '2' ||charactere ==  '3' || charactere == '4' ||charactere ==  '5' ||charactere ==  '6' || charactere == '7' || charactere == '8' ||charactere == '9' )
 	return 1;
 	else return 0;
@@ -318,8 +319,7 @@ uint string_to_integer(char *input, uint *here)
 	uint i = *here;
 	string tmp_chaine;
 	int integer = 0; 
-	/*strcpy(tmp_chaine,&input[i]);*/
-	tmp_chaine[0]=*input[i];
+	strcpy(tmp_chaine,&input[i]);
 	printf("sti:\n tmp_chaine %s\n",tmp_chaine);
 	here++;
 	while(input[*here] != '\0')
