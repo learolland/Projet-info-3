@@ -300,6 +300,8 @@ int test_integer (char* charactere)
 	if(charactere[0] ==  '0'|| charactere[0] == '1' || charactere[0] == '2' ||charactere[0] ==  '3' || charactere[0] == '4' ||charactere[0] ==  '5' ||charactere[0] ==  '6' || charactere[0] == '7' || charactere[0] == '8' ||charactere[0] == '9' )
 	return 1;
 	else return 0;
+	printf("sortie de test_integer\n");
+
 }
 
 int test_character (char* input, uint *here)
@@ -316,18 +318,18 @@ int test_character (char* input, uint *here)
 uint string_to_integer(char *input, uint *here)
 {
 	printf("entree dans string_to_integer\n");
-	uint i = *here;
-	string tmp_chaine;
+	uint i = 0;
+	string chaine, tmp_chaine;
 	int integer = 0; 
-	strcpy(tmp_chaine,&input[i]);
-	printf("sti:\n tmp_chaine %s\n",tmp_chaine);
+	strcpy(chaine,&input[*here]);
+	printf("sti:\n chaine %s\n",chaine);
 	here++;
 	while(input[*here] != '\0')
 	{
 		printf("boucle %d, input : %c\n",*here,input[*here]);
 		if(test_integer(&input[*here])==1)
 		{
-			strcat(tmp_chaine,&input[*here]);
+			strcat(tmp_chaine[i],chaine[*here]);
 			printf("	test_integer = 1, tmp_chaine = %s\n",tmp_chaine);
 		}
 		else 
