@@ -19,7 +19,7 @@ int main ( int argc, char *argv[] )
     *here = 1;
     printf(" %d\n",*here);
     object t = sfs_malloc(sizeof(*t));
-    t = sfs_read_atom(chaine,here);
+    t = string_to_integer(chaine,here);
     printf("%d\n",t->type);
     
    /*exit( EXIT_SUCCESS );*/
