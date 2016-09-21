@@ -296,7 +296,7 @@ uint  sfs_get_sexpr( char *input, FILE *fp ) {
 int test_integer (char charactere)
 {
 	printf("entree dans test_integer\n");
-	printf("%c\n",character);
+	printf("%c\n",charactere);
 	if(charactere ==  '0'|| charactere == '1' || charactere == '2' ||charactere ==  '3' || charactere == '4' ||charactere ==  '5' ||charactere ==  '6' || charactere == '7' || charactere == '8' ||charactere == '9' )
 	return 1;
 	else return 0;
