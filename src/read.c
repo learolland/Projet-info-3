@@ -297,7 +297,7 @@ int test_integer (string charactere)
 {
 	printf("entree dans test_integer\n");
 	printf("%s\n",charactere);
-	if(charactere ==  '0'|| charactere == '1' || charactere == '2' ||charactere ==  '3' || charactere == '4' ||charactere ==  '5' ||charactere ==  '6' || charactere == '7' || charactere == '8' ||charactere == '9' )
+	if(charactere[0] ==  '0'|| charactere[0] == '1' || charactere[0] == '2' ||charactere[0] ==  '3' || charactere[0] == '4' ||charactere[0] ==  '5' ||charactere[0] ==  '6' || charactere[0] == '7' || charactere[0] == '8' ||charactere[0] == '9' )
 	return 1;
 	else return 0;
 }
