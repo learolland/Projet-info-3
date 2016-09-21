@@ -314,40 +314,40 @@ int test_character (char* input, uint *here)
 /*****************FONCTIONS DE CONVERSTION*************/
 uint string_to_integer(char *input, uint *here)
 {
+	printf("entree dans string_to_integer\n");
 	uint i = *here;
 	string tmp_chaine;
-		int integer = 0; 
-		strcpy(tmp_chaine,&input[i]);
-		printf("sti:\n tmp_chaine %c\n",tmp_chaine);
-		here++;
-		while(input[*here] != '\0')
+	int integer = 0; 
+	strcpy(tmp_chaine,&input[i]);
+	printf("sti:\n tmp_chaine %c\n",tmp_chaine);
+	here++;
+	while(input[*here] != '\0')
+	{
+		printf("boucle %d, input : %c\n",*here,input[*here]);
+		if(test_integer(input[*here]==1))
 		{
-			printf("boucle %d, input : %c\n",*here,input[*here]);
-			if(test_integer(input[*here]==1))
-			{
-				strcat(tmp_chaine,&input[*here]);
-				printf("	test_integer = 1, tmp_chaine = %s\n",tmp_chaine);
-
-			}
-			else 
-			{
-				printf("ce n'est pas un entier\n");  
-				return -1;
-			}
-		
-		   here++; 
+			strcat(tmp_chaine,&input[*here]);
+			printf("	test_integer = 1, tmp_chaine = %s\n",tmp_chaine);
+		}
+		else 
+		{
+			printf("ce n'est pas un entier\n");  
+			return -1;
 		}
 	
-		uint j = 0;
-		i = *here - i;
-		while(tmp_chaine[j]!='\0')
-		{
-			integer = integer + tmp_chaine[j]*10^i; /* verifier si cela donne le bon nb (char == nb avec ascii) et si le 10^ fonctionne*/
-			i--;
-			j++;
-		}
-		printf("string_to_integer = %d\n",integer);
-		return integer;
+	   here++; 
+	}
+	
+	uint j = 0;
+	i = *here - i;
+	while(tmp_chaine[j]!='\0')
+	{
+		integer = integer + tmp_chaine[j]*10^i; /* verifier si cela donne le bon nb (char == nb avec ascii) et si le 10^ fonctionne*/
+		i--;
+		j++;
+	}
+	printf("string_to_integer = %d\n",integer);
+	return integer;
 }
 
 
