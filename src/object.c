@@ -23,7 +23,7 @@ object make_object( uint type )
     return t;
 }
 
-object make_nil( void ) 			make_empty_list ??
+object make_nil( void ) 			/*make_empty_list ??*/
 {
 
     object t = make_object( SFS_NIL );
