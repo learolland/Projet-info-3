@@ -359,16 +359,16 @@ uint string_to_integer(char *input, uint *here)
 
 object sfs_read_atom( char *input, uint *here) 
 {
-	/*printf("atom :%s\n", *input);*/
 	printf("entree dans read_atom\n");
-/*	uint i = *here;
+	printf("atom :%s\n", input[*here]);
+	uint i = *here;
 	if(test_integer(input[i] == 1))
 	{
 		printf("sfs_read_atom : on lit un entier\n");
-		uint integer = string_to_integer(input,here); */ /*test si la suite est tj un chiffre*/
-/*		return make_integer(integer);
+		uint integer = string_to_integer(input,here);  /*test si la suite est tj un chiffre*/
+		/*return make_integer(integer);*/
 	}
-	if(test_character(input,here) ==1)
+/*	if(test_character(input,here) ==1)
 	{
 		printf("sfs_read_atom : on lit un character\n");
 		char character = input[i+1];
