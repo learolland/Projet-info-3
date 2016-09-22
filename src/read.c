@@ -307,7 +307,7 @@ int test_character (char* input, uint *here)
 {
 	if(sizeof(*input)>1)
 		return 0;
-	if(test_integer(&input[*here])==0 
+	if(test_integer(&input[*here])==0 )
 	{
 		if((input[*here]>64 && input[*here]<91) ||(input[*here]>96 && input[*here]>123))
 		{
@@ -369,7 +369,7 @@ object sfs_read_atom( char *input, uint *here)
 	if(test_character(input,here) ==1)
 	{
 		printf("sfs_read_atom : on lit un character\n");
-		return make_character(character);
+		return make_character(input[*here]);
 	}
 	
     /*object atom = NULL;*/
