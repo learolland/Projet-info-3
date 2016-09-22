@@ -331,7 +331,7 @@ uint string_to_integer(char *input, uint *here)
 	while(input[indice] != '\0')
 	{
 		
-		printf("boucle %d, input : %s\n",indice,input[indice]);
+		printf("boucle %d, input : %c\n",indice,input[indice]);
 		
 		if(test_integer(&input[indice])==1)
 		{
