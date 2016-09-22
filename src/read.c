@@ -321,6 +321,7 @@ int test_string (char* input, uint *here)
 	{
 		if(test_integer(&input[*here])==1)
 		{
+			printf("cas du nombre en debut de chaine\n");
 			for(i++;i<strlen(input);i++)
 			{
 				if (test_integer(&input[i])==0)
