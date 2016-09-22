@@ -351,8 +351,8 @@ uint string_to_integer(char *input, uint *here)
 	uint j = 0;
 	while(tmp_chaine[j]!='\0')
 	{
-		integer = integer + tmp_chaine[j]*10^i; /* verifier si cela donne le bon nb (char == nb avec ascii) et si le 10^ fonctionne*/
-		printf("traduction : integer %d,\n i : %d, 10^i : %d j : %d tmp_chaine[j] : %c\n tmp_chaine[j]*10^i :%d\n",integer,i,10^i,j,tmp_chaine[j],tmp_chaine[j]*10^i);
+		integer = integer + tmp_chaine[j]*pow(10,i); /* verifier si cela donne le bon nb (char == nb avec ascii) et si le 10^ fonctionne*/
+		printf("traduction : integer %d,\n i : %d, 10^i : %d j : %d tmp_chaine[j] : %c\n tmp_chaine[j]*10^i :%d\n",integer,i,pow(10,i),j,tmp_chaine[j],tmp_chaine[j]*10^i);
 		i--;
 		j++;
 	}
