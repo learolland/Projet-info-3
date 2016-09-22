@@ -297,13 +297,10 @@ uint  sfs_get_sexpr( char *input, FILE *fp ) {
 
 int test_integer (char* charactere)
 {
-	printf("entree dans test_integer\n");
-	printf("%c\n",charactere[0]);
+	/*printf("entree dans test_integer\n");*/
 	if(charactere[0] ==  '0'|| charactere[0] == '1' || charactere[0] == '2' ||charactere[0] ==  '3' || charactere[0] == '4' ||charactere[0] ==  '5' ||charactere[0] ==  '6' || charactere[0] == '7' || charactere[0] == '8' ||charactere[0] == '9' )
 	return 1;
 	else return 0;
-	printf("sortie de test_integer\n");
-
 }
 
 int test_character (char* input, uint *here)
@@ -319,15 +316,12 @@ int test_character (char* input, uint *here)
 /*****************FONCTIONS DE CONVERSTION*************/
 uint string_to_integer(char *input, uint *here)
 {
-	printf("entree dans string_to_integer\n");
-	
+/*	printf("entree dans string_to_integer\n");*/
 	uint i = 0;
 	uint indice = *here;
 	string tmp_chaine;
 	int integer = 0; 
-	
 	strcpy(tmp_chaine,&input[*here]);
-
 	indice++;
 	while(input[indice] != '\0')
 	{
@@ -339,8 +333,6 @@ uint string_to_integer(char *input, uint *here)
 		i++;
 		indice++; 
 	}
-	
-	
 	uint j = 0;
 	while(tmp_chaine[j]!='\0')
 	{
@@ -366,7 +358,7 @@ object sfs_read_atom( char *input, uint *here)
 	{
 		printf("sfs_read_atom : on lit un entier\n");
 		uint integer = string_to_integer(input,here);  /*test si la suite est tj un chiffre*/
-		/*return make_integer(integer);*/
+		return make_integer(integer);
 	}
 /*	if(test_character(input,here) ==1)
 	{
