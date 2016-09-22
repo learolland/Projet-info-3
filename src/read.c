@@ -323,25 +323,17 @@ uint string_to_integer(char *input, uint *here)
 	
 	uint i = 0;
 	uint indice = *here;
-	string chaine, tmp_chaine;
+	string tmp_chaine;
 	int integer = 0; 
 	
-	strcpy(chaine,&input[*here]);
+	strcpy(tmp_chaine,&input[*here]);
 	printf("sti:\n chaine %s\n",chaine);
 	
 	indice++;
 	while(input[indice] != '\0')
 	{
-		
 		printf("boucle %d, input : %c\n",indice,input[indice]);
-		
-		if(test_integer(&input[indice])==1)
-		{
-			tmp_chaine[i]=chaine[indice];
-			printf("test_integer = 1, tmp_chaine = %s\n",tmp_chaine);
-		}
-		
-		else 
+		if(test_integer(&input[indice])==0)
 		{
 			printf("ce n'est pas un entier\n");  
 			return -1;
@@ -349,6 +341,7 @@ uint string_to_integer(char *input, uint *here)
 		i++;
 		indice++; 
 	}
+	
 	
 	uint j = 0;
 	while(tmp_chaine[j]!='\0')
