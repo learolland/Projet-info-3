@@ -1,13 +1,4 @@
 
-/**
- * @file read.c
- * @author François Cayre <cayre@yiking.(null)>
- * @date Fri Jun 15 18:31:05 2012
- * @brief Read routine for SFS.
- *
- * Read routine for SFS.
- */
-
 #include <stdio.h>
 #include <ctype.h>
 #include <math.h>
@@ -310,8 +301,10 @@ int test_character (char* input, uint *here)
 	{
 		return 0;
 	}
-	printf("en ascii : %d\n",input[*here]);
-	if( ((int)input[*here]>64 && (int)input[*here]<91) || ((int)(int)input[*here]>96 && (int)input[*here]>123))
+	int convertisseur = (int)input[*here];
+	printf("en ascii : %d, convertisseur : %d\n",input[*here],convertisseur);
+
+	if( (convertisseur>64 && convertisseur<91) || (convertisseur>96 && convertisseur>123))
 	{
 		printf("si c'est une lettre : %d\n",input[*here]);
 		return 1;
