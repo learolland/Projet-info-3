@@ -328,15 +328,15 @@ uint string_to_integer(char *input, uint *here)
 	printf("sti:\n chaine %s\n",chaine);
 	
 	indice++;
-	while(input[indice++] != '\0')
+	while(input[indice] != '\0')
 	{
 		
-		printf("boucle %d, input : %c\n",indice,input[indice]);
+		printf("boucle %d, input : %s\n",indice,input[indice]);
 		
 		if(test_integer(&input[indice])==1)
 		{
 			tmp_chaine[i]=chaine[indice];
-			printf("	test_integer = 1, tmp_chaine = %s\n",tmp_chaine);
+			printf("test_integer = 1, tmp_chaine = %s\n",tmp_chaine);
 		}
 		
 		else 
