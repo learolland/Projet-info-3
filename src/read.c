@@ -316,7 +316,7 @@ int test_string (char* input, uint *here)
 {
 	printf("entree dans test_string\n");
 	uint i = *here;
-	int j = 0
+	int j = 0;
 	if(sizeof(*input)>1)
 	{
 		if(test_integer(&input[*here])==1)
