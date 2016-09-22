@@ -327,12 +327,10 @@ uint string_to_integer(char *input, uint *here)
 	int integer = 0; 
 	
 	strcpy(tmp_chaine,&input[*here]);
-	printf("sti:\n chaine %s\n",tmp_chaine);
-	
+
 	indice++;
 	while(input[indice] != '\0')
 	{
-		printf("boucle %d, input : %c\n",indice,input[indice]);
 		if(test_integer(&input[indice])==0)
 		{
 			printf("ce n'est pas un entier\n");  
@@ -346,13 +344,10 @@ uint string_to_integer(char *input, uint *here)
 	uint j = 0;
 	while(tmp_chaine[j]!='\0')
 	{
-		/*integer = integer + tmp_chaine[j]*pow(10,i);*/ /* verifier si cela donne le bon nb (char == nb avec ascii) et si le 10^ fonctionne*/
 		integer = atoi(tmp_chaine);
-		printf("traduction : integer %d,\n i : %d, 10^i : %lf j : %d tmp_chaine[j] : %c\n tmp_chaine[j]*10^i :%d\n",integer,i,pow(10,i),j,tmp_chaine[j],tmp_chaine[j]*10^i);
 		i--;
 		j++;
 	}
-	printf("string_to_integer = %d\n",integer);
 	return integer;
 }
 
@@ -370,7 +365,7 @@ object sfs_read_atom( char *input, uint *here)
 	if(test_integer(input[i] == 1))
 	{
 		printf("sfs_read_atom : on lit un entier\n");
-		uint integer = string_to_integer(input,here); *//*test si la suite est tj un chiffre*/
+		uint integer = string_to_integer(input,here); */ /*test si la suite est tj un chiffre*/
 /*		return make_integer(integer);
 	}
 	if(test_character(input,here) ==1)
