@@ -311,7 +311,7 @@ int test_character (char* input, uint *here)
 		return 0;
 	}
 	printf("en ascii : %d\n",input[*here]);
-	if( (input[*here]>64 && input[*here]<91) || (input[*here]>96 && input[*here]>123))
+	if( ((int)input[*here]>64 && (int)input[*here]<91) || ((int)(int)input[*here]>96 && (int)input[*here]>123))
 	{
 		printf("si c'est une lettre : %d\n",input[*here]);
 		return 1;
