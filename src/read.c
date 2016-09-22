@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <math.h>
-#include <stdlib>
+#include <stdlib.h>
 
 #include "read.h"
 /*void init (NULL)
