@@ -329,7 +329,7 @@ uint string_to_integer(char *input, uint *here)
 		printf("boucle %d, input : %c\n",*here,input[*here]);
 		if(test_integer(&input[*here])==1)
 		{
-			strcat(tmp_chaine[i],chaine[*here]);
+			tmp_chaine[i]==chaine[*here];
 			printf("	test_integer = 1, tmp_chaine = %s\n",tmp_chaine);
 		}
 		else 
