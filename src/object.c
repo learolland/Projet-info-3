@@ -111,7 +111,10 @@ object cons (object val, object pair)
 }
 
 
-
+void afficher_objet (object t)/*pour un entier poue l'instant*/
+{
+    printf("type : %d, valeur : %d\n",t->type,t->this.number.this.integer);
+}
 
 
 
