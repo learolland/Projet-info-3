@@ -310,6 +310,7 @@ int test_character (char* input, uint *here)
 	{
 		return 0;
 	}
+	printf("en ascii : %d\n",input[*here]);
 	if( (input[*here]>64 && input[*here]<91) || (input[*here]>96 && input[*here]>123))
 	{
 		printf("si c'est une lettre : %d\n",input[*here]);
@@ -359,7 +360,7 @@ uint string_to_integer(char *input, uint *here)
 object sfs_read_atom( char *input, uint *here) 
 {
 	printf("entree dans read_atom\n");
-	printf("atom :%s, size : %lf\n", input,sizeof(*input));
+	printf("atom :%s, size : %lu\n", input,sizeof(*input));
 	uint i = *here;
 	if(test_integer(&input[i]) == 1)
 	{
