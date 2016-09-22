@@ -327,7 +327,7 @@ uint string_to_integer(char *input, uint *here)
 	int integer = 0; 
 	
 	strcpy(tmp_chaine,&input[*here]);
-	printf("sti:\n chaine %s\n",chaine);
+	printf("sti:\n chaine %s\n",tmp_chaine);
 	
 	indice++;
 	while(input[indice] != '\0')
