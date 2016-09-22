@@ -12,7 +12,7 @@
 int main ( int argc, char *argv[] ) 
 {
     char *chaine = malloc(sizeof(*chaine));
-   /* scanf("%s",chaine);*/
+    scanf("%s",chaine);
    
     uint* here = malloc(sizeof(*here));
     *here = 0;
