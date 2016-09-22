@@ -16,7 +16,6 @@ int main ( int argc, char *argv[] )
    
     uint* here = malloc(sizeof(*here));
     *here = 0;
-    printf(" %d\n",*here);
     object t = sfs_malloc(sizeof(*t));
     t = sfs_read_atom(chaine,here);
     afficher_objet(t);
