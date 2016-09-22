@@ -391,7 +391,7 @@ object sfs_read_atom( char *input, uint *here)
 	if(test_string(input,here)==1)
 	{
 		printf("sfs_read_atom : on lit une chaine\n");
-		return make_string(*input);
+		return make_string(input);
 		
 	}
 	
