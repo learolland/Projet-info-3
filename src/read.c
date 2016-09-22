@@ -330,9 +330,17 @@ int test_string (char* input, uint *here)
 			if(j>0)
 				return 1;
 		}
-		if(input[*here]!='#')
+		if(input[*here]!='#' && strlen(input)>2)
 			return 1;
 	}
+	return 0;
+}
+
+int test_symbol (char* input, uint *here)
+{
+	printf("entree dans test_symbol\n");
+	if(strlen(input) = 2 && input[*here]=='#' && input[*here+1]!='t' && input[*here+1]!='f')
+		return 1;
 	return 0;
 }
 
@@ -395,6 +403,11 @@ object sfs_read_atom( char *input, uint *here)
 		printf("sfs_read_atom : on lit une chaine\n");
 		return make_string(input);
 		
+	}
+	if(test_symbol(input,here)==1)
+	{
+		printf("sfs_read_atom : on lit un symbole\n");
+		return make_symbol(input);
 	}
 	
     /*object atom = NULL;*/
