@@ -50,7 +50,7 @@ object make_integer( uint integer);
 object make_character( char character);
 object make_string( string chaine);
 
-
+afficher_objet(object t);
 
 
 #define SFS_NUMBER       0x00
