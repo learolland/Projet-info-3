@@ -12,15 +12,14 @@
 int main ( int argc, char *argv[] ) 
 {
     char *chaine = malloc(sizeof(*chaine));
-    scanf("%s",chaine);
-    printf("main : %s",chaine);
-    
+   /* scanf("%s",chaine);*/
+   
     uint* here = malloc(sizeof(*here));
     *here = 0;
     printf(" %d\n",*here);
     object t = sfs_malloc(sizeof(*t));
-    uint d = string_to_integer(chaine,here);
-    printf("%d\n",d);
+    t = sfs_read_atom(chaine,here);
+    printf("fin\n");
     
    /*exit( EXIT_SUCCESS );*/
 }
