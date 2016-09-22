@@ -310,12 +310,10 @@ int test_character (char* input, uint *here)
 	{
 		return 0;
 	}
-	if(test_integer(&input[*here])==0 )
+	if( (input[*here]>64 && input[*here]<91) || (input[*here]>96 && input[*here]>123))
 	{
-		if( (input[*here]>64 && input[*here]<91) || (input[*here]>96 && input[*here]>123))
-		{
-			return 1;
-		}
+		printf("si c'est une lettre : %d\n",input[*here]);
+		return 1;
 	}
 	return 0;
 }
