@@ -348,7 +348,6 @@ uint string_to_integer(char *input, uint *here)
 	}
 	
 	uint j = 0;
-	i = *here - i;
 	while(tmp_chaine[j]!='\0')
 	{
 		integer = integer + tmp_chaine[j]*10^i; /* verifier si cela donne le bon nb (char == nb avec ascii) et si le 10^ fonctionne*/
