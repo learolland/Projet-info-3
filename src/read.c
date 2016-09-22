@@ -330,7 +330,7 @@ int test_string (char* input, uint *here)
 			if(j>0)
 				return 1;
 		}
-		if(input[*here]!='#' && strlen(input)>2)
+		if(input[*here]!='#' || strlen(input)>2)
 			return 1;
 	}
 	return 0;
