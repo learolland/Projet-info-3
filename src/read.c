@@ -362,7 +362,7 @@ object sfs_read_atom( char *input, uint *here)
 	printf("entree dans read_atom\n");
 	printf("atom :%s\n", input);
 	uint i = *here;
-	if(test_integer(input[i] == 1))
+	if(test_integer(input[i]) == 1)
 	{
 		printf("sfs_read_atom : on lit un entier\n");
 		uint integer = string_to_integer(input,here);  /*test si la suite est tj un chiffre*/
