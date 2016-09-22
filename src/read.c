@@ -312,6 +312,28 @@ int test_character (char* input, uint *here)
 	return 0;
 }
 
+int test_string (char* input, uint *here)
+{
+	printf("entree dans test_string\n");
+	uint i = *here;
+	int j = 0
+	if(sizeof(*input)>1)
+	{
+		if(test_integer(&input[*here])==1)
+		{
+			for(i++;i<sizeof(*input);i++)
+			{
+				if (test_integer(&input[i])==0)
+					j++;
+			}
+			if(j>0)
+				return 1;
+		}
+		if(input[*here]!='#')
+			return 1;
+	}
+	return 0;
+}
 
 
 /*****************FONCTIONS DE CONVERSTION*************/
@@ -365,6 +387,11 @@ object sfs_read_atom( char *input, uint *here)
 	{
 		printf("sfs_read_atom : on lit un character\n");
 		return make_character(input[*here]);
+	}
+	if(test_string(input,here)==1)
+	{
+		printf("sfs_read_atom : on lit une chaine\n");
+		
 	}
 	
     /*object atom = NULL;*/
