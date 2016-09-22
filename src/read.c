@@ -339,7 +339,7 @@ int test_string (char* input, uint *here)
 int test_symbol (char* input, uint *here)
 {
 	printf("entree dans test_symbol\n");
-	if(strlen(input) = 2 && input[*here]=='#' && input[*here+1]!='t' && input[*here+1]!='f')
+	if(strlen(input) == 2 && input[*here]=='#' && input[*here+1]!='t' && input[*here+1]!='f')
 		return 1;
 	return 0;
 }
