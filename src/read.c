@@ -297,7 +297,7 @@ int test_integer (char* charactere)
 int test_character (char* input, uint *here)
 {
 	printf("entree dans test_character\n");
-	if(strlen(*input)>1)
+	if(strlen(input)>1)
 	{
 		return 0;
 	}
@@ -317,11 +317,11 @@ int test_string (char* input, uint *here)
 	printf("entree dans test_string\n");
 	uint i = *here;
 	int j = 0;
-	if(strlen(*input)>1)
+	if(strlen(input)>1)
 	{
 		if(test_integer(&input[*here])==1)
 		{
-			for(i++;i<strlen(*input);i++)
+			for(i++;i<strlen(input);i++)
 			{
 				if (test_integer(&input[i])==0)
 					j++;
@@ -375,7 +375,7 @@ uint string_to_integer(char *input, uint *here)
 object sfs_read_atom( char *input, uint *here) 
 {
 	printf("entree dans read_atom\n");
-	printf("atom :%s, size : %lu\n", input,strlen(*input));
+	printf("atom :%s, size : %lu\n", input,strlen(input));
 	uint i = *here;
 	if(test_integer(&input[i]) == 1)
 	{
