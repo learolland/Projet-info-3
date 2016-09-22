@@ -352,7 +352,7 @@ uint string_to_integer(char *input, uint *here)
 	while(tmp_chaine[j]!='\0')
 	{
 		integer = integer + tmp_chaine[j]*10^i; /* verifier si cela donne le bon nb (char == nb avec ascii) et si le 10^ fonctionne*/
-		printf("traduction : integer %d\n",integer);
+		printf("traduction : integer %d, tmp_chaine[j]*10^i :%d\n",integer,tmp_chaine[j]*10^i);
 		i--;
 		j++;
 	}
