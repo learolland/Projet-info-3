@@ -320,21 +320,22 @@ uint string_to_integer(char *input, uint *here)
 	printf("entree dans string_to_integer\n");
 	
 	uint i = 0;
+	uint indice = *here;
 	string chaine, tmp_chaine;
 	int integer = 0; 
 	
 	strcpy(chaine,&input[*here]);
 	printf("sti:\n chaine %s\n",chaine);
 	
-	*here++;
-	while(input[*here] != '\0')
+	indice++;
+	while(input[indice++] != '\0')
 	{
 		
-		printf("boucle %d, input : %c\n",*here,input[*here]);
+		printf("boucle %d, input : %c\n",indice,input[indice]);
 		
-		if(test_integer(&input[*here])==1)
+		if(test_integer(&input[indice])==1)
 		{
-			tmp_chaine[i]=chaine[*here];
+			tmp_chaine[i]=chaine[indice];
 			printf("	test_integer = 1, tmp_chaine = %s\n",tmp_chaine);
 		}
 		
@@ -344,7 +345,7 @@ uint string_to_integer(char *input, uint *here)
 			return -1;
 		}
 		i++;
-		*here++; 
+		indice++; 
 	}
 	
 	uint j = 0;
