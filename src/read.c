@@ -360,7 +360,7 @@ uint string_to_integer(char *input, uint *here)
 object sfs_read_atom( char *input, uint *here) 
 {
 	printf("entree dans read_atom\n");
-	printf("atom :%s\n", input[*here]);
+	printf("atom :%s\n", input);
 	uint i = *here;
 	if(test_integer(input[i] == 1))
 	{
