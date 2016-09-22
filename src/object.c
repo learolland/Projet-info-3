@@ -116,7 +116,7 @@ void afficher_objet (object t)/*pour un entier poue l'instant*/
     if(t->type == 0)
     printf("type : %d, valeur : %d\n",t->type,t->this.number.this.integer);
     if(t->type == 1)
-    printf("type : %d, valeur : %c\n",t->type,t->this.charactere);
+    printf("type : %d, valeur : %c\n",t->type,t->this.character);
 
 }
 
