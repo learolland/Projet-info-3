@@ -23,7 +23,7 @@ object make_object( uint type )
     return t;
 }
 
-/*object make_nil( void ) 			make_empty_list ??
+object make_nil( void ) 			make_empty_list ??
 {
 
     object t = make_object( SFS_NIL );
@@ -31,7 +31,7 @@ object make_object( uint type )
     t->this.special = t;
 
     return t;
-}*/
+}
 
 
 object make_boolean( uint true_false  )
@@ -51,7 +51,7 @@ object make_boolean( uint true_false  )
 object make_symbol( string symbol )
 {
     object t = make_object(SFS_SYMBOL);
-    strcpy(t->this.symbol,symbol);		/* ∕?\ est ce que ça copie bien ? après tout, char* et string, c'est pas pareil...*/
+    strcpy(t->this.symbol,symbol);	
 
     return t;
 }
