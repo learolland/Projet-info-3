@@ -337,8 +337,8 @@ uint string_to_integer(char *input, uint *here)
 			printf("ce n'est pas un entier\n");  
 			return -1;
 		}
-	
-	   here++; 
+		i++;
+		here++; 
 	}
 	
 	uint j = 0;
