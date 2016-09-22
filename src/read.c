@@ -304,7 +304,7 @@ int test_character (char* input, uint *here)
 	int convertisseur = (int)input[*here];
 	printf("en ascii : %d, convertisseur : %d\n",input[*here],convertisseur);
 
-	if( (convertisseur>64 && convertisseur<91) || (convertisseur>96 && convertisseur>123))
+	if( (convertisseur>64 && convertisseur<91) || (convertisseur>96 && convertisseur<123))
 	{
 		printf("si c'est une lettre : %d\n",input[*here]);
 		return 1;
