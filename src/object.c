@@ -15,11 +15,11 @@
 
 object make_object( uint type )
 {
-
+    printf("entree dans make_object ");
     object t = sfs_malloc( sizeof( *t ) );
 
     t->type = type;
-
+    printf("type : %d\n", t->type);
     return t;
 }
 
@@ -59,6 +59,7 @@ object make_symbol( string symbol )
 
 object make_integer(uint integer)
 {
+    printf("entree dans make_integer\n");
     object t = make_object(SFS_NUMBER);
     t->this.number.numtype = NUM_INTEGER;
     t->this.number.this.integer = (int)integer;
