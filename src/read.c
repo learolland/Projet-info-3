@@ -305,10 +305,16 @@ int test_integer (char* charactere)
 
 int test_character (char* input, uint *here)
 {
-	int i = *here;
-	if(input[i] == '#'&& input[i++]!='t' && input[i++]!='f' )
-	return 1;
-	else return 0;
+	if(sizeof(*input)>1)
+		return 0;
+	if(test_integer(&input[*here])==0 
+	{
+		if((input[*here]>64 && input[*here]<91) ||(input[*here]>96 && input[*here]>123))
+		{
+			return 1;
+		}
+	}
+	return 0;
 }
 
 
@@ -360,14 +366,12 @@ object sfs_read_atom( char *input, uint *here)
 		uint integer = string_to_integer(input,here);  /*test si la suite est tj un chiffre*/
 		return make_integer(integer);
 	}
-/*	if(test_character(input,here) ==1)
+	if(test_character(input,here) ==1)
 	{
 		printf("sfs_read_atom : on lit un character\n");
-		char character = input[i+1];
 		return make_character(character);
 	}
 	
-	here++;*/
     /*object atom = NULL;*/
 
 }
