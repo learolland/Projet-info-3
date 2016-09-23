@@ -298,11 +298,11 @@ int test_character (char* input, uint *here)
 {
 	printf("entree dans test_character\n");
 	
-	if(input[*here]== '#' && input[(*here)+1]=='\\')
+	if(input[*here]== '#' && strcmp(input[(*here)+1], "\\")==0)
 	{
 		if(strcmp(&input[*here],"#\newline")==0) 
 			return 2;
-		if(input[(*here)+1] == "\\" && strcmp(&input[(*here)+2],"space")==0)
+		if(strcmp(input[(*here)+1], "\\")==0 && strcmp(&input[(*here)+2],"space")==0)
 			return 3;
 		if(strlen(input)>3)
 		{
@@ -383,12 +383,12 @@ uint string_to_integer(char *input, uint *here)
 char* input_to_string (char* input, uint *here)
 {
 	uint i = *here;
-	*here++;
+	(*here)++;
 	string tmp_chaine;
 	strcpy(tmp_chaine,&input[*here]) ;
 	string chaine;
 	while(strcmp(&input[*here],"'")!=0)
-		*here++;
+		(*here)++;
 	strncpy(chaine,tmp_chaine, *here-i );
 	return chaine;
 }
@@ -433,7 +433,7 @@ object sfs_read_atom( char *input, uint *here)
 	if(test_string(input,here)==1)
 	{
 		printf("sfs_read_atom : on lit une chaine\n");
-		string chaine = input_to_string(input,here);
+		char* chaine = input_to_string(input,here);
 		return make_string(chaine);
 		
 	}
