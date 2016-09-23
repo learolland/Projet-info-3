@@ -298,11 +298,11 @@ int test_character (char* input, uint *here)
 {
 	printf("entree dans test_character\n");
 	
-	if(input[*here]== '#' && input[(*here)+1]==92)
+	if(input[*here]== '#' && input[(*here)+1]=='\\')
 	{
 		if(strcmp(&input[*here],"#\newline")==0) 
 			return 2;
-		if(strncmp(&input[(*here)+1],"\",1)==0 && strcmp(&input[(*here)+2],"space")==0)
+		if(input[(*here)+1] == "\\" && strcmp(&input[(*here)+2],"space")==0)
 			return 3;
 		if(strlen(input)>3)
 		{
@@ -322,7 +322,7 @@ int test_string (char* input, uint *here)
 {
 	printf("entree dans test_string\n");
 	
-	if(strcmp(&input[*here],"'")==0)
+	if(input[*here]=='\'')
 		return 1; 
 	/*uint i = *here;
 	int j = 0;
@@ -380,12 +380,12 @@ uint string_to_integer(char *input, uint *here)
 }
 
 
-string input_to_string (char*input, uint *here)
+char* input_to_string (char* input, uint *here)
 {
 	uint i = *here;
 	*here++;
 	string tmp_chaine;
-	strcpy(tmp_chaine,input[*here]) ;
+	strcpy(tmp_chaine,&input[*here]) ;
 	string chaine;
 	while(strcmp(&input[*here],"'")!=0)
 		*here++;
