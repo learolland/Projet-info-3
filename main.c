@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "include/object.h"
 #include "include/mem.h"
 #include "include/read.h"
 #include "include/eval.h"
