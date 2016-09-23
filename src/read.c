@@ -479,18 +479,18 @@ object sfs_read( char *input, uint *here )
 
 
 
-object cons (object val, object pair)
+/*object cons (object val, object pair)
 {
     object p;
-    p = make_object(SFS_PAIR);
+    p = make_object(SFS_PAIR);*/
 
     /*if (est_vide(p))
     	return NULL;*/
 
-    p->this.pair.car = val;
+   /* p->this.pair.car = val;
     p->this.pair.cdr = pair;
     return p ;
-} 
+} */
 
 
 /*********** WIP ***********
