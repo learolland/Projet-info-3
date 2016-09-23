@@ -304,6 +304,11 @@ int test_character (char* input, uint *here)
 			return 2;
 		if(strcmp(input[*here],"#\space")==0)
 			return 3;
+		if(strlen(input)>3)
+		{
+			printf("le caractere est trop long\n");
+			return -1;
+		}	
 		return 1;
 	}
 	/*if( (convertisseur>64 && convertisseur<91) || (convertisseur>96 && convertisseur<123))
@@ -403,18 +408,23 @@ object sfs_read_atom( char *input, uint *here)
 	
 	if(test_character(input,here) ==1)
 	{
-		printf("sfs_read_atom : on lit un character\n");
-		return make_character(input);
+		printf("sfs_read_atom : on lit un caractere\n");
+		return make_character(input[(*here)+2]);
 	}
 	if(test_character(input,here) ==2)
 	{
 		printf("sfs_read_atom : on lit un saut a la ligne\n");
-		return make_character(input);
+		return make_character(input[*here]);
 	}
 	if(test_character(input,here) ==3)
 	{
 		printf("sfs_read_atom : on lit un espace\n");
-		return make_character(input);
+		return make_character(input[*here]);
+	}
+	if(test_character(input,here) == -1)
+	{
+		printf("sfs_read_atom : on lit un caractere trop long\n");
+		return NULL;
 	}
 	
 	if(test_string(input,here)==1)
