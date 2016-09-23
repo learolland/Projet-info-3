@@ -97,18 +97,7 @@ object make_pair(void)
 }
 
 
-object cons (object val, object pair)
-{
-    object p;
-    p = make_object(SFS_PAIR);
 
-    /*if (est_vide(p))
-    	return NULL;*/
-
-    p->this.pair.car = val;
-    p->this.pair.cdr = pair;
-    return p ;
-}
 
 
 void afficher_objet (object t)/*pour un entier poue l'instant*/
