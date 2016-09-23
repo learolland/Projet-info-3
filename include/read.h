@@ -32,7 +32,7 @@ uint string_to_integer( char *input, uint *here );
 object sfs_read( char *input, uint *here );
 object sfs_read_atom( char *input, uint *here );
 object sfs_read_pair( char *stream, uint *i );
-
+object cons (object val, object pair);
 
 #ifdef __cplusplus
 }
