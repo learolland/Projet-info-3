@@ -298,7 +298,7 @@ int test_character (char* input, uint *here)
 {
 	printf("entree dans test_character\n");
 	
-	if(input[*here]=='#' && input[(*here)+1]=='\')
+	if(input[*here]== '#' && input[(*here)+1]==backslash)
 	{
 		if(strcmp(input[*here],"#\newline")==0) 
 			return 2;
@@ -322,7 +322,7 @@ int test_string (char* input, uint *here)
 {
 	printf("entree dans test_string\n");
 	
-	if(input[*here]==''')
+	if(strcmp(input[*here],"'")==0)
 		return 1; 
 	/*uint i = *here;
 	int j = 0;
@@ -359,35 +359,38 @@ int test_string (char* input, uint *here)
 /*****************FONCTIONS DE CONVERSTION*************/
 uint string_to_integer(char *input, uint *here)
 {
-/*	printf("entree dans string_to_integer\n");*/
-	uint i = 0;
+	printf("entree dans string_to_integer\n");
 	uint indice = *here;
 	string tmp_chaine;
 	int integer = 0; 
 	strcpy(tmp_chaine,&input[*here]);
 	indice++;
-	while(input[indice] != '\0')
+	while(input[indice] != '\0' && input[indice]!= 32 )
 	{
 		if(test_integer(&input[indice])==0)
 		{
 			printf("ce n'est pas un entier\n");  
 			return -1;
 		}
-		i++;
 		indice++; 
 	}
-	uint j = 0;
-	while(tmp_chaine[j]!='\0')
-	{
-		integer = atoi(tmp_chaine);
-		i--;
-		j++;
-	}
+	integer = atoi(tmp_chaine);
+	*here = indice;
 	return integer;
 }
 
 
-
+string input_to_string (char*input, uint *here)
+{
+	uint i = *here
+	*here++
+	string tmp_chaine = input[*here] ;
+	string chaine
+	while(strcmp(input[*here],"'")!=0)
+		*here++;
+	strncpy(chaine,tmp_chaine, *here-i );
+	return chaine;
+}
 
 
 /**************     READ      *****************/
@@ -424,13 +427,13 @@ object sfs_read_atom( char *input, uint *here)
 	if(test_character(input,here) == -1)
 	{
 		printf("sfs_read_atom : on lit un caractere trop long\n");
-		return NULL;
 	}
 	
 	if(test_string(input,here)==1)
 	{
 		printf("sfs_read_atom : on lit une chaine\n");
-		return make_string(input);
+		string chaine = input_to_string(input,here);
+		return make_string(chaine);
 		
 	}
 	printf("sfs_read_atom : on ne lit aucun des cas precedents -> symbole \n");
