@@ -302,7 +302,7 @@ int test_character (char* input, uint *here)
 	{
 		if(strcmp(&input[*here],"#\newline")==0) 
 			return 2;
-		if(strcmp(&input[(*here)+1],"\space")==0)
+		if(strncmp(&input[(*here)+1],"\",1)==0 && strcmp(&input[(*here)+2],"space")==0)
 			return 3;
 		if(strlen(input)>3)
 		{
@@ -382,10 +382,11 @@ uint string_to_integer(char *input, uint *here)
 
 string input_to_string (char*input, uint *here)
 {
-	uint i = *here
-	*here++
-	string tmp_chaine = input[*here] ;
-	string chaine
+	uint i = *here;
+	*here++;
+	string tmp_chaine;
+	strcpy(tmp_chaine,input[*here]) ;
+	string chaine;
 	while(strcmp(&input[*here],"'")!=0)
 		*here++;
 	strncpy(chaine,tmp_chaine, *here-i );
