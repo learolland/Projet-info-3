@@ -297,28 +297,34 @@ int test_integer (char* charactere)
 int test_character (char* input, uint *here)
 {
 	printf("entree dans test_character\n");
-	if(strlen(input)>1)
+	
+	if(input[*here]=='#' && input[(*here)+1]=='\')
 	{
-		return 0;
-	}
-	int convertisseur = (int)input[*here];
-	printf("en ascii : %d, convertisseur : %d\n",input[*here],convertisseur);
-
-	if( (convertisseur>64 && convertisseur<91) || (convertisseur>96 && convertisseur<123))
-	{
-		printf("si c'est une lettre : %d\n",input[*here]);
+		if(strcmp(input[*here],"#\newline")==0) 
+			return 2;
+		if(strcmp(input[*here],"#\space")==0)
+			return 3;
 		return 1;
 	}
+	/*if( (convertisseur>64 && convertisseur<91) || (convertisseur>96 && convertisseur<123))
+	{
+		return 1;
+	}*/
 	return 0;
 }
 
 int test_string (char* input, uint *here)
 {
 	printf("entree dans test_string\n");
-	uint i = *here;
+	
+	if(input[*here]==''')
+		return 1; 
+	/*uint i = *here;
 	int j = 0;
 	if(strlen(input)>1)
 	{
+		if(input[*here]=='"' && input[(*here)+1]!= '"')
+			return 1;
 		if(test_integer(&input[*here])==1)
 		{
 			printf("cas du nombre en debut de chaine\n");
@@ -332,17 +338,17 @@ int test_string (char* input, uint *here)
 		}
 		if(input[*here]!='#' || strlen(input)>2)
 			return 1;
-	}
+	}*/
 	return 0;
 }
 
-int test_symbol (char* input, uint *here)
+/*int test_symbol (char* input, uint *here)
 {
 	printf("entree dans test_symbol\n");
 	if(strlen(input) == 2 && input[*here]=='#' && input[*here+1]!='t' && input[*here+1]!='f')
 		return 1;
 	return 0;
-}
+}*/
 
 
 /*****************FONCTIONS DE CONVERSTION*************/
@@ -386,6 +392,7 @@ object sfs_read_atom( char *input, uint *here)
 	printf("entree dans read_atom\n");
 	printf("atom :%s, size : %lu\n", input,strlen(input));
 	uint i = *here;
+	
 	if(test_integer(&input[i]) == 1)
 	{
 		printf("sfs_read_atom : on lit un entier\n");
@@ -393,22 +400,32 @@ object sfs_read_atom( char *input, uint *here)
 		if(integer!=-1)
 			return make_integer(integer);
 	}
+	
 	if(test_character(input,here) ==1)
 	{
 		printf("sfs_read_atom : on lit un character\n");
-		return make_character(input[*here]);
+		return make_character(input);
 	}
+	if(test_character(input,here) ==2)
+	{
+		printf("sfs_read_atom : on lit un saut a la ligne\n");
+		return make_character(input);
+	}
+	if(test_character(input,here) ==3)
+	{
+		printf("sfs_read_atom : on lit un espace\n");
+		return make_character(input);
+	}
+	
 	if(test_string(input,here)==1)
 	{
 		printf("sfs_read_atom : on lit une chaine\n");
 		return make_string(input);
 		
 	}
-	if(test_symbol(input,here)==1)
-	{
-		printf("sfs_read_atom : on lit un symbole\n");
-		return make_symbol(input);
-	}
+	printf("sfs_read_atom : on ne lit aucun des cas precedents -> symbole \n");
+	return make_symbol(input);
+
 	
     /*object atom = NULL;*/
 
@@ -418,7 +435,6 @@ object sfs_read_atom( char *input, uint *here)
 
 object sfs_read( char *input, uint *here ) 
 {
-/*cree une pair*/
     if ( input[*here] == '(' ) 			
     {
         if ( input[(*here)+1] == ')' ) 
@@ -432,10 +448,11 @@ object sfs_read( char *input, uint *here )
             return sfs_read_pair( input, here );
         }
     }
-    else 					/*cree un atome */
+    else 
     {
         return sfs_read_atom( input, here );
     }
+    
 }
 
 /*num make_num_integer (uint nombre)  modifiable facilement pour gérer les autres types de nombres (?)
@@ -448,10 +465,42 @@ object sfs_read( char *input, uint *here )
 
 
 
+object cons (object val, object pair)
+{
+    object p;
+    p = make_object(SFS_PAIR);
+
+    /*if (est_vide(p))
+    	return NULL;*/
+
+    p->this.pair.car = val;
+    p->this.pair.cdr = pair;
+    return p ;
+} 
 
 
+/*********** WIP ***********
+object read (char*input)
+{
+	object t = nil;
+	uint *here = 0 ;
+	object l = compiler(t,input,here); 
+}
 
 
+object compiler (object t, char*input, uint *here)
+{
+	if(input[*here]!='\0')
+	{
+		t = cons(sfs_read(input,here),t);
+		(*here)++;
+		compiler(t,input,here);
+	}
+	return t
+}*/
+
+
+/***************/
 
 
 object sfs_read_pair( char *stream, uint *i ) 
