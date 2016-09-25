@@ -16,6 +16,7 @@ extern "C" {
 #endif
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "object.h"
 
@@ -26,8 +27,9 @@ uint   sfs_get_sexpr( string input, FILE *fp );
 
 int test_integer (char* charactere);
 
-uint string_to_integer( char *input, uint *here ); 
+uint string_to_integer( char *input, uint *here );
 
+object read (char*input);
 
 object sfs_read( char *input, uint *here );
 object sfs_read_atom( char *input, uint *here );

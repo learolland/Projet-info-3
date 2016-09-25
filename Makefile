@@ -13,7 +13,7 @@ GARBAGE=*~ $(SRCDIR)/*~ $(INCDIR)/*~ $(TESTDIR)/*~
 
 INCLUDE=-I$(INCDIR)
 
-# Pour activer les sorties INFO_MSG, ajouter -DVERBOSE aux CFLAGS 
+# Pour activer les sorties INFO_MSG, ajouter -DVERBOSE aux CFLAGS
 CFLAGS=-Wall -ansi $(INCLUDE)
 LFLAGS=-lm
 
@@ -25,7 +25,7 @@ SRC=$(wildcard $(SRCDIR)/*.c)
 OBJ_DBG=$(SRC:.c=.dbg)
 OBJ_RLS=$(SRC:.c=.rls)
 
-all : 
+all :
 	@echo "in " $(DIRNAME)
 	@echo ""
 	@echo "Usage:"
@@ -47,18 +47,18 @@ release : $(OBJ_RLS)
 %.rls : %.c
 	$(CC) $< $(CFLAGS_RLS) -c -o $(basename $<).rls
 
-clean2 : 
+clean2 :
 	$(RM) $(TARGET) $(SRCDIR)/*.orig $(SRCDIR)/*.dbg $(SRCDIR)/*.rls $(GARBAGE) scheme-`whoami`-*.tgz
 
-tarball : 
-	make clean 
+tarball :
+	make clean
 	cd .. && tar -czvf scheme-`whoami`-`date +%d-%m-%H-%M`.tgz $(DIRNAME) && cd $(DIRNAME) && mv ../scheme-`whoami`-*.tgz .
 
-test : main.o src/read.o src/object.o src/eval.o src/mem.o
+test : repl.o src/read.o src/object.o src/eval.o src/mem.o
 	$(LD) $^ $(LFLAGS) -o test
 
 testdebug : main.o src/read.o src/object.o src/eval.o src/mem.o
 	$(CC) $< $(CFLAGS_DBG) -o $@ $^
-	
+
 clean:
-	rm *.o 
+	rm *.o

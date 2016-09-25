@@ -11,11 +11,12 @@
 #include "object.h"
 #include "mem.h"
 #include "basic.h"
+#include <stdlib.h>
 
 
 object make_object( uint type )
 {
-    printf("entree dans make_object ");
+    printf("                entree dans make_object ");
     object t = sfs_malloc( sizeof( *t ) );
 
     t->type = type;
@@ -28,7 +29,7 @@ object make_nil( void ) 			/*make_empty_list ??*/
 
     object t = make_object( SFS_NIL );
 
-    t->this.special = t;
+    t->this.special = NULL;
 
     return t;
 }
@@ -51,7 +52,8 @@ object make_boolean( uint true_false  )
 object make_symbol( string symbol )
 {
     object t = make_object(SFS_SYMBOL);
-    strcpy(t->this.symbol,symbol);	
+    strcpy(t->this.symbol,symbol);
+    printf("                symbol : %s\n",symbol);
 
     return t;
 }
@@ -59,11 +61,11 @@ object make_symbol( string symbol )
 
 object make_integer(uint integer)
 {
-    printf("entree dans make_integer\n");
+    printf("                entree dans make_integer\n");
     object t = make_object(SFS_NUMBER);
     t->this.number.numtype = NUM_INTEGER;
     t->this.number.this.integer = (int)integer;
-
+    printf("                entier : %d\n",integer);
     return t;
 }
 
@@ -103,26 +105,12 @@ object make_pair(void)
 void afficher_objet (object t)/*pour un entier poue l'instant*/
 {
     if(t->type == 0)
-    printf("type : %d, valeur : %d\n",t->type,t->this.number.this.integer);
+    printf("                type : %d, valeur : %d\n",t->type,t->this.number.this.integer);
     if(t->type == 1)
-    printf("type : %d, valeur : %c\n",t->type,t->this.character);
+    printf("                type : %d, valeur : %c\n",t->type,t->this.character);
     if(t->type == 2)
-    printf("type : %d, valeur : %s\n",t->type,t->this.string);
+    printf("                type : %d, valeur : %s\n",t->type,t->this.string);
     if(t->type == 6)
-    printf("type : %d, valeur : %s\n",t->type,t->this.symbol);
+    printf("                type : %d, valeur : %s\n",t->type,t->this.symbol);
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
