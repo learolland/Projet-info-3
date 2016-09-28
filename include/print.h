@@ -16,6 +16,7 @@ extern "C" {
 #endif
 
 #include "object.h"
+#include "read.h"
 
 
 void sfs_print( object );

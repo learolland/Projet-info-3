@@ -312,7 +312,7 @@ int test_character (char* input, uint *here)
 			return 2;
 		if(strcmp(&input[i+1], "\\")==0 && strcmp(&input[i+2],"space")==0)
 			return 3;
-		if(strlen(input)>3)
+		if(input[i+2]== 0 || input[i+2] == 32 || input[i+2] == 41)
 		{
 			printf("le caractere est trop long\n");
 			return -1;
@@ -324,8 +324,6 @@ int test_character (char* input, uint *here)
 
 int test_string (char* input, uint *here)
 {
-	printf("entree dans test_string\n");
-
 	if(input[*here]=='\'')
 		return 1;
 	return 0;
@@ -387,15 +385,19 @@ char * input_to_string (char* input, uint *here)
 
 char* input_to_symbol (char* input, uint *here)
 {
-	uint i = *here + 1;
+	uint i = *here;
+	printf("début de input_to_symbol : input[i] = %c\n",input[i]);
+
 	string tmp_chaine;
 	strcpy(tmp_chaine,&input[i]) ;
 	char* chaine = malloc(sizeof(*chaine));
-	while(input[i]!= 32)
+	while(input[i]!= 32 && input[i]!= 41)
 	{
+		printf("input[i] dans symbol : %c\n",input[i]);
 		i++;
 	}
-	strncpy(chaine,tmp_chaine, i-*here+1);
+	strncpy(chaine,tmp_chaine, i-*here);
+	printf("symbol : %s, taille du symbole %lu\n",chaine, strlen(chaine));
 	return chaine;
 }
 
@@ -405,96 +407,76 @@ char* input_to_symbol (char* input, uint *here)
 
 object sfs_read_atom( char *input, uint *here)
 {
-	printf("            entree dans read_atom\n");
 	printf("            atom :%c, size : %lu, chaine : %s \n", input[*here],strlen(input),input);
 	uint i = *here;
-  uint test = 0 ;
-
-	if(test_integer(&input[i]) == 1)
+	uint test = 0 ;
+	while(*here<strlen(input))
 	{
-		printf("            sfs_read_atom : on lit un entier\n");
-		uint integer = string_to_integer(input,here);  /*test si la suite est tj un chiffre*/
-		if(integer!=-1)
-    {
-      *here += taille_int(integer);
-			printf("            *here = %d, taille integer : %d\n",*here,taille_int(integer));
-			return make_integer(integer);
-		}
-	}
-
-  test = test_character(input,here);
-	if(test ==1)
-	{
-		printf("            sfs_read_atom : on lit un caractere\n");
-		*here += 3;
-		printf("            *here = %d\n",*here);
-		return make_character(input[(*here)+2]);
-	}
-	if(test ==2)
-	{
-		printf("            sfs_read_atom : on lit un saut a la ligne\n");
-		printf("            *here = %d\n",*here);
-		return make_character(input[*here]);
-	}
-	if(test ==3)
-	{
-		printf("            sfs_read_atom : on lit un espace\n");
-				printf("            *here = %d\n",*here);
-		return make_character(input[*here]);
-	}
-	if(test == -1)
-	{
-		printf("            sfs_read_atom : on lit un caractere trop long\n");
-	}
-
-	if(test_string(input,here)==1)
-	{
-		printf("            sfs_read_atom : on lit une chaine\n");
-		char *chaine = malloc(sizeof(chaine));
-		chaine = input_to_string(input,here);
-		*here += strlen(chaine)+2;
-				printf("            chaine : %s taille de la chaine : %lu -> here = %d\n", chaine, strlen(chaine),*here);
-				printf("            *here = %d, input : %c\n",*here, input[*here]);
-		return make_string(chaine);
-
-	}
-
-	printf("            sfs_read_atom : on ne lit aucun des cas precedents -> symbole \n");
-	char * chaine_symbol = input_to_symbol(input, here);
-	*here += sizeof(chaine_symbol);
-			printf("            *here = %d\n",*here);
-	return make_symbol(input);
-
-
-    /*object atom = NULL;*/
-
-}
-
-
-
-object sfs_read( char *input, uint *here )
-{
-	printf("        on entre dans sfs_read\n");
-	if ( input[*here] == '(' )
-  {
-		printf("        on detecte une liste\n");
-			if ( input[(*here)+1] == ')' )
+		if(test_integer(&input[i]) == 1)
+		{
+			printf("            sfs_read_atom : on lit un entier\n");
+			uint integer = string_to_integer(input,here);  /*test si la suite est tj un chiffre*/
+			if(integer!=-1)
 			{
-				*here += 2;
-				return *nil;
-    	}
-        else {
-            (*here)++;
-						printf("        dans sfs_read : here = %d\n",*here);
-            return sfs_read_pair( input, here );
-        }
-    }
-    else
-    {
-        return sfs_read_atom( input, here );
-    }
+				*here += taille_int(integer);
+				printf("            *here = %d, taille integer : %d\n",*here,taille_int(integer));
+				return make_integer(integer);
+			}
+		}
 
+		test = test_character(input,here);
+		if(test ==1)
+		{
+			printf("            sfs_read_atom : on lit un caractere\n");
+			*here += 3;
+			printf("            *here = %d\n",*here);
+			return make_character(input[(*here)+2]);
+		}
+		if(test ==2)
+		{
+			printf("            sfs_read_atom : on lit un saut a la ligne\n");
+			printf("            *here = %d\n",*here);
+			return make_character(input[*here]);
+		}
+		if(test ==3)
+		{
+			printf("            sfs_read_atom : on lit un espace\n");
+			printf("            *here = %d\n",*here);
+			return make_character(input[*here]);
+		}
+		if(test == -1)
+		{
+			printf("            sfs_read_atom : on lit un caractere trop long\n");
+		}
+
+		if(test_string(input,here)==1)
+		{
+			printf("            sfs_read_atom : on lit une chaine\n");
+			char *chaine = malloc(sizeof(chaine));
+			chaine = input_to_string(input,here);
+			*here += strlen(chaine)+2;
+			printf("            chaine : %s taille de la chaine : %lu -> here = %d\n", chaine, strlen(chaine),*here);
+			printf("            *here = %d, input : %c\n",*here, input[*here]);
+			return make_string(chaine);
+
+		}
+
+		if(input[i] > 32 && *here < strlen(input))
+		{
+			printf("            sfs_read_atom : on ne lit aucun des cas precedents -> symbole \n");
+			char * chaine_symbol = malloc(sizeof(chaine_symbol));
+			chaine_symbol = input_to_symbol(input, here);
+			printf("here = %d taille : %lu\n",*here, sizeof(chaine_symbol));
+			*here += sizeof(chaine_symbol);
+			printf("            *here = %d\n",*here);
+			return make_symbol(input);
+		}
+
+		/*object atom = NULL;*/
+	}
 }
+
+
 
 
 
@@ -507,20 +489,24 @@ object cons (object val, object pair)
     	return NULL;*/
 
     p->this.pair.car = val;
+
     p->this.pair.cdr = pair;
+	printf("                                      %d, val : %d\n",pair->type, val->type);
     return p ;
 }
 
 
-object compiler (object t, char*input, uint *here)
-{
-	printf("    on entre dans compiler\n");
 
-	if(input[*here]!=41)
+
+
+object compiler (object t, char* input, uint *here)
+{
+	printf("    on entre dans compiler %d\n",input[*here]);
+
+	if(input[*here]!=0 && input[*here]!= 41)
 	{
 		if(input[*here]==32 || input[*here]==0)
 			(*here)++;
-		printf("    here :%d  input: %d\n",*here,input[*here]);
 		t = cons(sfs_read(input,here),t);
 		t = compiler(t,input,here);
 	}
@@ -528,33 +514,56 @@ object compiler (object t, char*input, uint *here)
 }
 
 
-object read (char*input)
+
+
+
+void affiche_liste (object t)
 {
-	printf("on entre dans read\n");
-	object t = make_nil();
-	uint* here = malloc(sizeof(*here));
-	*here = 0;
-	while (input[*here]!='\0')
+	object o = t;
+	while (o->this.pair.cdr != NULL)
 	{
-		object l = compiler(t,input,here);
+		printf("type : %d\n",o->type);
+		o = o->this.pair.cdr;
 	}
+
 }
 
 
 
-
-/***************/
 
 
 object sfs_read_pair( char *stream, uint *i )
 {
-	printf("             on rentre dans sfs_read_pair\n");
     object pair = make_pair();
-		printf("            on a cree un pair\n");
-		pair = compiler(pair,stream,i);
-
+	pair = compiler(pair,stream,i);
     return pair;
 }
 
 
-/***********fontions utiles***********/
+
+
+
+
+object sfs_read( char *input, uint *here )
+{
+	while(*here<strlen(input) && input[*here]!=41)
+	{
+		if ( input[*here] == '(' )
+		{
+			if ( input[(*here)+1] == ')' )
+			{
+				*here += 2;
+				return *nil;
+			}
+			else
+			{
+				(*here)++;
+				return sfs_read_pair( input, here );
+			}
+		}
+		else
+		{
+			return sfs_read_atom( input, here );
+		}
+	}
+}

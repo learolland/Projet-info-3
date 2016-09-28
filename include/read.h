@@ -23,7 +23,7 @@ extern "C" {
 enum {S_OK, S_KO, S_END};
 
 uint   sfs_get_sexpr( string input, FILE *fp );
-
+void init();
 
 int test_integer (char* charactere);
 

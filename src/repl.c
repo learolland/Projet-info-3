@@ -16,7 +16,6 @@
 #include <string.h>
 
 
-#include "object.h"
 #include "read.h"
 #include "eval.h"
 #include "print.h"

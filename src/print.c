@@ -1,34 +1,87 @@
 
-/**
- * @file print.c
- * @author François Cayre <cayre@yiking.(null)>
- * @date Fri Jun 22 20:12:17 2012
- * @brief Printing stuff for SFS.
- *
- * Printing stuff for SFS.
- */
+#include <stdio.h>
+#include <ctype.h>
+#include <math.h>
+#include <stdlib.h>
 
+#include "read.h"
 #include "print.h"
 
-#include <stdio.h>
 
-void sfs_print_atom( object o ) {
+/* Globals */
+object * nil;
+object * boolean_true;
+object * boolean_false;
+
+
+
+
+
+void sfs_print_atom( object p )
+{
+	if (p->type != SFS_NIL)
+	{
+		if(p->type == 0)
+		{
+			printf("%d ",p->this.number.this.integer );
+			return;
+		}
+		if(p->type == 1)
+		{
+			printf("%c ",p->this.character);
+			return;
+		}
+		if(p->type == 2)
+		{
+			printf("%s ",p->this.string);
+			return;
+		}
+		if(p->type == 4)
+		{
+			printf("() ");
+			return;
+		}
+		if(p->type == 5)
+		{
+			printf("booléen (à gérer) ");
+			return;
+		}
+		if(p->type == 6)
+		{
+			printf("%s ",p->this.symbol);
+			return;
+		}
+	}
 
     return;
 }
 
-void sfs_print_pair( object o ) {
+void sfs_print_pair( object o )
+{
+    while (o!= NULL && o->this.pair.car !=NULL)
+    {
+		/*printf("type suivant : %d\n", o->this.pair.cdr->this.pair.car->type);
 
-    return;
-}
-
-void sfs_print( object o ) {
-
-    if ( SFS_PAIR == o->type ) {
-        sfs_print_pair( o );
+		if(o->this.pair.cdr->type == 3)*/
+		sfs_print(o->this.pair.car);
+		o = o->this.pair.cdr ;
     }
-    else {
+
+    return;
+}
+
+void sfs_print( object o )
+{
+    if ( SFS_PAIR == o->type )
+    {
+		printf("(");
+        sfs_print_pair( o );
+		printf(" )");
+    }
+    else
+    {
         sfs_print_atom( o );
     }
+
 
 }

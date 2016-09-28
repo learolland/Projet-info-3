@@ -16,11 +16,9 @@
 
 object make_object( uint type )
 {
-    printf("                entree dans make_object ");
     object t = sfs_malloc( sizeof( *t ) );
 
     t->type = type;
-    printf("type : %d\n", t->type);
     return t;
 }
 
@@ -53,7 +51,6 @@ object make_symbol( string symbol )
 {
     object t = make_object(SFS_SYMBOL);
     strcpy(t->this.symbol,symbol);
-    printf("                symbol : %s\n",symbol);
 
     return t;
 }
@@ -61,11 +58,9 @@ object make_symbol( string symbol )
 
 object make_integer(uint integer)
 {
-    printf("                entree dans make_integer\n");
     object t = make_object(SFS_NUMBER);
     t->this.number.numtype = NUM_INTEGER;
     t->this.number.this.integer = (int)integer;
-    printf("                entier : %d\n",integer);
     return t;
 }
 
@@ -91,6 +86,7 @@ object make_string( string chaine)
 
 object make_pair(void)
 {
+    printf("make_pair\n");
     object t = make_object(SFS_PAIR);
     t->this.pair.car = NULL;			/*pas suuuuuure*/
     t->this.pair.cdr = NULL;
