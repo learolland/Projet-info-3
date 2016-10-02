@@ -50,6 +50,8 @@ object make_integer( uint integer);
 object make_character( char character);
 object make_string( string chaine);
 object make_pair(void);
+object make_character_special(string chaine);
+
 
 void afficher_objet(object t);
 
@@ -61,6 +63,7 @@ void afficher_objet(object t);
 #define SFS_NIL          0x04
 #define SFS_BOOLEAN      0x05
 #define SFS_SYMBOL       0x06
+#define SFS_CHAR_SPECIAL 0x07
 
 
 /*extern object nil;*/

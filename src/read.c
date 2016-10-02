@@ -6,16 +6,22 @@
 
 #include "read.h"
 
-/* Globals */
-object * nil;
-object * boolean_true;
-object * boolean_false;
 
-void init ()
+/* Globals */
+object  nil;
+object  boolean_true;
+object  boolean_false;
+object root ;
+uint nb_maillon = 0;
+
+void init (void)
 {
-	object boolean_true = make_boolean(TRUE);
-	object boolean_false = make_boolean(FALSE);
-  object nil = make_nil();
+	DEBUG_MSG("init\n");
+	boolean_true = make_boolean(TRUE);
+	boolean_false = make_boolean(FALSE);
+	root = make_pair();
+
+    nil = make_nil();
 }
 
 
@@ -290,12 +296,29 @@ uint  sfs_get_sexpr( char *input, FILE *fp ) {
 
     return S_OK;
 }
+/*
 
-/************* TEST DES CARACTERES ****************/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+************* TEST DES CARACTERES ****************/
 
 int test_integer (char* charactere)
 {
-	/*printf("entree dans test_integer\n");*/
+	/*DEBUG_MSG("entree dans test_integer\n");*/
 	if(charactere[0] ==  '0'|| charactere[0] == '1' || charactere[0] == '2' ||charactere[0] ==  '3' || charactere[0] == '4' ||charactere[0] ==  '5' ||charactere[0] ==  '6' || charactere[0] == '7' || charactere[0] == '8' ||charactere[0] == '9' )
 	return 1;
 	else return 0;
@@ -303,29 +326,42 @@ int test_integer (char* charactere)
 
 int test_character (char* input, uint *here)
 {
-	printf("entree dans test_character\n");
+	DEBUG_MSG("entree dans test_character\n");
 	uint i = *here;
 
-	if(input[i]== '#' && input[i+1]==92)
+	if(input[i]== '#' && input[i+1]=='\\')
 	{
-		if(strcmp(&input[i],"#\newline")==0)
-			return 2;
-		if(strcmp(&input[i+1], "\\")==0 && strcmp(&input[i+2],"space")==0)
-			return 3;
-		if(strlen(input)>3)
+		i = i+2;
+		DEBUG_MSG("dans test integer : i : %d, input :%s\n",i,input+i);
+		if(strncmp(input+i,"newline",6)==0)
 		{
-			printf("le caractere est trop long\n");
+			return 2;
+		}
+		if( strcmp(&input[i],"space")==0)
+			return 3;
+		if(input[i+1] == 0 || input[i+1] == 32 || input[i+1] == 41)
+		{
+			DEBUG_MSG("le caractere est trop long\n");
 			return -1;
 		}
+		if(input[i]=='t')
+		{
+			DEBUG_MSG("boolen t\n");
+			return 4;
+		}
+		if(input[i]=='f')
+		{
+			DEBUG_MSG("boolen t\n");
+
+			return 5;
+		}
 		return 1;
+
 	}
-	return 0;
 }
 
 int test_string (char* input, uint *here)
 {
-	printf("entree dans test_string\n");
-
 	if(input[*here]=='\'')
 		return 1;
 	return 0;
@@ -340,7 +376,7 @@ uint taille_int (uint integer)
 /*****************FONCTIONS DE CONVERSTION*************/
 uint string_to_integer(char *input, uint *here)
 {
-	printf("                entree dans string_to_integer\n");
+	DEBUG_MSG("                entree dans string_to_integer\n");
 	uint indice = *here;
 	string tmp_chaine;
 	int integer = 0;
@@ -350,7 +386,7 @@ uint string_to_integer(char *input, uint *here)
 	{
 		if(test_integer(&input[indice])==0)
 		{
-			printf("                ce n'est pas un entier\n");
+			DEBUG_MSG("                ce n'est pas un entier\n");
 			return -1;
 		}
 		indice++;
@@ -366,19 +402,19 @@ uint string_to_integer(char *input, uint *here)
 char * input_to_string (char* input, uint *here)
 {
 	uint i = *here + 1;
-	printf("début de la chaine : %d\n",i);
+	DEBUG_MSG("début de la chaine : %d\n",i);
 	string tmp_chaine;
 	strcpy(tmp_chaine,&input[i]) ;
-	printf("                copie de input dans tmp_chaine : %s\n",tmp_chaine );
+	DEBUG_MSG("                copie de input dans tmp_chaine : %s\n",tmp_chaine );
 	char* chaine = malloc(sizeof(*chaine));
 	for( ; input[i]!=39 ; i++)
 	{
-		printf("%c\n",input[i]);
+		DEBUG_MSG("%c\n",input[i]);
 	}
-	printf("                fin de la chaine, i = %d\n",i);
+	DEBUG_MSG("                fin de la chaine, i = %d\n",i);
 	strncpy(chaine,tmp_chaine, i-*here-1);
-		printf("                     chaine  = %s , taille : %lu\n",chaine,strlen(chaine));
-	/*printf("                 on copie tmp dans chaine %s jusqu'à i- here+1 : %d\n",chaine,i-*here-1);*/
+		DEBUG_MSG("                     chaine  = %s , taille : %lu\n",chaine,strlen(chaine));
+	/*DEBUG_MSG("                 on copie tmp dans chaine %s jusqu'à i- here+1 : %d\n",chaine,i-*here-1);*/
 	return  chaine;
 }
 
@@ -387,15 +423,19 @@ char * input_to_string (char* input, uint *here)
 
 char* input_to_symbol (char* input, uint *here)
 {
-	uint i = *here + 1;
+	uint i = *here;
+	DEBUG_MSG("début de input_to_symbol : input[i] = %c\n",input[i]);
+
 	string tmp_chaine;
 	strcpy(tmp_chaine,&input[i]) ;
 	char* chaine = malloc(sizeof(*chaine));
-	while(input[i]!= 32)
+	while(input[i]!= 32 && input[i]!= 41)
 	{
+		DEBUG_MSG("input[i] dans symbol : %c\n",input[i]);
 		i++;
 	}
-	strncpy(chaine,tmp_chaine, i-*here+1);
+	strncpy(chaine,tmp_chaine, i-*here);
+	DEBUG_MSG("symbol : %s, taille du symbole %lu\n",chaine, strlen(chaine));
 	return chaine;
 }
 
@@ -405,156 +445,284 @@ char* input_to_symbol (char* input, uint *here)
 
 object sfs_read_atom( char *input, uint *here)
 {
-	printf("            entree dans read_atom\n");
-	printf("            atom :%c, size : %lu, chaine : %s \n", input[*here],strlen(input),input);
+	DEBUG_MSG("            atom :%c, size : %lu, chaine : %s \n", input[*here],strlen(input),input);
 	uint i = *here;
-  uint test = 0 ;
-
-	if(test_integer(&input[i]) == 1)
+	uint test = 0 ;
+	if(input[*here]<33)
+		(*here)++;
+	while(*here<strlen(input))
 	{
-		printf("            sfs_read_atom : on lit un entier\n");
-		uint integer = string_to_integer(input,here);  /*test si la suite est tj un chiffre*/
-		if(integer!=-1)
-    {
-      *here += taille_int(integer);
-			printf("            *here = %d, taille integer : %d\n",*here,taille_int(integer));
-			return make_integer(integer);
-		}
-	}
-
-  test = test_character(input,here);
-	if(test ==1)
-	{
-		printf("            sfs_read_atom : on lit un caractere\n");
-		*here += 3;
-		printf("            *here = %d\n",*here);
-		return make_character(input[(*here)+2]);
-	}
-	if(test ==2)
-	{
-		printf("            sfs_read_atom : on lit un saut a la ligne\n");
-		printf("            *here = %d\n",*here);
-		return make_character(input[*here]);
-	}
-	if(test ==3)
-	{
-		printf("            sfs_read_atom : on lit un espace\n");
-				printf("            *here = %d\n",*here);
-		return make_character(input[*here]);
-	}
-	if(test == -1)
-	{
-		printf("            sfs_read_atom : on lit un caractere trop long\n");
-	}
-
-	if(test_string(input,here)==1)
-	{
-		printf("            sfs_read_atom : on lit une chaine\n");
-		char *chaine = malloc(sizeof(chaine));
-		chaine = input_to_string(input,here);
-		*here += strlen(chaine)+2;
-				printf("            chaine : %s taille de la chaine : %lu -> here = %d\n", chaine, strlen(chaine),*here);
-				printf("            *here = %d, input : %c\n",*here, input[*here]);
-		return make_string(chaine);
-
-	}
-
-	printf("            sfs_read_atom : on ne lit aucun des cas precedents -> symbole \n");
-	char * chaine_symbol = input_to_symbol(input, here);
-	*here += sizeof(chaine_symbol);
-			printf("            *here = %d\n",*here);
-	return make_symbol(input);
-
-
-    /*object atom = NULL;*/
-
-}
-
-
-
-object sfs_read( char *input, uint *here )
-{
-	printf("        on entre dans sfs_read\n");
-	if ( input[*here] == '(' )
-  {
-		printf("        on detecte une liste\n");
-			if ( input[(*here)+1] == ')' )
+		if(test_integer(&input[i]) == 1)
+		{
+			DEBUG_MSG("            sfs_read_atom : on lit un entier\n");
+			uint integer = string_to_integer(input,here);  /*test si la suite est tj un chiffre*/
+			if(integer!=-1)
 			{
-				*here += 2;
-				return *nil;
-    	}
-        else {
-            (*here)++;
-						printf("        dans sfs_read : here = %d\n",*here);
-            return sfs_read_pair( input, here );
-        }
-    }
-    else
-    {
-        return sfs_read_atom( input, here );
-    }
+				*here += taille_int(integer);
+				DEBUG_MSG("            *here = %d, taille integer : %d\n",*here,taille_int(integer));
+				return make_integer(integer);
+			}
+		}
 
+		test = test_character(input,here);
+		if(test ==1)
+		{
+			DEBUG_MSG("            sfs_read_atom : on lit un caractere\n");
+			char caractere = input[*here+2];
+			*here += 3;
+			DEBUG_MSG("            *here = %d\n",*here);
+			return make_character(caractere);
+		}
+		if(test ==2)
+		{
+			DEBUG_MSG("            sfs_read_atom : on lit un saut a la ligne\n");
+			DEBUG_MSG("            *here = %d\n",*here);
+			*here += 9;
+			string chaine = "newline";
+			return make_character_special(chaine);
+		}
+		if(test ==3)
+		{
+			DEBUG_MSG("            sfs_read_atom : on lit un espace\n");
+			DEBUG_MSG("            *here = %d\n",*here);
+			*here += 7;
+			string chaine = "space";
+			return make_character_special(chaine);
+		}
+		if (test ==4)
+		{
+			DEBUG_MSG("boolean_true\n");
+			*here += 3;
+			return make_boolean(TRUE);
+		}
+		if (test ==5)
+		{
+			*here += 3;
+			return make_boolean(FALSE);
+		}
+
+		if(test == -1)
+		{
+			DEBUG_MSG("            sfs_read_atom : on lit un caractere trop long\n");
+		}
+
+		if(test_string(input,here)==1)
+		{
+			DEBUG_MSG("            sfs_read_atom : on lit une chaine\n");
+			char *chaine = malloc(sizeof(chaine));
+			chaine = input_to_string(input,here);
+			*here += strlen(chaine)+2;
+			DEBUG_MSG("            chaine : %s taille de la chaine : %lu -> here = %d\n", chaine, strlen(chaine),*here);
+			DEBUG_MSG("            *here = %d, input : %c\n",*here, input[*here]);
+			return make_string(chaine);
+
+		}
+
+		if(input[i] > 32 && *here < strlen(input))
+		{
+			DEBUG_MSG("            sfs_read_atom : on ne lit aucun des cas precedents -> symbole \n");
+			char * chaine_symbol = malloc(sizeof(chaine_symbol));
+			chaine_symbol = input_to_symbol(input, here);
+			DEBUG_MSG("here = %d taille : %lu\n",*here, sizeof(chaine_symbol));
+			*here += sizeof(chaine_symbol);
+			DEBUG_MSG("            *here = %d\n",*here);
+			return make_symbol(input);
+		}
+
+		/*object atom = NULL;*/
+	}
 }
 
 
 
-object cons (object val, object pair)
+
+
+object cons (char*stream,uint*i)
 {
-    object p;
-    p = make_object(SFS_PAIR);
+	object t = make_pair();
+	t->this.pair.car = sfs_read(stream,i);
+	return t;
+}
+/*
 
-    /*if (est_vide(p))
-    	return NULL;*/
+	object p ;
+	while(stream[*i]!=41 && stream[*i]>32 && *i<strlen(stream))
+	{
+		p = make_pair();
+		p->this.pair.car = sfs_read(stream,i);
+		p->this.pair.cdr = cons(stream,i);
+	}
+	return p ;
+}*/
 
-    p->this.pair.car = val;
-    p->this.pair.cdr = pair;
-    return p ;
+
+object sfs_read_pair (char* stream, uint *i)
+
+{
+	/*DEBUG_MSG("entrée dans read_pair\n");
+	while(stream[*i]!=41 && stream[*i]>31 && *i<strlen(stream))
+	{
+	if(stream[*i]==32) (*i)++;
+	DEBUG_MSG("STREAM : %c ou %d, i : %d\n",stream[*i],stream[*i], *i);
+
+	object pair = cons(stream,i);
+	if(stream[*i]!=41 && stream[*i]>31 && *i<strlen(stream))
+	{
+	while(stream[*i]==32) (*i)++;
+
+	DEBUG_MSG("STREAM SUIVANT: %c ou %d , i : %d\n",stream[*i],stream[*i],*i);
+	if(stream[*i]==41) pair->this.pair.cdr = nil;
+	else
+	pair->this.pair.cdr = sfs_read_pair(stream,i);
+}
+else pair->this.pair.cdr = nil ;
+
+return pair;
+}
+return NULL;*/
+	*i = next_char(stream,i);
+	if(stream[*i]== ')' || stream[*i] < 31)
+	{
+		(*i)++;
+		DEBUG_MSG("on va retourner nil\n");
+		return nil;
+	}
+	*i = next_char(stream,i);
+
+	if(stream[*i]<31) return nil;
+
+	object pair = make_pair();
+
+	*i = next_char(stream,i);
+	pair->this.pair.car = sfs_read(stream, i);
+	pair->this.pair.cdr = sfs_read_pair(stream,i);
+	return pair;
 }
 
-
-object compiler (object t, char*input, uint *here)
+uint next_char (char*input, uint *i)
 {
-	printf("    on entre dans compiler\n");
+	while(input[*i]==32)
 
-	if(input[*here]!=41)
+	{
+		if(*i<strlen(input))
+
+		(*i)++;
+	}
+	return *i;
+}
+/*
+
+
+object compiler (object t, char* input, uint *here)
+{
+	DEBUG_MSG("    on entre dans compiler %d\n",input[*here]);
+
+	if(input[*here]!=0 && input[*here]!= 41)
 	{
 		if(input[*here]==32 || input[*here]==0)
 			(*here)++;
-		printf("    here :%d  input: %d\n",*here,input[*here]);
+
 		t = cons(sfs_read(input,here),t);
 		t = compiler(t,input,here);
 	}
 	return t;
 }
+*/
 
 
-object read (char*input)
+/*
+object make_root (char*input, uint*i)
 {
-	printf("on entre dans read\n");
-	object t = make_nil();
-	uint* here = malloc(sizeof(*here));
-	*here = 0;
-	while (input[*here]!='\0')
+	DEBUG_MSG("entree dans make_root, %c\n",input[*i]);
+	object pair;
+
+	while (input[*i]!=41)
 	{
-		object l = compiler(t,input,here);
+		pair = make_pair();
+		root = pair;
+		pair->this.pair.car = sfs_read(input,i);
+		if(input[*i]!= 41)
+		pair->this.pair.cdr = make_root(input,i);
+		else return pair;
 	}
+	DEBUG_MSG("1\n");
+
+	return pair;
 }
 
-
-
-
-/***************/
-
-
-object sfs_read_pair( char *stream, uint *i )
+object make_liste (char *input, uint*i)
 {
-	printf("             on rentre dans sfs_read_pair\n");
-    object pair = make_pair();
-		printf("            on a cree un pair\n");
-		pair = compiler(pair,stream,i);
+	object pair;
+	while (input[*i]!=41)
+	{
+		pair = make_pair();
+		pair->this.pair.car = sfs_read(input,i);
+		pair->this.pair.cdr = make_liste(input,i);
 
-    return pair;
+	}
+	return pair;
 }
 
+object sfs_read_pair (char* input, uint *i, uint nb_maillon)
+{
+	object pair;
+	DEBUG_MSG("entree dans sfs_read_pair\n");
+	while(input[*i]!=41)
+	{
+		DEBUG_MSG("entree dans sfs_read_pair, maillon = %d\n", nb_maillon);
+		(nb_maillon)++;
+		if (nb_maillon == 1)
+		{
+			nb_maillon++;
+			DEBUG_MSG("if nb_maillon = 1\n");
+			pair = make_root(input,i);
+			return pair;
 
-/***********fontions utiles***********/
+		}
+		else
+		{
+			while(input[*i]!=41)
+			{
+				pair = make_liste(input,i);
+				DEBUG_MSG("on a une liste interieure finie\n");
+			}
+		}
+		nb_maillon = 0;
+		root->this.pair.cdr = sfs_read_pair(input,i,nb_maillon);
+		if(input[*i]==41 && *i+1 >=strlen(input))
+			return pair;
+	}
+	DEBUG_MSG("3\n");
+
+	return pair;
+}
+*/
+
+
+object sfs_read( char *input, uint *here )
+{
+	if(input[*here]<33)
+		(*here)++;
+	if(*here<strlen(input) && input[*here]!=41)
+	{
+		if ( input[*here] == '(' )
+		{
+			if ( input[(*here)+1] == ')' )
+			{
+				*here += 2;
+				return nil;
+			}
+			else
+			{
+				(*here)++;
+				return sfs_read_pair( input, here  );
+				DEBUG_MSG("? \n");
+			}
+		}
+		else
+		{
+			return sfs_read_atom( input, here );
+		}
+	}
+	DEBUG_MSG("fin de sfs_read\n");
+}

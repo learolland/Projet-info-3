@@ -23,7 +23,7 @@ extern "C" {
 enum {S_OK, S_KO, S_END};
 
 uint   sfs_get_sexpr( string input, FILE *fp );
-
+void init(void);
 
 int test_integer (char* charactere);
 
@@ -34,7 +34,12 @@ object read (char*input);
 object sfs_read( char *input, uint *here );
 object sfs_read_atom( char *input, uint *here );
 object sfs_read_pair( char *stream, uint *i );
-object cons (object val, object pair);
+
+
+uint next_char (char*input, uint *i);
+
+
+object cons (char*stream,uint*i);
 
 #ifdef __cplusplus
 }

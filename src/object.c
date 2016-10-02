@@ -16,11 +16,9 @@
 
 object make_object( uint type )
 {
-    printf("                entree dans make_object ");
     object t = sfs_malloc( sizeof( *t ) );
 
     t->type = type;
-    printf("type : %d\n", t->type);
     return t;
 }
 
@@ -29,7 +27,7 @@ object make_nil( void ) 			/*make_empty_list ??*/
 
     object t = make_object( SFS_NIL );
 
-    t->this.special = NULL;
+    t->this.special = t;
 
     return t;
 }
@@ -39,11 +37,21 @@ object make_boolean( uint true_false  )
 {
 
     object t = make_object(SFS_BOOLEAN);
-
+    DEBUG_MSG("on lit un booléen\n");
     if(true_false == FALSE)
-        strcpy(t->this.string,"#f");
+    {
+        string chaine = "#f";
+        strcpy(t->this.string,chaine);
+        printf("BOOLEN / %s\n",chaine);
+    }
     if (true_false == TRUE )
-        strcpy(t->this.string,"#t");
+    {
+        string chaine = "#t";
+        printf("BOOLEN / %s\n",chaine);
+
+        strcpy(t->this.string,chaine);
+
+    }
 
     return t;
 }
@@ -53,7 +61,6 @@ object make_symbol( string symbol )
 {
     object t = make_object(SFS_SYMBOL);
     strcpy(t->this.symbol,symbol);
-    printf("                symbol : %s\n",symbol);
 
     return t;
 }
@@ -61,11 +68,9 @@ object make_symbol( string symbol )
 
 object make_integer(uint integer)
 {
-    printf("                entree dans make_integer\n");
     object t = make_object(SFS_NUMBER);
     t->this.number.numtype = NUM_INTEGER;
     t->this.number.this.integer = (int)integer;
-    printf("                entier : %d\n",integer);
     return t;
 }
 
@@ -78,6 +83,12 @@ object make_character( char character)
     return t;
 }
 
+object make_character_special(string chaine)
+{
+    object t = make_object(SFS_CHAR_SPECIAL);
+    strcpy(t->this.string,chaine);
+    return t;
+}
 
 
 object make_string( string chaine)
@@ -91,6 +102,7 @@ object make_string( string chaine)
 
 object make_pair(void)
 {
+    printf("make_pair\n");
     object t = make_object(SFS_PAIR);
     t->this.pair.car = NULL;			/*pas suuuuuure*/
     t->this.pair.cdr = NULL;
