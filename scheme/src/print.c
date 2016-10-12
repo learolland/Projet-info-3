@@ -22,17 +22,17 @@ void sfs_print_atom( object p )
 
 		if(p->type == SFS_NUMBER)
 		{
-			printf("%d ",p->this.number.this.integer );
+			printf("%d",p->this.number.this.integer );
 			return;
 		}
 		if(p->type == SFS_CHARACTER)
 		{
-			printf("%c ",p->this.character);
+			printf("#\\%c",p->this.character);
 			return;
 		}
 		if(p->type == SFS_STRING)
 		{
-			printf("%s ",p->this.string);
+			printf("\"%s\"",p->this.string);
 			return;
 		}
 		if(p->type == SFS_NIL)
@@ -42,17 +42,17 @@ void sfs_print_atom( object p )
 		}
 		if(p->type == SFS_BOOLEAN)
 		{
-			printf("%s ",p->this.string);
+			printf("%s",p->this.string);
 			return;
 		}
 		if(p->type == SFS_SYMBOL)
 		{
-			printf("%s ",p->this.symbol);
+			printf("%s",p->this.symbol);
 			return;
 		}
 		if(p->type == SFS_CHAR_SPECIAL)
 		{
-			printf("%s ",p->this.string);
+			printf("%s",p->this.string);
 			return;
 		}
     return;

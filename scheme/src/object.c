@@ -42,13 +42,10 @@ object make_boolean( uint true_false  )
     {
         string chaine = "#f";
         strcpy(t->this.string,chaine);
-        printf("BOOLEN / %s\n",chaine);
     }
     if (true_false == TRUE )
     {
         string chaine = "#t";
-        printf("BOOLEN / %s\n",chaine);
-
         strcpy(t->this.string,chaine);
 
     }

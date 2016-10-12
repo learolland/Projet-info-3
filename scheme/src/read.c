@@ -349,7 +349,7 @@ int test_character (char* input, uint *here)	/*teste les différents cas de cara
 			if( strncmp(&input[i],"space",5)==0) /*si on a #\space test_character renvoie 3*/
 				return 3;
 
-			if(input[i+1] == 0 || input[i+1] == 32 || input[i+1] == 41)	/*si on a #\ mais un caractere plus long que 1, on renvoie -1 -> symbole */
+			if(input[i+1] != 0 && input[i+1] != 32 && input[i+1] != ')')	/*si on a #\ mais un caractere plus long que 1, on renvoie -1 -> symbole */
 			{
 				DEBUG_MSG("le caractere est trop long\n");
 				return -1;
@@ -414,23 +414,26 @@ int string_to_integer(char *input, uint *here)
 
 
 
-char * input_to_string (char* input, uint *here)
+string * input_to_string (char* input, uint *here)
 {
 	uint i = *here;
+	if(input[i]=='\''|| input[i]=='\"') i++;
 	DEBUG_MSG("début de la chaine : %d\n",i);
+
 	string tmp_chaine;
+	string chaine;
 	strcpy(tmp_chaine,&input[i]) ;
 	DEBUG_MSG("                copie de input dans tmp_chaine : %s\n",tmp_chaine );
-	char* chaine = malloc(sizeof(*chaine));
-	for( ; input[i]!=39 && input[i]!=34 ; i++)
+
+	for( ; input[i]!='\"' && input[i]!='\'' ; i++)
 	{
 		DEBUG_MSG("%c\n",input[i]);
 	}
 	DEBUG_MSG("                fin de la chaine, i = %d\n",i);
-	strncpy(chaine,tmp_chaine, i-*here);
+	strncpy(chaine,tmp_chaine, i-*here-1);
 		DEBUG_MSG("                     chaine  = %s , taille : %lu\n",chaine,strlen(chaine));
 	/*DEBUG_MSG("                 on copie tmp dans chaine %s jusqu'à i- here+1 : %d\n",chaine,i-*here-1);*/
-	return  chaine;
+	return  &chaine;
 }
 
 
@@ -449,7 +452,7 @@ char* input_to_symbol (char* input, uint *here)
 		DEBUG_MSG("input[i] dans symbol : %c\n",input[i]);
 		i++;
 	}
-	strncpy(chaine,tmp_chaine, i-*here);
+	strncpy(chaine,tmp_chaine, i-*here-1);
 	DEBUG_MSG("symbol : %s, taille du symbole %lu\n",chaine, strlen(chaine));
 	return chaine;
 }
@@ -505,7 +508,7 @@ object sfs_read_atom( char *input, uint *here)
 			DEBUG_MSG("            sfs_read_atom : on lit un saut a la ligne\n");
 			DEBUG_MSG("            *here = %d\n",*here);
 			*here += 9;
-			string chaine = "newline";
+			string chaine = "#\\newline";
 			return make_character_special(chaine);
 		}
 		if(test ==3)
@@ -513,7 +516,7 @@ object sfs_read_atom( char *input, uint *here)
 			DEBUG_MSG("            sfs_read_atom : on lit un espace\n");
 			DEBUG_MSG("            *here = %d\n",*here);
 			*here += 7;
-			string chaine = "space";
+			string chaine = "#\\space";
 			return make_character_special(chaine);
 		}
 		if (test ==4)
@@ -536,8 +539,8 @@ object sfs_read_atom( char *input, uint *here)
 		if(test_string(input,here)==1)
 		{
 			DEBUG_MSG("            sfs_read_atom : on lit une chaine\n");
-			char *chaine = malloc(sizeof(chaine));
-			chaine = input_to_string(input,here);
+			string chaine ;
+			strcpy(chaine, *input_to_string(input,here));
 			*here += strlen(chaine)+2;
 			DEBUG_MSG("            chaine : %s taille de la chaine : %lu -> here = %d\n", chaine, strlen(chaine),*here);
 			DEBUG_MSG("            *here = %d, input : %c\n",*here, input[*here]);
@@ -598,93 +601,8 @@ uint next_char (char*input, uint *i)
 	}
 	return *i;
 }
-/*
 
 
-object compiler (object t, char* input, uint *here)
-{
-	DEBUG_MSG("    on entre dans compiler %d\n",input[*here]);
-
-	if(input[*here]!=0 && input[*here]!= 41)
-	{
-		if(input[*here]==32 || input[*here]==0)
-			(*here)++;
-
-		t = cons(sfs_read(input,here),t);
-		t = compiler(t,input,here);
-	}
-	return t;
-}
-*/
-
-
-/*
-object make_root (char*input, uint*i)
-{
-	DEBUG_MSG("entree dans make_root, %c\n",input[*i]);
-	object pair;
-
-	while (input[*i]!=41)
-	{
-		pair = make_pair();
-		root = pair;
-		pair->this.pair.car = sfs_read(input,i);
-		if(input[*i]!= 41)
-		pair->this.pair.cdr = make_root(input,i);
-		else return pair;
-	}
-	DEBUG_MSG("1\n");
-
-	return pair;
-}
-
-object make_liste (char *input, uint*i)
-{
-	object pair;
-	while (input[*i]!=41)
-	{
-		pair = make_pair();
-		pair->this.pair.car = sfs_read(input,i);
-		pair->this.pair.cdr = make_liste(input,i);
-
-	}
-	return pair;
-}
-
-object sfs_read_pair (char* input, uint *i, uint nb_maillon)
-{
-	object pair;
-	DEBUG_MSG("entree dans sfs_read_pair\n");
-	while(input[*i]!=41)
-	{
-		DEBUG_MSG("entree dans sfs_read_pair, maillon = %d\n", nb_maillon);
-		(nb_maillon)++;
-		if (nb_maillon == 1)
-		{
-			nb_maillon++;
-			DEBUG_MSG("if nb_maillon = 1\n");
-			pair = make_root(input,i);
-			return pair;
-
-		}
-		else
-		{
-			while(input[*i]!=41)
-			{
-				pair = make_liste(input,i);
-				DEBUG_MSG("on a une liste interieure finie\n");
-			}
-		}
-		nb_maillon = 0;
-		root->this.pair.cdr = sfs_read_pair(input,i,nb_maillon);
-		if(input[*i]==41 && *i+1 >=strlen(input))
-			return pair;
-	}
-	DEBUG_MSG("3\n");
-
-	return pair;
-}
-*/
 
 
 object sfs_read( char *input, uint *here )
