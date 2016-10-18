@@ -37,8 +37,8 @@ void sfs_print_atom( object p )
 		}
 		if(p->type == SFS_NIL)
 		{
-		/*	printf("()");
-			return;*/
+			printf("()");
+			return;
 		}
 		if(p->type == SFS_BOOLEAN)
 		{
@@ -64,21 +64,33 @@ void sfs_print_pair( object o )
     {
 
 		/*if(o->this.pair.cdr->type == 3)*/
+		DEBUG_MSG("this.pair.car->type = %d\n",o->this.pair.car->type);
+
 		sfs_print(o->this.pair.car);
+
+
 		o = o->this.pair.cdr ;
-		sfs_print_pair(o);
-    }
+		DEBUG_MSG("2 :this.pair.car->type = %d",o->type);
+		if(o->type!=SFS_NIL)
+		{
+			printf(" ");
+			sfs_print_pair(o);
+		}
+	}
 
     return;
 }
 
 void sfs_print( object o )
 {
+	DEBUG_MSG("type : %d",o->type);
     if ( SFS_PAIR == o->type )
     {
-		printf("( ");
+		printf("(");
+		DEBUG_MSG("\n ON RENTRE DANS LES ( \n");
+
         sfs_print_pair( o );
-		printf(" ) ");
+		printf(")");
     }
     else
     {

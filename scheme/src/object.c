@@ -14,12 +14,23 @@
 #include <stdlib.h>
 
 
+
+
 object make_object( uint type )
 {
     object t = sfs_malloc( sizeof( *t ) );
 
     t->type = type;
     return t;
+}
+
+object make_liste (void)
+{
+    object p = make_object(SFS_LIST);
+    p->nom = '\0';
+    p->car = NULL;
+    p->cdr = NULL;
+    return p;
 }
 
 object make_nil( void ) 			/*make_empty_list ??*/
