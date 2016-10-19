@@ -39,7 +39,9 @@ object sfs_read_pair( char *stream, uint *i );
 uint next_char (char*input, uint *i);
 
 
-object cons (char*stream,uint*i);
+object cons (object car, object cdr);
+
+
 
 #ifdef __cplusplus
 }

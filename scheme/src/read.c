@@ -11,8 +11,6 @@
 object  nil;
 object  boolean_true;
 object  boolean_false;
-object root ;
-uint nb_maillon = 0;
 
 void init (void)
 {
@@ -22,7 +20,14 @@ void init (void)
 	root = make_pair();
 
     nil = make_nil();
+
+
+
+
 }
+
+
+
 
 
 void flip( uint *i ) {
@@ -370,7 +375,17 @@ int test_character (char* input, uint *here)	/*teste les différents cas de cara
 int test_string (char* input, uint *here) /* test si on a des guillemets et renvoie 1 // NE GÈRE PAS si on ne finit pas la chaine par un ' */
 {
 	if(input[*here]=='\'' || input[*here]=='\"')
+	{
+		uint i = *here + 1;
+		while(input[i]!='\'' && input[i]!='\"')
+		{
+			if(input[i]<33 || input[i]==')' || input[i]=='(')
+				return 0;
+			i++;
+		}
 		return 1;
+
+	}
 	return 0;
 }
 
@@ -381,7 +396,12 @@ uint taille_int (uint integer)	/* renvoie la taille d'un entier (nb de character
 }
 
 
-
+uint taille_string(string chaine)
+{
+	int i = 0;
+	while(chaine[i]!='\0') i++;
+	return i;
+}
 
 
 
@@ -389,23 +409,25 @@ uint taille_int (uint integer)	/* renvoie la taille d'un entier (nb de character
 /*****************FONCTIONS DE CONVERSTION*************/
 int string_to_integer(char *input, uint *here)
 {
-	uint indice = *here +1;
+	*here = next_char(input,here);
+	uint indice = *here;
 	string tmp_chaine;
 	int integer = 0;
 	strcpy(tmp_chaine,&input[*here]);
-	indice++;
+	DEBUG_MSG("input : %c",input[*here]);
 
+	if(input[indice]=='+'|| input[indice]=='-') indice ++;
 	while(input[indice] != '\0' && input[indice]!= 32 && input[indice]!= 41 )
 	{
 		if(test_integer(&input[indice])==0)
 		{
-			DEBUG_MSG("                ce n'est pas un entier\n");
+			DEBUG_MSG("                ce n'est pas un entier");
 			return -1;
 		}
 		indice++;
 	}
 	integer = atoi(tmp_chaine);
-	DEBUG_MSG("integer : %d\n",integer);
+	DEBUG_MSG("integer : %d",integer);
 
 	return integer;
 }
@@ -418,45 +440,56 @@ string * input_to_string (char* input, uint *here)
 {
 	uint i = *here;
 	if(input[i]=='\''|| input[i]=='\"') i++;
-	DEBUG_MSG("début de la chaine : %d\n",i);
+	DEBUG_MSG("début de la chaine : %d",i);
 
 	string tmp_chaine;
 	string chaine;
 	strcpy(tmp_chaine,&input[i]) ;
-	DEBUG_MSG("                copie de input dans tmp_chaine : %s\n",tmp_chaine );
+	DEBUG_MSG("                copie de input dans tmp_chaine : %s",tmp_chaine );
 
 	for( ; input[i]!='\"' && input[i]!='\'' ; i++)
 	{
-		DEBUG_MSG("%c\n",input[i]);
+		DEBUG_MSG("%c",input[i]);
 	}
 	DEBUG_MSG("                fin de la chaine, i = %d\n",i);
 	strncpy(chaine,tmp_chaine, i-*here-1);
 		DEBUG_MSG("                     chaine  = %s , taille : %lu\n",chaine,strlen(chaine));
-	/*DEBUG_MSG("                 on copie tmp dans chaine %s jusqu'à i- here+1 : %d\n",chaine,i-*here-1);*/
 	return  &chaine;
 }
 
 
 
 
-char* input_to_symbol (char* input, uint *here)
+string* input_to_symbol (char* input, uint *here)
 {
 	uint i = *here;
-	DEBUG_MSG("début de input_to_symbol : input[i] = %c\n",input[i]);
+	DEBUG_MSG("début de input_to_symbol : input[i] = %c",input[i]);
 
 	string tmp_chaine;
+	string chaine;
 	strcpy(tmp_chaine,&input[i]) ;
-	char* chaine = malloc(sizeof(*chaine));
-	while(input[i]!= 32 && input[i]!= 41)
+
+	while(input[i]!= 0 && input[i]!= 41 && input[i]>32)
 	{
-		DEBUG_MSG("input[i] dans symbol : %c\n",input[i]);
+		DEBUG_MSG("input[%d] dans symbol : %c",i,input[i]);
 		i++;
 	}
-	strncpy(chaine,tmp_chaine, i-*here-1);
+	strncpy(chaine,tmp_chaine, i-*here);
 	DEBUG_MSG("symbol : %s, taille du symbole %lu\n",chaine, strlen(chaine));
-	return chaine;
+	return &chaine;
 }
 
+object cons (object car, object cdr)
+{
+	DEBUG_MSG("entree dans cons");
+    object o = make_pair() ;
+    object p = make_pair() ;
+    p->this.pair.car = cdr;
+	p->this.pair.cdr = nil;
+    o->this.pair.car = car;
+    o->this.pair.cdr = p;
+    return o ;
+}
 
 
 /**************     READ      *****************/
@@ -466,30 +499,29 @@ char* input_to_symbol (char* input, uint *here)
 
 object sfs_read_atom( char *input, uint *here)
 {
-	DEBUG_MSG("            atom :%c, size : %lu, chaine : %s \n", input[*here],strlen(input),input);
+	DEBUG_MSG("            atom :%c, size : %lu, chaine : %s ", input[*here],strlen(input),input);
 	uint test = 0 ;
 	*here = next_char(input,here);
-	uint i = *here;
 
 	while(*here<strlen(input))
 	{
 		if(test_signed_integer(input,here) == 1)
 		{
-			DEBUG_MSG("            sfs_read_atom : on lit un entier\n");
+			DEBUG_MSG("            sfs_read_atom : on lit un entier");
 			int integer = string_to_integer(input,here);  /*test si la suite est tj un chiffre*/
 			if(integer<0)
 			{
 				*here += taille_int(abs(integer))+1;
-				DEBUG_MSG("apres modif: *here = %d, taille integer : %d\n",*here,taille_int(integer));
+				DEBUG_MSG("apres modif: *here = %d, taille integer : %d",*here,taille_int(integer));
 				return make_integer(integer);
 			}
 			else
 			{
-				DEBUG_MSG("entier positif, taille : %d here %d\n",taille_int(integer),*here);
+				DEBUG_MSG("entier positif, taille : %d here %d",taille_int(integer),*here);
 				if(input[*here]=='+')
 					*here += taille_int(integer)+1;
 				else *here += taille_int(integer);
-				DEBUG_MSG("apres modif : %d, taille : %d, input :%c\n",*here,taille_int(integer),input[*here]);
+				DEBUG_MSG("apres modif : %d, taille : %d, input :%c",*here,taille_int(integer),input[*here]);
 				return make_integer(integer);
 			}
 		}
@@ -497,23 +529,23 @@ object sfs_read_atom( char *input, uint *here)
 		test = test_character(input,here);
 		if(test ==1)
 		{
-			DEBUG_MSG("            sfs_read_atom : on lit un caractere\n");
+			DEBUG_MSG("            sfs_read_atom : on lit un caractere");
 			char caractere = input[*here+2];
 			*here += 3;
-			DEBUG_MSG("            *here = %d\n",*here);
+			DEBUG_MSG("            *here = %d",*here);
 			return make_character(caractere);
 		}
 		if(test ==2)
 		{
-			DEBUG_MSG("            sfs_read_atom : on lit un saut a la ligne\n");
-			DEBUG_MSG("            *here = %d\n",*here);
+			DEBUG_MSG("            sfs_read_atom : on lit un saut a la ligne");
+			DEBUG_MSG("            *here = %d",*here);
 			*here += 9;
 			string chaine = "#\\newline";
 			return make_character_special(chaine);
 		}
 		if(test ==3)
 		{
-			DEBUG_MSG("            sfs_read_atom : on lit un espace\n");
+			DEBUG_MSG("            sfs_read_atom : on lit un espace");
 			DEBUG_MSG("            *here = %d\n",*here);
 			*here += 7;
 			string chaine = "#\\space";
@@ -533,30 +565,40 @@ object sfs_read_atom( char *input, uint *here)
 
 		if(test == -1)
 		{
-			DEBUG_MSG("            sfs_read_atom : on lit un caractere trop long\n");
+			DEBUG_MSG("            sfs_read_atom : on lit un caractere trop long");
 		}
 
 		if(test_string(input,here)==1)
 		{
-			DEBUG_MSG("            sfs_read_atom : on lit une chaine\n");
+			DEBUG_MSG("sfs_read_atom : on lit une chaine");
 			string chaine ;
 			strcpy(chaine, *input_to_string(input,here));
-			*here += strlen(chaine)+2;
-			DEBUG_MSG("            chaine : %s taille de la chaine : %lu -> here = %d\n", chaine, strlen(chaine),*here);
-			DEBUG_MSG("            *here = %d, input : %c\n",*here, input[*here]);
+			*here += taille_string(chaine)+2;
+			DEBUG_MSG("chaine : %s taille de la chaine : %lu -> here = %d", chaine, strlen(chaine),*here);
+			DEBUG_MSG("*here = %d, input : %c",*here, input[*here]);
 			return make_string(chaine);
 
 		}
 
-		if(input[i] > 32 && *here < strlen(input))
+
+		if(input[*here] > 32 && *here < strlen(input))
 		{
-			DEBUG_MSG("            sfs_read_atom : on ne lit aucun des cas precedents -> symbole \n");
-			char * chaine_symbol = malloc(sizeof(chaine_symbol));
-			chaine_symbol = input_to_symbol(input, here);
-			DEBUG_MSG("here = %d taille : %lu\n",*here, sizeof(chaine_symbol));
-			*here += sizeof(chaine_symbol);
-			DEBUG_MSG("            *here = %d\n",*here);
-			return make_symbol(input);
+			DEBUG_MSG("sfs_read_atom : on ne lit aucun des cas precedents -> symbole");
+
+			if(input[*here]=='\'')
+			{
+				*here += 1;
+				return cons(make_symbol("quote"),sfs_read(input,here));
+			}
+
+			string chaine_symbol;
+			strcpy(chaine_symbol,*input_to_symbol(input,here)) ;
+
+			DEBUG_MSG("here = %d taille : %d, chaine : %s",*here, taille_string(chaine_symbol),chaine_symbol);
+			*here += taille_string(chaine_symbol);
+			DEBUG_MSG("            *here = %d",*here);
+
+			return make_symbol(chaine_symbol);
 		}
 
 		/*object atom = NULL;*/
@@ -575,7 +617,7 @@ object sfs_read_pair (char* stream, uint *i)
 	if(stream[*i]== ')' || stream[*i] < 31)
 	{
 		(*i)++;
-		DEBUG_MSG("on va retourner nil\n");
+		DEBUG_MSG("on va retourner nil");
 		return nil;
 	}
 	*i = next_char(stream,i);
@@ -585,14 +627,16 @@ object sfs_read_pair (char* stream, uint *i)
 	object pair = make_pair();
 
 	*i = next_char(stream,i);
+	DEBUG_MSG("test : input[i]= %c",stream[*i]);
 	pair->this.pair.car = sfs_read(stream, i);
+	DEBUG_MSG("on va retourner dans sfs_read_pair : input = %c",stream[*i]);
 	pair->this.pair.cdr = sfs_read_pair(stream,i);
 	return pair;
 }
 
 uint next_char (char*input, uint *i)
 {
-	while(input[*i]==32)
+	while(input[*i]==32 || input[*i]== 8 || input[*i]==9 )
 
 	{
 		if(*i<strlen(input))
@@ -607,18 +651,13 @@ uint next_char (char*input, uint *i)
 
 object sfs_read( char *input, uint *here )
 {
-	DEBUG_MSG("TEST COMMENT : %c\n",input[*here]);
+	*here = next_char(input,here);
 
-	/*if(input[0]!='(')
-	{
-		printf("il ne s'agit pas d'une entree scheme\n");
-		return exit;
-	}
-	else*/
 	{
 		if(input[*here]<33)
 			(*here)++;
 			DEBUG_MSG(" elo ? dans read = here = %d, input : %c\n",*here, input[*here]);
+			*here = next_char(input,here);
 
 		if(*here<strlen(input) && input[*here]!=41)
 		{
@@ -632,12 +671,16 @@ object sfs_read( char *input, uint *here )
 				else
 				{
 					(*here)++;
+					*here = next_char(input,here);
+
 					return sfs_read_pair( input, here  );
 					DEBUG_MSG("? \n");
 				}
 			}
 			else
 			{
+				*here = next_char(input,here);
+
 				return sfs_read_atom( input, here );
 			}
 		}

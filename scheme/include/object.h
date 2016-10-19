@@ -34,6 +34,12 @@ typedef struct object_t {
             struct object_t *car;
             struct object_t *cdr;
         } pair;
+        
+         struct liste_t
+        {
+            string nom;
+            object val;
+        }*liste ;
 
         struct object_t *special;
 
@@ -41,6 +47,9 @@ typedef struct object_t {
 
 } *object;
 
+
+
+object make_liste (void);
 
 object make_object( uint type );
 object make_nil( void );
@@ -64,7 +73,7 @@ void afficher_objet(object t);
 #define SFS_BOOLEAN      0x05
 #define SFS_SYMBOL       0x06
 #define SFS_CHAR_SPECIAL 0x07
-
+#define SFS_LIST         0x08
 
 /*extern object nil;*/
 
