@@ -27,9 +27,8 @@ object make_object( uint type )
 object make_liste (void)
 {
     object p = make_object(SFS_LIST);
-    p->nom = '\0';
-    p->car = NULL;
-    p->cdr = NULL;
+    strcpy(p->this.liste->nom,"\0");
+    p->this.liste->val = NULL;
     return p;
 }
 

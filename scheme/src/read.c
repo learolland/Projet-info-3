@@ -17,7 +17,6 @@ void init (void)
 	DEBUG_MSG("init\n");
 	boolean_true = make_boolean(TRUE);
 	boolean_false = make_boolean(FALSE);
-	root = make_pair();
 
     nil = make_nil();
 
@@ -337,7 +336,7 @@ int test_signed_integer (char*input, uint *i) /* teste si la chaine commence par
 		if(test_integer(&input[*i+1]) == 1)
 			return 1;
 	}
-	else return -1 ;
+	return -1 ;
 }
 
 int test_character (char* input, uint *here)	/*teste les différents cas de caracteres*/
@@ -370,6 +369,7 @@ int test_character (char* input, uint *here)	/*teste les différents cas de cara
 		return 1; /* si le caractere n'est pas trop long, on renvoie 1*/
 
 	}
+	return 0;
 }
 
 int test_string (char* input, uint *here) /* test si on a des guillemets et renvoie 1 // NE GÈRE PAS si on ne finit pas la chaine par un ' */
@@ -601,8 +601,8 @@ object sfs_read_atom( char *input, uint *here)
 			return make_symbol(chaine_symbol);
 		}
 
-		/*object atom = NULL;*/
 	}
+	return NULL ;
 }
 
 
@@ -685,5 +685,6 @@ object sfs_read( char *input, uint *here )
 			}
 		}
 	}
+	return NULL ;
 	DEBUG_MSG("fin de sfs_read\n");
 }

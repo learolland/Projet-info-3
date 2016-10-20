@@ -34,11 +34,11 @@ typedef struct object_t {
             struct object_t *car;
             struct object_t *cdr;
         } pair;
-        
+
          struct liste_t
         {
             string nom;
-            object val;
+            struct object_t *val;
         }*liste ;
 
         struct object_t *special;
