@@ -479,9 +479,14 @@ string* input_to_symbol (char* input, uint *here)
 	return &chaine;
 }
 
-object cons (object car, object cdr)
+
+
+
+/******* FONCTIONS CONS, CAR ET CDR **********/
+
+object cons_pair (object car, object cdr)
 {
-	DEBUG_MSG("entree dans cons");
+	DEBUG_MSG("entree dans cons_pair");
     object o = make_pair() ;
     object p = make_pair() ;
     p->this.pair.car = cdr;
@@ -490,6 +495,7 @@ object cons (object car, object cdr)
     o->this.pair.cdr = p;
     return o ;
 }
+
 
 
 /**************     READ      *****************/
@@ -532,28 +538,22 @@ object sfs_read_atom( char *input, uint *here)
 			DEBUG_MSG("            sfs_read_atom : on lit un caractere");
 			char caractere = input[*here+2];
 			*here += 3;
-			DEBUG_MSG("            *here = %d",*here);
 			return make_character(caractere);
 		}
 		if(test ==2)
 		{
-			DEBUG_MSG("            sfs_read_atom : on lit un saut a la ligne");
-			DEBUG_MSG("            *here = %d",*here);
 			*here += 9;
 			string chaine = "#\\newline";
 			return make_character_special(chaine);
 		}
 		if(test ==3)
 		{
-			DEBUG_MSG("            sfs_read_atom : on lit un espace");
-			DEBUG_MSG("            *here = %d\n",*here);
 			*here += 7;
 			string chaine = "#\\space";
 			return make_character_special(chaine);
 		}
 		if (test ==4)
 		{
-			DEBUG_MSG("boolean_true\n");
 			*here += 3;
 			return make_boolean(TRUE);
 		}
@@ -565,42 +565,30 @@ object sfs_read_atom( char *input, uint *here)
 
 		if(test == -1)
 		{
-			DEBUG_MSG("            sfs_read_atom : on lit un caractere trop long");
+			DEBUG_MSG("sfs_read_atom : on lit un caractere trop long");
 		}
 
 		if(test_string(input,here)==1)
 		{
-			DEBUG_MSG("sfs_read_atom : on lit une chaine");
 			string chaine ;
 			strcpy(chaine, *input_to_string(input,here));
 			*here += taille_string(chaine)+2;
-			DEBUG_MSG("chaine : %s taille de la chaine : %lu -> here = %d", chaine, strlen(chaine),*here);
-			DEBUG_MSG("*here = %d, input : %c",*here, input[*here]);
 			return make_string(chaine);
-
 		}
-
 
 		if(input[*here] > 32 && *here < strlen(input))
 		{
-			DEBUG_MSG("sfs_read_atom : on ne lit aucun des cas precedents -> symbole");
-
 			if(input[*here]=='\'')
 			{
 				*here += 1;
-				return cons(make_symbol("quote"),sfs_read(input,here));
+				return cons_pair(make_symbol("quote"),sfs_read(input,here));
 			}
-
 			string chaine_symbol;
 			strcpy(chaine_symbol,*input_to_symbol(input,here)) ;
 
-			DEBUG_MSG("here = %d taille : %d, chaine : %s",*here, taille_string(chaine_symbol),chaine_symbol);
 			*here += taille_string(chaine_symbol);
-			DEBUG_MSG("            *here = %d",*here);
-
 			return make_symbol(chaine_symbol);
 		}
-
 	}
 	return NULL ;
 }
@@ -627,9 +615,7 @@ object sfs_read_pair (char* stream, uint *i)
 	object pair = make_pair();
 
 	*i = next_char(stream,i);
-	DEBUG_MSG("test : input[i]= %c",stream[*i]);
 	pair->this.pair.car = sfs_read(stream, i);
-	DEBUG_MSG("on va retourner dans sfs_read_pair : input = %c",stream[*i]);
 	pair->this.pair.cdr = sfs_read_pair(stream,i);
 	return pair;
 }

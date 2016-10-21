@@ -89,18 +89,33 @@ uint chercher_symb (string nom)
 
 
 
-/*** forme define ****/
-void define (object variable, object valeur)
-{
-    ajout_binding(variable,valeur,0);
 
+
+object cons(object car, object cdr)
+{
+    object o = make_pair() ;
+    object p = make_pair() ;
+    p->this.pair.car = cdr;
+    p->this.pair.cdr = nil;
+    o->this.pair.car = car;
+    o->this.pair.cdr = p;
+    return o ;
 }
 
 
 
 
+/*** forme define ****/
+object define (object variable, object valeur)
+{
+    ajout_binding(variable,valeur,0);
+    return variable;
+}
+
+
 /*** forme set! ***/
-void set (object variable, object valeur)
+
+object set (object variable, object valeur)
 {
     uint i = chercher_symb(variable->this.symbol);
     if(i==0)
@@ -126,13 +141,14 @@ void set (object variable, object valeur)
             binding = env->this.pair.car;
         }
     }
+    return variable;
 }
 
 uint is_form(string forme, object input)
 {
     if (input->type == SFS_NUMBER || input->type == SFS_STRING || input->type == SFS_CHARACTER || input->type == SFS_BOOLEAN || input->type == SFS_CHAR_SPECIAL)
         return 0 ;
-    if(strcmp(input->this.symbol,forme)
+    if(strcmp(input->this.symbol,forme))
         return 1;
     else return 0;
 }
@@ -142,19 +158,19 @@ uint is_form(string forme, object input)
 
 object sfs_eval( object input )
 {
-    restart;
-    if(input->type == SFS_NUMBER || )
+    
+    if(input->type == SFS_NUMBER || input->type == SFS_STRING || input->type == SFS_CHARACTER || input->type == SFS_BOOLEAN || input->type == SFS_CHAR_SPECIAL)
         return input;
 
     if(is_form("quote",input))
     {
-        return crdr(input);
+        return (input->this.pair.cdr->this.pair.car);
     }
-    if(is_form("if",input))
+    /*if(is_form("if",input))
     {
         if(true==eval(cadr(input)))
             return eval(caddr(input));
             input = goto restart ;
-    }
+    }*/
     return input;
 }

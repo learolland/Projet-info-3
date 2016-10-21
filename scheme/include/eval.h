@@ -19,7 +19,7 @@ extern "C" {
 #include "object.h"
 
 object sfs_eval( object );
-void set(object variable, object valeur);
+object set(object variable, object valeur);
 #ifdef __cplusplus
 }
 #endif
