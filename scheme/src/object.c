@@ -24,11 +24,13 @@ object make_object( uint type )
     return t;
 }
 
+
+
 object make_liste (void)
 {
     object p = make_object(SFS_LIST);
-    strcpy(p->this.liste->nom,"\0");
-    p->this.liste->val = NULL;
+    strcpy(p->this.liste.nom,"\0");
+    p->this.liste.val = NULL;
     return p;
 }
 
@@ -111,25 +113,7 @@ object make_pair(void)
 {
     DEBUG_MSG("make_pair\n");
     object t = make_object(SFS_PAIR);
-    t->this.pair.car = NULL;			/*pas suuuuuure*/
+    t->this.pair.car = NULL;
     t->this.pair.cdr = NULL;
-
     return t;
-}
-
-
-
-
-
-void afficher_objet (object t)/*pour un entier poue l'instant*/
-{
-    if(t->type == 0)
-    printf("                type : %d, valeur : %d\n",t->type,t->this.number.this.integer);
-    if(t->type == 1)
-    printf("                type : %d, valeur : %c\n",t->type,t->this.character);
-    if(t->type == 2)
-    printf("                type : %d, valeur : %s\n",t->type,t->this.string);
-    if(t->type == 6)
-    printf("                type : %d, valeur : %s\n",t->type,t->this.symbol);
-
 }

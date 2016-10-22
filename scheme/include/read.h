@@ -24,6 +24,7 @@ enum {S_OK, S_KO, S_END};
 
 uint   sfs_get_sexpr( string input, FILE *fp );
 void init(void);
+void init_interpreter ( void ) ;
 
 int test_integer (char* charactere);
 
@@ -41,6 +42,11 @@ uint next_char (char*input, uint *i);
 
 object cons_pair (object car, object cdr);
 
+
+
+extern object nil;
+extern object boolean_false;
+extern object boolean_true;
 
 #ifdef __cplusplus
 }

@@ -31,10 +31,17 @@ void usage_error( char *command ) {
 
 
 object nil;
+object liste_env;
+object  boolean_true;
+object  boolean_false;
 
-void init_interpreter ( void ) {
 
+void init_interpreter ( void )
+{
+    boolean_true = make_boolean(TRUE);
+    boolean_false = make_boolean(FALSE);
     nil      = make_nil();
+    liste_env = make_pair();
 
 }
 
@@ -141,7 +148,7 @@ int main ( int argc, char *argv[] ) {
             continue ;
         }
 
-        output = sfs_eval( sexpr );
+        output = sfs_eval( sexpr);
         if( NULL == output) {
             /* si fichier alors on sort*/
             if (mode == SCRIPT) {

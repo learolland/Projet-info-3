@@ -7,24 +7,6 @@
 #include "read.h"
 
 
-/* Globals */
-object  nil;
-object  boolean_true;
-object  boolean_false;
-
-void init (void)
-{
-	DEBUG_MSG("init\n");
-	boolean_true = make_boolean(TRUE);
-	boolean_false = make_boolean(FALSE);
-
-    nil = make_nil();
-
-
-
-
-}
-
 
 
 
@@ -642,7 +624,7 @@ object sfs_read( char *input, uint *here )
 	{
 		if(input[*here]<33)
 			(*here)++;
-			DEBUG_MSG(" elo ? dans read = here = %d, input : %c\n",*here, input[*here]);
+			DEBUG_MSG("dans read = here = %d, input : %c\n",*here, input[*here]);
 			*here = next_char(input,here);
 
 		if(*here<strlen(input) && input[*here]!=41)

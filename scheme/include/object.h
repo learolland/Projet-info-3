@@ -39,7 +39,7 @@ typedef struct object_t {
         {
             string nom;
             struct object_t *val;
-        }*liste ;
+        }liste ;
 
         struct object_t *special;
 
@@ -60,6 +60,7 @@ object make_character( char character);
 object make_string( string chaine);
 object make_pair(void);
 object make_character_special(string chaine);
+object *make_env(void);
 
 
 void afficher_objet(object t);

@@ -18,8 +18,15 @@ extern "C" {
 
 #include "object.h"
 
-object sfs_eval( object );
+uint chercher_symb (string nom);
+uint is_form(string forme, object input);
+object sfs_eval( object input);
 object set(object variable, object valeur);
+extern object liste_env;
+extern object nil;
+extern object boolean_false;
+extern object boolean_true;
+
 #ifdef __cplusplus
 }
 #endif
