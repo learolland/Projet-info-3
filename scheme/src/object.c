@@ -53,12 +53,12 @@ object make_boolean( uint true_false  )
     if(true_false == FALSE)
     {
         string chaine = "#f";
-        strcpy(t->this.string,chaine);
+        strcpy(t->this.symbol,chaine);
     }
     if (true_false == TRUE )
     {
         string chaine = "#t";
-        strcpy(t->this.string,chaine);
+        strcpy(t->this.symbol,chaine);
 
     }
 

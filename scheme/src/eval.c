@@ -36,31 +36,37 @@ object ajout_env (object p)
 }
 
 
-void ajout_binding (object variable, object valeur)
+uint ajout_binding (object variable, object valeur)
 {
     DEBUG_MSG("on entre dans ajout_binding");
 
     object binding_ajout = make_pair();
     binding_ajout->this.pair.car = make_liste() ;
     strcpy(binding_ajout->this.pair.car->this.liste.nom,variable->this.symbol);
-    DEBUG_MSG("%s",binding_ajout->this.pair.car->this.liste.nom);
     binding_ajout->this.pair.car->this.liste.val = valeur;
-    DEBUG_MSG("on cree et remplie binding_ajout");
+
 
 
     object tmp_binding;
     object binding = liste_env->this.pair.car;
-    DEBUG_MSG("utilisation de liste_env");
 
+    if(binding == NULL || binding == nil)
+    {
+        DEBUG_MSG("on n'a pas encore de binding -> création");
+        binding = binding_ajout;
+        binding->this.pair.cdr = nil;
+        liste_env->this.pair.car = binding;
+        return 1;
+    }
 
     tmp_binding = make_pair();
 
-    DEBUG_MSG("on va jusqu'a la fin des binding");
 
     tmp_binding->this.pair.cdr = binding_ajout;
     binding_ajout->this.pair.cdr = binding;
     liste_env->this.pair.car = binding_ajout;
     DEBUG_MSG("%s",liste_env->this.pair.car->this.pair.car->this.liste.nom);
+    return 1;
 }
 
 
@@ -88,22 +94,34 @@ object valeur_symb (string nom)
 
 uint chercher_symb (string nom)
 {
+    DEBUG_MSG("entree dans chercher_symb");
     object env = liste_env;
-    object binding = env->this.pair.car;
-    while(env != NULL && env != nil)
+    object binding = NULL;
+    while(env != NULL)
     {
-        while(binding!=NULL && binding != nil)
+        DEBUG_MSG("premier palier");
+        binding = env->this.pair.car;
+        while(binding != nil)
         {
+            DEBUG_MSG("deuxieme palier");
             object valeur_binding = binding->this.pair.car;
+            DEBUG_MSG("on a un valeur_binding : %s",valeur_binding->this.liste.nom);
             if(strcmp(valeur_binding->this.liste.nom, nom)==0)
             {
+                DEBUG_MSG("on trouve un correspondance");
                 return 1;
             }
             binding = binding->this.pair.cdr;
+            DEBUG_MSG("on change binding, %s",binding->this.pair.car->this.liste.nom);
+            if(binding == nil)
+            DEBUG_MSG("wtf c'est bien nil");
         }
-        env = (liste_env)->this.pair.cdr;
-        binding = env->this.pair.car;
+        DEBUG_MSG("on sort du deuxieme palier");
+        env = env->this.pair.cdr;
+        DEBUG_MSG("on change d'env");
+
     }
+    DEBUG_MSG("on a rien trouvé");
     return 0;
 }
 
@@ -111,10 +129,21 @@ uint chercher_symb (string nom)
 void afficher_env (void)
 {
     DEBUG_MSG(" on entre dans afficher_env");
-    if((liste_env)->this.pair.car != NULL)
+    object env = liste_env;
+    object binding = NULL;
+    while(env != NULL)
     {
-        object binding = liste_env->this.pair.car;
-        DEBUG_MSG("binding %s",binding->this.pair.car->this.liste.nom);
+        binding = env->this.pair.car;
+        while(binding != nil)
+        {
+            object valeur_binding = binding->this.pair.car;
+            if(valeur_binding->this.liste.val->type == SFS_NUMBER)
+                DEBUG_MSG("variable : %s, valeur: %d",valeur_binding->this.liste.nom,valeur_binding->this.liste.val->this.number.this.integer);
+            if(valeur_binding->this.liste.val->type == SFS_SYMBOL)
+                DEBUG_MSG("variable : %s, valeur: %s",valeur_binding->this.liste.nom,valeur_binding->this.liste.val->this.symbol);
+            binding = binding->this.pair.cdr;
+        }
+        env = (liste_env)->this.pair.cdr;
     }
 }
 
@@ -146,18 +175,22 @@ object define (object variable, object valeur)
 
 object set (object variable, object valeur)
 {
+    DEBUG_MSG("entree dans set");
     uint i = chercher_symb(variable->this.symbol);
+    DEBUG_MSG("chercher_symb = %d",i);
     if(i==0)
     {
-        define(variable,valeur);
+        printf("erreur\n");
+        return nil;
     }
     else
     {
         object env = liste_env;
-        object binding = env->this.pair.car;
-        while(env != NULL && env != nil)
+        object binding = NULL;
+        while(env != NULL)
         {
-            while(binding!=NULL && binding != nil)
+            binding = env->this.pair.car;
+            while(binding != nil)
             {
                 object valeur_binding = binding->this.pair.car;
                 if(strcmp(valeur_binding->this.liste.nom, variable->this.symbol)==0)
@@ -167,15 +200,14 @@ object set (object variable, object valeur)
                 binding = binding->this.pair.cdr;
             }
             env = (liste_env)->this.pair.cdr;
-            binding = env->this.pair.car;
         }
     }
+    afficher_env();
     return variable;
 }
 
 uint is_form(string forme, object input)
 {
-    DEBUG_MSG("dans is_form : input : %s",input->this.pair.car->this.symbol);
     if (input->type == SFS_NUMBER || input->type == SFS_STRING || input->type == SFS_CHARACTER || input->type == SFS_BOOLEAN || input->type == SFS_CHAR_SPECIAL)
         return 0 ;
     if(strcmp(input->this.pair.car->this.symbol,forme)==0)
@@ -291,15 +323,28 @@ object evaluer_predicat (object input,string signe)
 
 object sfs_eval( object input )
 {
-
+    restart:
     DEBUG_MSG("\n");
-    afficher_env();
-    DEBUG_MSG("on entre dans eval, variable : %s",input->this.pair.car->this.symbol);
+    DEBUG_MSG("on entre dans eval");
     /*if(input->type == SFS_NUMBER || input->type == SFS_STRING || input->type == SFS_CHARACTER || input->type == SFS_BOOLEAN || input->type == SFS_CHAR_SPECIAL)
         return input;*/
-
+    if(input->this.pair.car==nil || input->this.pair.car == NULL)
+        DEBUG_MSG("pour une raison que j'ignore, le car est vide");
     object o = input->this.pair.car;
-
+    DEBUG_MSG("o : %s, type : %d",o->this.symbol, o->type);
+    if(o->type == SFS_BOOLEAN)
+    {
+        if(strcmp(o->this.symbol,"#t")==0)
+        {
+            DEBUG_MSG("boolean_true");
+            return boolean_true;
+        }
+        if(strcmp(o->this.symbol,"#f")==0)
+        {
+            DEBUG_MSG("boolean_false");
+            return boolean_false;
+        }
+    }
     if(o->type == SFS_SYMBOL)
     {
         string signe;
@@ -335,27 +380,66 @@ object sfs_eval( object input )
         }
     }
 
+    object variable = input->this.pair.cdr;
+    DEBUG_MSG("variable : %s",variable->this.pair.car->this.symbol);
+    object valeur = input->this.pair.cdr->this.pair.cdr;
+
     if(is_form("define",input)==1)
     {
-        object variable = input->this.pair.cdr->this.pair.car;
-        object valeur = input->this.pair.cdr->this.pair.cdr->this.pair.car;
-        DEBUG_MSG("variable : %s, valeur : %s",variable->this.symbol,valeur->this.symbol);
+        DEBUG_MSG("variable : %s, valeur : %s",variable->this.pair.car->this.symbol,valeur->this.pair.car->this.symbol);
         return define(variable,valeur);
     }
 
     if(is_form("set!",input)==1)
     {
-        return set(input->this.pair.cdr->this.pair.car,input->this.pair.cdr->this.pair.cdr->this.pair.car);
+        return set(variable,valeur);
     }
     if(is_form("quote",input)==1)
     {
-        return (input->this.pair.cdr->this.pair.car);
+        return (input->this.pair.cdr);
     }
     if(is_form("if",input))
     {
-        if(true==eval(input->this.pair.cdr->this.pair.car))
-            return eval(caddr(input));
-            input = goto restart ;
+        DEBUG_MSG("on a un if");
+        if(boolean_true==sfs_eval(input->this.pair.cdr))
+        {
+            DEBUG_MSG("ça va péter");
+            return sfs_eval(input->this.pair.cdr);
+
+        }
+        else
+        {
+            DEBUG_MSG("on a if faux");
+            input = input->this.pair.cdr->this.pair.cdr->this.pair.cdr;
+            DEBUG_MSG("on change input");
+            goto restart;
+        }
+    }
+    if(is_form("and",input))
+    {
+        if(boolean_false==sfs_eval(input->this.pair.cdr))
+        {
+            return boolean_false;
+        }
+        else
+        {
+            if(boolean_true==sfs_eval(input->this.pair.cdr->this.pair.cdr))
+                return boolean_true;
+            return boolean_false;
+        }
+    }
+    if(is_form("or",input))
+    {
+        if(boolean_true==sfs_eval(input->this.pair.cdr))
+        {
+            return boolean_true;
+        }
+        else
+        {
+            if(boolean_true==sfs_eval(input->this.pair.cdr->this.pair.cdr))
+                return boolean_true;
+            return boolean_false;
+        }
     }
     return input;
 }
