@@ -285,21 +285,6 @@ uint  sfs_get_sexpr( char *input, FILE *fp ) {
 /*
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ************* TEST DES CARACTERES ****************/
 
 int test_integer (char* charactere)	/*teste si le premier caractère est un chiffre et retourne 1 */

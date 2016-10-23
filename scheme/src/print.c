@@ -8,10 +8,7 @@
 #include "print.h"
 
 
-/* Globals */
-object * nil;
-object * boolean_true;
-object * boolean_false;
+
 
 
 
@@ -60,11 +57,11 @@ void sfs_print_atom( object p )
 
 void sfs_print_pair( object o )
 {
-    if (o!= NULL && o->this.pair.car !=NULL && o->this.pair.car != *nil && o->this.pair.cdr != *nil)
+    if (o!= NULL  && o->this.pair.car != nil)
     {
 
 		/*if(o->this.pair.cdr->type == 3)*/
-		DEBUG_MSG("this.pair.car->type = %d\n",o->this.pair.car->type);
+		DEBUG_MSG("this.pair.car->type = %d",o->this.pair.car->type);
 
 		sfs_print(o->this.pair.car);
 
@@ -74,6 +71,7 @@ void sfs_print_pair( object o )
 		if(o->type!=SFS_NIL)
 		{
 			printf(" ");
+			DEBUG_MSG("o : %d",o->this.pair.car->this.number.this.integer);
 			sfs_print_pair(o);
 		}
 	}
@@ -87,8 +85,6 @@ void sfs_print( object o )
     if ( SFS_PAIR == o->type )
     {
 		printf("(");
-		DEBUG_MSG("\n ON RENTRE DANS LES ( \n");
-
         sfs_print_pair( o );
 		printf(")");
     }
