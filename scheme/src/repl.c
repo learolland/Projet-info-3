@@ -137,7 +137,8 @@ int main ( int argc, char *argv[] ) {
 
         here  = 0;
         sexpr = sfs_read( input, &here );
-        if ( NULL == sexpr ) {
+        if ( NULL == sexpr )
+        {
             /* si fichier alors on sort*/
             if (mode == SCRIPT) {
                 fclose( fp );

@@ -72,7 +72,11 @@ uint ajout_binding (object variable, object valeur)
 
 object valeur_symb (string nom)
 {
-    if (chercher_symb(nom)==0) return nil;
+    if (chercher_symb(nom)==0)
+    {
+        WARNING_MSG("La variable %s n'a pas été définie",nom);
+        return NULL;
+    }
     object env = liste_env;
     object binding = env->this.pair.car;
     while(env != NULL && env != nil)
@@ -89,7 +93,8 @@ object valeur_symb (string nom)
         env = (liste_env)->this.pair.cdr;
         binding = env->this.pair.car;
     }
-    return nil;
+    WARNING_MSG("Le programme n'a pas pu trouver la variable %s dans les environnements",nom);
+    return NULL;
 }
 
 uint chercher_symb (string nom)
@@ -170,11 +175,11 @@ object define (object variable, object valeur)
     DEBUG_MSG("on entre dans define");
     uint i = chercher_symb(variable->this.symbol);
     if (i == 1)
-        return nil;
+        return set(variable,valeur);
     if(variable->type != SFS_SYMBOL)
     {
-        /*printf("on ne peut pas définir une nouvelle valeur pour un nombre\n");*/
-        return nil;
+        WARNING_MSG("on ne peut pas définir une nouvelle valeur pour un nombre");
+        return NULL;
     }
     ajout_binding(variable,valeur);
     return variable;
@@ -190,7 +195,8 @@ object set (object variable, object valeur)
     DEBUG_MSG("chercher_symb = %d",i);
     if(i==0)
     {
-        return nil;
+        WARNING_MSG("La variable %s n'est pas initialisée : utilisez define",variable->this.symbol);
+        return NULL;
     }
     else
     {
@@ -238,7 +244,8 @@ object evaluer_predicat (object input,string signe)
     {
         if(chercher_symb(car->this.symbol)==0)
         {
-            return nil;
+            WARNING_MSG("le symbole %s que vous cherchez à évaluer n'a pas été défini",car->this.symbol);
+            return NULL;
         }
         else
         {
@@ -247,13 +254,15 @@ object evaluer_predicat (object input,string signe)
                 a = o->this.number;
             else
             {
-                return nil;
+                WARNING_MSG("vous cherchez à comparer quelque chose qui n'est pas un nombre");
+                return NULL;
             }
         }
     }
     if(car->type != SFS_NUMBER && car->type != SFS_SYMBOL)
     {
-        return nil;
+        WARNING_MSG("vous cherchez à comparer des éléments qui ne sont ni des nombres, ou des symboles définis");
+        return NULL;
     }
 
     object cadr = input->this.pair.cdr->this.pair.cdr->this.pair.car;
@@ -266,7 +275,8 @@ object evaluer_predicat (object input,string signe)
     {
         if(chercher_symb(cadr->this.symbol)==0)
         {
-            return nil;
+            WARNING_MSG("le symbole %s que vous cherchez à évaluer n'a pas été défini",cadr->this.symbol);
+            return NULL;
         }
         else
         {
@@ -275,13 +285,15 @@ object evaluer_predicat (object input,string signe)
             b = o->this.number;
             else
             {
-                return nil;
+                WARNING_MSG("vous cherchez à comparer quelque chose qui n'est pas un nombre");
+                return NULL;
             }
         }
     }
     if(cadr->type != SFS_NUMBER && cadr->type != SFS_SYMBOL)
     {
-        return nil;
+        WARNING_MSG("vous cherchez à comparer des éléments qui ne sont ni des nombres, ou des symboles définis");
+        return NULL;
     }
     if(strcmp(signe,"+")==0)
     {
@@ -329,6 +341,8 @@ object sfs_eval( object input )
     restart:
     DEBUG_MSG("\n");
     DEBUG_MSG("on entre dans eval");
+    if(input->this.pair.cdr == nil)
+        DEBUG_MSG("input cdr = nil ");
     /*if(input->type == SFS_NUMBER || input->type == SFS_STRING || input->type == SFS_CHARACTER || input->type == SFS_BOOLEAN || input->type == SFS_CHAR_SPECIAL)
         return input;*/
 
@@ -341,12 +355,14 @@ object sfs_eval( object input )
         }
         else return input;
     }
+
     object o = NULL;
     if(input->type == SFS_PAIR)
     {
+        DEBUG_MSG("input = pair");
+        DEBUG_MSG("input car type = %d",input->this.pair.car->type);
         o = input->this.pair.car;
 
-        DEBUG_MSG("o type : %d",input->type);
         if(o->type == SFS_BOOLEAN)
         {
             if(strcmp(o->this.symbol,"#t")==0)
@@ -360,108 +376,132 @@ object sfs_eval( object input )
                 return boolean_false;
             }
         }
+
+        if(o->type == SFS_NUMBER)
+        {
+
+            return o;
+        }
+
         if(o->type == SFS_SYMBOL)
         {
-            string signe;
-            if(strcmp(o->this.symbol,"+")==0)
-            {
-                strcpy(signe ,"+");
-                return evaluer_predicat (input,signe);
-            }
-            if(strcmp(o->this.symbol,"-")==0)
-            {
-                strcpy(signe ,"-");
-                return evaluer_predicat(input,signe);
-            }
-            if(strcmp(o->this.symbol,">")==0)
-            {
-                strcpy(signe ,">");
-                return evaluer_predicat(input,signe);
-            }
-            if(strcmp(o->this.symbol,"<")==0)
-            {
-                strcpy(signe ,"<");
-                return evaluer_predicat(input,signe);
-            }
-            if(strcmp(o->this.symbol,"=")==0)
-            {
-                strcpy(signe ,"=");
-                return evaluer_predicat(input,signe);
-            }
-            if(strcmp(o->this.symbol,"!=")==0)
-            {
-                strcpy(signe ,"!=");
-                return evaluer_predicat(input,signe);
-            }
-        }
+            DEBUG_MSG("on a un car symbol : %s",o->this.symbol);
 
-        object variable = input->this.pair.cdr->this.pair.car;
-        object valeur = input->this.pair.cdr->this.pair.cdr->this.pair.car;
 
-        if(is_form("define",input)==1)
-        {
-            return define(variable,valeur);
-        }
-
-        if(is_form("set!",input)==1)
-        {
-            return set(variable,valeur);
-        }
-        if(is_form("quote",input)==1)
-        {
-            return (input->this.pair.cdr->this.pair.car);
-        }
-        if(is_form("if",input))
-        {
-            DEBUG_MSG("on a un if");
-            input = input->this.pair.cdr;
-            if(boolean_true==sfs_eval(input))
+            if(is_form("define",input)==1)
             {
-                DEBUG_MSG("on a un if vrai");
-                DEBUG_MSG("then : %d",input->this.pair.car->this.number.this.integer);
-                if (input->this.pair.cdr->this.pair.cdr->this.pair.car != nil)
-                    return sfs_eval(input->this.pair.cdr->this.pair.car);
-                else return input;
+                return define(input->this.pair.cdr->this.pair.cdr,input->this.pair.cdr->this.pair.cdr->this.pair.car);
             }
-            else
+
+            if(is_form("set!",input)==1)
             {
-                DEBUG_MSG("on a if faux");
-                if (input->this.pair.cdr->this.pair.cdr->this.pair.car != nil)
+                return set(input->this.pair.cdr->this.pair.cdr,input->this.pair.cdr->this.pair.cdr->this.pair.car);
+            }
+            if(is_form("quote",input)==1)
+            {
+                return (input->this.pair.cdr->this.pair.car);
+            }
+            if(is_form("if",input))
+            {
+                DEBUG_MSG("on a un if");
+                input = input->this.pair.cdr;
+                if(boolean_true==sfs_eval(input))
                 {
-                    input = input->this.pair.cdr->this.pair.cdr->this.pair.car;
-                    DEBUG_MSG("on change input");
-                    goto restart;
+                    DEBUG_MSG("on a un if vrai");
+                    DEBUG_MSG("then : %d",input->this.pair.car->this.number.this.integer);
+                    return sfs_eval(input->this.pair.cdr->this.pair.car);
                 }
                 else
+                {
+                    DEBUG_MSG("on a if faux");
+                    if (input->this.pair.cdr->this.pair.cdr->this.pair.car != nil)
+                    {
+                        input = input->this.pair.cdr->this.pair.cdr->this.pair.car;
+                        DEBUG_MSG("on change input");
+                        goto restart;
+                    }
+                    else
                     return boolean_false;
+                }
             }
-        }
-        if(is_form("and",input))
-        {
-            if(boolean_false==sfs_eval(input->this.pair.cdr))
+            if(is_form("and",input))
             {
-                return boolean_false;
+                if(boolean_false==sfs_eval(input->this.pair.cdr))
+                {
+                    return boolean_false;
+                }
+                else
+                {
+                    DEBUG_MSG("(and #true...)");
+                    input = input->this.pair.cdr;
+                    while(input != nil)
+                    {
+                        if(boolean_false==sfs_eval(input->this.pair.cdr))
+                        return boolean_false;
+                        else input = input->this.pair.cdr;
+                    }
+                    return boolean_true;
+                }
             }
+            if(is_form("or",input))
+            {
+                if(boolean_true==sfs_eval(input->this.pair.cdr))
+                {
+                    return boolean_true;
+                }
+                else
+                {
+                    input = input->this.pair.cdr;
+                    while(input != nil)
+                    {
+                        DEBUG_MSG("(or #f ...)");
+                        if(boolean_true==sfs_eval(input->this.pair.cdr))
+                        return boolean_true;
+                        else input = input->this.pair.cdr;
+                    }
+                    return boolean_false;
+                }
+            }
+
             else
             {
-                if(boolean_true==sfs_eval(input->this.pair.cdr->this.pair.cdr))
-                return boolean_true;
-                return boolean_false;
+                DEBUG_MSG("on a un symbol mais pas de forme connue");
+                string signe;
+                if(strcmp(o->this.symbol,"+")==0)
+                {
+                    strcpy(signe ,"+");
+                    return evaluer_predicat (input,signe);
+                }
+                if(strcmp(o->this.symbol,"-")==0)
+                {
+                    strcpy(signe ,"-");
+                    return evaluer_predicat(input,signe);
+                }
+                if(strcmp(o->this.symbol,">")==0)
+                {
+                    strcpy(signe ,">");
+                    return evaluer_predicat(input,signe);
+                }
+                if(strcmp(o->this.symbol,"<")==0)
+                {
+                    strcpy(signe ,"<");
+                    return evaluer_predicat(input,signe);
+                }
+                if(strcmp(o->this.symbol,"=")==0)
+                {
+                    strcpy(signe ,"=");
+                    return evaluer_predicat(input,signe);
+                }
+                if(strcmp(o->this.symbol,"!=")==0)
+                {
+                    strcpy(signe ,"!=");
+                    return evaluer_predicat(input,signe);
+                }
+                else return o;
             }
         }
-        if(is_form("or",input))
-        {
-            if(boolean_true==sfs_eval(input->this.pair.cdr))
-            {
-                return boolean_true;
-            }
-            else
-            {
-                if(boolean_true==sfs_eval(input->this.pair.cdr->this.pair.cdr))
-                return boolean_true;
-                return boolean_false;
-            }
-        }
+
+
     }
     return input;
 }
