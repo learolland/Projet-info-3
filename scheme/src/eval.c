@@ -419,8 +419,9 @@ object sfs_eval( object input )
             {
                 DEBUG_MSG("on a un if vrai");
                 DEBUG_MSG("then : %d",input->this.pair.car->this.number.this.integer);
-                return sfs_eval(input->this.pair.cdr->this.pair.car);
-
+                if (input->this.pair.cdr->this.pair.cdr->this.pair.car != nil)
+                    return sfs_eval(input->this.pair.cdr->this.pair.car);
+                else return input;
             }
             else
             {
@@ -432,7 +433,7 @@ object sfs_eval( object input )
                     goto restart;
                 }
                 else
-                    return sfs_eval(input->this.pair.cdr->this.pair.car);
+                    return boolean_false;
             }
         }
         if(is_form("and",input))
