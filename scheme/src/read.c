@@ -343,13 +343,20 @@ int test_string (char* input, uint *here) /* test si on a des guillemets et renv
 {
 	if(input[*here]=='\'' || input[*here]=='\"')
 	{
+        DEBUG_MSG("on commence test_string");
 		uint i = *here + 1;
 		while(input[i]!='\'' && input[i]!='\"')
 		{
-			if(input[i]<33 || input[i]==')' || input[i]=='(')
-				return 0;
+			if(input[i]<32 || input[i]==')' || input[i]=='(')
+			{
+                DEBUG_MSG("on arrete test_string i : %d",input[i]);
+                i = next_char(input, &i);
+                if(input[i]!='\"' && input[i]!='\'')
+            	   return 0;
+            }
 			i++;
 		}
+        DEBUG_MSG("on a une chaine ");
 		return 1;
 
 	}
@@ -521,12 +528,12 @@ object sfs_read_atom( char *input, uint *here)
 		}
 		if (test ==4)
 		{
-			*here += 3;
+			*here += 2;
 			return make_boolean(TRUE);
 		}
 		if (test ==5)
 		{
-			*here += 3;
+			*here += 2;
 			return make_boolean(FALSE);
 		}
 

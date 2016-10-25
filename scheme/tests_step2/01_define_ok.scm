@@ -13,3 +13,5 @@ c
 e
 g
 h
+(define a "nouveau define")
+a
