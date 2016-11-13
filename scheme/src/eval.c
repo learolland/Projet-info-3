@@ -22,7 +22,6 @@ object nil;
 
 
 /**** Fonctions utilitaires environnement ****/
-
 object ajout_env (object p)
 {
     object o = liste_env;
@@ -35,15 +34,18 @@ object ajout_env (object p)
     return liste_env;
 }
 
-
 uint ajout_binding (object variable, object valeur)
 {
     DEBUG_MSG("on entre dans ajout_binding");
-
+    /*if(valeur->type == SFS_SYMBOL)
+    {
+        if(chercher_symb(valeur->this.symbol)==1)
+        valeur = valeur_symb(valeur->this.symbol);
+    }*/
     object binding_ajout = make_pair();
     binding_ajout->this.pair.car = make_liste() ;
     strcpy(binding_ajout->this.pair.car->this.liste.nom,variable->this.symbol);
-    binding_ajout->this.pair.car->this.liste.val = valeur;
+    binding_ajout->this.pair.car->this.liste.val = sfs_eval(valeur);
 
 
 
@@ -68,7 +70,6 @@ uint ajout_binding (object variable, object valeur)
     DEBUG_MSG("%s",liste_env->this.pair.car->this.pair.car->this.liste.nom);
     return 1;
 }
-
 
 object valeur_symb (string nom)
 {
@@ -126,7 +127,6 @@ uint chercher_symb (string nom)
     return 0;
 }
 
-
 void afficher_env (void)
 {
     DEBUG_MSG(" on entre dans afficher_env");
@@ -148,7 +148,6 @@ void afficher_env (void)
     }
 }
 
-
 object cons(object car, object cdr)
 {
     object o = make_pair() ;
@@ -160,10 +159,25 @@ object cons(object car, object cdr)
     return o ;
 }
 
+object ajout_queue (object liste, object car)
+{
+    if (liste->this.pair.car==nil)
+    {
+        liste->this.pair.car = car ;
+        return liste ;
+    }
+
+    object p,a;
+    for (a = liste; a->this.pair.cdr != NULL && a->this.pair.cdr !=  nil ; a = a->this.pair.cdr);
+
+    p = make_pair();
+    p->this.pair.car = car;
+    a->this.pair.cdr = p;
+    return liste;
+}
 
 
-
-/*** forme define ****/
+/*** FORMES ****/
 object define (object variable, object valeur)
 {
     DEBUG_MSG("on entre dans define");
@@ -178,9 +192,6 @@ object define (object variable, object valeur)
     ajout_binding(variable,valeur);
     return variable;
 }
-
-
-/*** forme set! ***/
 
 object set (object variable, object valeur)
 {
@@ -204,7 +215,10 @@ object set (object variable, object valeur)
                 object valeur_binding = binding->this.pair.car;
                 if(strcmp(valeur_binding->this.liste.nom, variable->this.symbol)==0)
                 {
-                    binding->this.pair.car->this.liste.val = valeur ;
+
+                            binding->this.pair.car->this.liste.val = sfs_eval(valeur);
+
+
                 }
                 binding = binding->this.pair.cdr;
             }
@@ -222,6 +236,47 @@ uint is_form(string forme, object input)
     if(strcmp(input->this.symbol,forme)==0)
         return 1;
     else return 0;
+}
+
+
+
+/*** PRIMITIVES ***/
+
+object plus_p (object nums)
+{
+    uint somme = 0;
+    object l = nums;
+    while (l->this.pair.cdr != nil && l->this.pair.cdr != nil)
+    {
+        somme += l->this.pair.car->this.number.this.integer;
+        l = l->this.pair.cdr;
+    }
+    object o_somme = make_integer(somme);
+    return o_somme;
+}
+
+
+/********** EVALUATION ***********/
+object evaluer_arg (object liste)
+{
+    object liste_arg = make_pair();
+    for(object ptr_liste = liste;ptr_liste->this.pair.cdr != NULL && ptr_liste->this.pair.cdr != nil; ptr_liste = ptr_liste->this.pair.cdr)
+    {
+        liste_arg = ajout_queue(liste_arg,sfs_eval(ptr_liste->this.pair.car));
+    }
+    return liste_arg;
+}
+
+object evaluer_prim (object input)
+{
+    string signe;
+    strcpy(signe,input->this.symbol);
+    if(strcmp(signe,"+")==0)
+    {
+        DEBUG_MSG("on a un +");
+        return plus_p;
+    }
+    return NULL;
 }
 
 object evaluer_predicat (object input,string signe)
@@ -330,6 +385,11 @@ object evaluer_predicat (object input,string signe)
 
 
 
+
+
+
+
+
 object sfs_eval( object input )
 {
     restart:
@@ -351,17 +411,17 @@ object sfs_eval( object input )
         DEBUG_MSG("input = pair");
         DEBUG_MSG("input car type = %d",input->this.pair.car->type);
 
-        if(input->this.pair.car->type == SFS_PAIR)
+        o = input->this.pair.car;
+        input_bis = input;
+
+        object test_input = input ;
+        while(test_input->this.pair.car->type == SFS_PAIR)
         {
             DEBUG_MSG("on a une pair imbriquée");
-            o = input->this.pair.car->this.pair.car;
-            input_bis = input->this.pair.car;
+            o = test_input->this.pair.car->this.pair.car;
+            input_bis = test_input->this.pair.car;
         }
-        else
-        {
-            o = input->this.pair.car;
-            input_bis = input;
-        }
+
         if(o->type == SFS_BOOLEAN)
         {
             if(strcmp(o->this.symbol,"#t")==0)
@@ -385,13 +445,10 @@ object sfs_eval( object input )
         if(o->type == SFS_SYMBOL)
         {
             DEBUG_MSG("on a un car symbol : %s",o->this.symbol);
-
-
             if(is_form("define",o)==1)
             {
                 return define(input_bis->this.pair.cdr->this.pair.car,input_bis->this.pair.cdr->this.pair.cdr->this.pair.car);
             }
-
             if(is_form("set!",o)==1)
             {
                 return set(input_bis->this.pair.cdr->this.pair.car,input_bis->this.pair.cdr->this.pair.cdr->this.pair.car);
@@ -465,16 +522,20 @@ object sfs_eval( object input )
 
             else
             {
-                DEBUG_MSG("on a un symbol mais pas de forme connue");
                 if(chercher_symb(o->this.symbol)==1)
                 {
                     return valeur_symb(o->this.symbol);
                 }
 
                 string signe;
-                if(strcmp(o->this.symbol,"+")==0)
+                object p = make_primitive(evaluer_prim(o)) ;
+                object liste_arg = evaluer_arg(input_bis->this.pair.cdr);
+                return (p->this.prim.fonction)(liste_arg);
+            /*    if(strcmp(o->this.symbol,"+")==0)
                 {
                     strcpy(signe ,"+");
+                    object liste_arg = evaluer_arg(input->this.pair.cdr);
+
                     return evaluer_predicat (input,signe);
                 }
                 if(strcmp(o->this.symbol,"-")==0)
@@ -506,7 +567,7 @@ object sfs_eval( object input )
                 {
                     DEBUG_MSG("on retourne %s",o->this.symbol);
                     return o;
-                }
+                }*/
             }
         }
 

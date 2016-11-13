@@ -1,12 +1,4 @@
 
-/**
- * @file object.c
- * @author François Cayre <cayre@yiking.(null)>
- * @date Fri Jun 15 18:02:57 2012
- * @brief Object definitions for SFS.
- *
- * Object definitions for SFS.
- */
 
 #include "object.h"
 #include "mem.h"
@@ -24,7 +16,12 @@ object make_object( uint type )
     return t;
 }
 
-
+object make_primitive (object (*p)(object))
+{
+    object o = make_object(SFS_PRIM);
+    o->this.prim.fonction = p;
+    return o;
+}
 
 object make_liste (void)
 {
@@ -36,11 +33,8 @@ object make_liste (void)
 
 object make_nil( void ) 			/*make_empty_list ??*/
 {
-
     object t = make_object( SFS_NIL );
-
     t->this.special = t;
-
     return t;
 }
 

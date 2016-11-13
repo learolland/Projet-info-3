@@ -19,6 +19,7 @@ extern "C" {
 #include "object.h"
 
 uint chercher_symb (string nom);
+object valeur_symb (string nom);
 uint is_form(string forme, object input);
 object sfs_eval( object input);
 object set(object variable, object valeur);

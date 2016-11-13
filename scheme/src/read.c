@@ -365,6 +365,8 @@ int test_string (char* input, uint *here) /* test si on a des guillemets et renv
 
 uint taille_int (uint integer)	/* renvoie la taille d'un entier (nb de characteres) */
 {
+    if (integer == 0)
+        return 1;
 	uint n = log10(integer)+1;
 	return n;
 }

@@ -33,23 +33,32 @@ typedef struct object_t {
         struct pair_t {
             struct object_t *car;
             struct object_t *cdr;
-        } pair;
+        }                pair;
 
          struct liste_t
         {
             string nom;
             struct object_t *val;
-        }liste ;
+        }               liste ;
 
         struct object_t *special;
+        struct primitive_t
+        {
+            struct object_t *(*fonction)(struct object_t *);
+        } prim;
 
     } this;
 
 } *object;
 
+typedef struct primitive_t prim;
+
+
+
 
 
 object make_liste (void);
+object make_primitive (object (*p)(object));
 
 object make_object( uint type );
 object make_nil( void );
@@ -75,8 +84,8 @@ void afficher_objet(object t);
 #define SFS_SYMBOL       0x06
 #define SFS_CHAR_SPECIAL 0x07
 #define SFS_LIST         0x08
+#define SFS_PRIM         0X10
 
-/*extern object nil;*/
 
 #ifdef __cplusplus
 }
