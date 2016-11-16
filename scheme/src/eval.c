@@ -161,9 +161,12 @@ object cons(object car, object cdr)
 
 object ajout_queue (object liste, object car)
 {
-    if (liste->this.pair.car==nil)
+    DEBUG_MSG("dans ajout_queue");
+    if (liste->this.pair.car==nil || liste->this.pair.car == NULL)
     {
+        DEBUG_MSG("ajout_tete simple");
         liste->this.pair.car = car ;
+        DEBUG_MSG("on ajoute le car");
         return liste ;
     }
 
@@ -244,10 +247,12 @@ uint is_form(string forme, object input)
 
 object plus_p (object nums)
 {
+    DEBUG_MSG("on va faire un plus");
     uint somme = 0;
     object l = nums;
     while (l->this.pair.cdr != nil && l->this.pair.cdr != nil)
     {
+        DEBUG_MSG("on entre dans le while");
         somme += l->this.pair.car->this.number.this.integer;
         l = l->this.pair.cdr;
     }
@@ -259,11 +264,18 @@ object plus_p (object nums)
 /********** EVALUATION ***********/
 object evaluer_arg (object liste)
 {
+    DEBUG_MSG("evaluation des arguments");
     object liste_arg = make_pair();
-    for(object ptr_liste = liste;ptr_liste->this.pair.cdr != NULL && ptr_liste->this.pair.cdr != nil; ptr_liste = ptr_liste->this.pair.cdr)
+    object ptr_liste = liste ;
+    DEBUG_MSG("car de la liste : %d",ptr_liste->this.pair.car->this.number.this.integer);
+    while(ptr_liste != NULL && ptr_liste != nil)
     {
+        DEBUG_MSG("dans le for de evaluer_arg");
         liste_arg = ajout_queue(liste_arg,sfs_eval(ptr_liste->this.pair.car));
+        ptr_liste = ptr_liste->this.pair.cdr;
+        DEBUG_MSG("on change le ptr_liste");
     }
+    DEBUG_MSG("on sort du while\n");
     return liste_arg;
 }
 
@@ -527,9 +539,11 @@ object sfs_eval( object input )
                     return valeur_symb(o->this.symbol);
                 }
 
-                string signe;
                 object p = make_primitive(evaluer_prim(o)) ;
+                DEBUG_MSG("on a créé la prim");
                 object liste_arg = evaluer_arg(input_bis->this.pair.cdr);
+                DEBUG_MSG("on a une liste_arg");
+                return liste_arg;
                 return (p->this.prim.fonction)(liste_arg);
             /*    if(strcmp(o->this.symbol,"+")==0)
                 {
