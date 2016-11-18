@@ -343,20 +343,17 @@ int test_string (char* input, uint *here) /* test si on a des guillemets et renv
 {
 	if(input[*here]=='\'' || input[*here]=='\"')
 	{
-        DEBUG_MSG("on commence test_string");
 		uint i = *here + 1;
 		while(input[i]!='\'' && input[i]!='\"')
 		{
 			if(input[i]<32 || input[i]==')' || input[i]=='(')
 			{
-                DEBUG_MSG("on arrete test_string i : %d",input[i]);
                 i = next_char(input, &i);
                 if(input[i]!='\"' && input[i]!='\'')
             	   return 0;
             }
 			i++;
 		}
-        DEBUG_MSG("on a une chaine ");
 		return 1;
 
 	}
@@ -390,20 +387,17 @@ int string_to_integer(char *input, uint *here)
 	string tmp_chaine;
 	int integer = 0;
 	strcpy(tmp_chaine,&input[*here]);
-	DEBUG_MSG("input : %c",input[*here]);
 
 	if(input[indice]=='+'|| input[indice]=='-') indice ++;
 	while(input[indice] != '\0' && input[indice]!= 32 && input[indice]!= 41 )
 	{
 		if(test_integer(&input[indice])==0)
 		{
-			DEBUG_MSG("                ce n'est pas un entier");
 			return -1;
 		}
 		indice++;
 	}
 	integer = atoi(tmp_chaine);
-	DEBUG_MSG("integer : %d",integer);
 
 	return integer;
 }
@@ -416,20 +410,16 @@ string * input_to_string (char* input, uint *here)
 {
 	uint i = *here;
 	if(input[i]=='\''|| input[i]=='\"') i++;
-	DEBUG_MSG("début de la chaine : %d",i);
 
 	string tmp_chaine;
 	string chaine;
 	strcpy(tmp_chaine,&input[i]) ;
-	DEBUG_MSG("                copie de input dans tmp_chaine : %s",tmp_chaine );
 
 	for( ; input[i]!='\"' && input[i]!='\'' ; i++)
 	{
 		DEBUG_MSG("%c",input[i]);
 	}
-	DEBUG_MSG("                fin de la chaine, i = %d\n",i);
 	strncpy(chaine,tmp_chaine, i-*here-1);
-		DEBUG_MSG("                     chaine  = %s , taille : %lu\n",chaine,strlen(chaine));
 	return  &chaine;
 }
 
@@ -439,7 +429,6 @@ string * input_to_string (char* input, uint *here)
 string* input_to_symbol (char* input, uint *here)
 {
 	uint i = *here;
-	DEBUG_MSG("début de input_to_symbol : input[i] = %c",input[i]);
 
 	string tmp_chaine;
 	string chaine;
@@ -447,11 +436,9 @@ string* input_to_symbol (char* input, uint *here)
 
 	while(input[i]!= 0 && input[i]!= 41 && input[i]>32)
 	{
-		DEBUG_MSG("input[%d] dans symbol : %c",i,input[i]);
 		i++;
 	}
 	strncpy(chaine,tmp_chaine, i-*here);
-	DEBUG_MSG("symbol : %s, taille du symbole %lu\n",chaine, strlen(chaine));
 	return &chaine;
 }
 
@@ -481,7 +468,6 @@ object cons_pair (object car, object cdr)
 
 object sfs_read_atom( char *input, uint *here)
 {
-	DEBUG_MSG("            atom :%c, size : %lu, chaine : %s ", input[*here],strlen(input),input);
 	uint test = 0 ;
 	*here = next_char(input,here);
 
@@ -489,21 +475,17 @@ object sfs_read_atom( char *input, uint *here)
 	{
 		if(test_signed_integer(input,here) == 1)
 		{
-			DEBUG_MSG("            sfs_read_atom : on lit un entier");
 			int integer = string_to_integer(input,here);  /*test si la suite est tj un chiffre*/
 			if(integer<0)
 			{
 				*here += taille_int(abs(integer))+1;
-				DEBUG_MSG("apres modif: *here = %d, taille integer : %d",*here,taille_int(integer));
 				return make_integer(integer);
 			}
 			else
 			{
-				DEBUG_MSG("entier positif, taille : %d here %d",taille_int(integer),*here);
 				if(input[*here]=='+')
 					*here += taille_int(integer)+1;
 				else *here += taille_int(integer);
-				DEBUG_MSG("apres modif : %d, taille : %d, input :%c",*here,taille_int(integer),input[*here]);
 				return make_integer(integer);
 			}
 		}
@@ -511,7 +493,6 @@ object sfs_read_atom( char *input, uint *here)
 		test = test_character(input,here);
 		if(test ==1)
 		{
-			DEBUG_MSG("            sfs_read_atom : on lit un caractere");
 			char caractere = input[*here+2];
 			*here += 3;
 			return make_character(caractere);
@@ -581,7 +562,6 @@ object sfs_read_pair (char* stream, uint *i)
 	if(stream[*i]== ')' || stream[*i] < 31)
 	{
 		(*i)++;
-		DEBUG_MSG("on va retourner nil");
 		return nil;
 	}
 	*i = next_char(stream,i);
@@ -618,7 +598,6 @@ object sfs_read( char *input, uint *here )
 	{
 		if(input[*here]<33)
 			(*here)++;
-			DEBUG_MSG("dans read = here = %d, input : %c\n",*here, input[*here]);
 			*here = next_char(input,here);
 
 		if(*here<strlen(input) && input[*here]!=41)
@@ -648,5 +627,4 @@ object sfs_read( char *input, uint *here )
 		}
 	}
 	return NULL ;
-	DEBUG_MSG("fin de sfs_read\n");
 }

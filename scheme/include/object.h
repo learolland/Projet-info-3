@@ -70,7 +70,7 @@ object make_string( string chaine);
 object make_pair(void);
 object make_character_special(string chaine);
 object *make_env(void);
-
+void creer_primitives(void);
 
 void afficher_objet(object t);
 
@@ -84,7 +84,7 @@ void afficher_objet(object t);
 #define SFS_SYMBOL       0x06
 #define SFS_CHAR_SPECIAL 0x07
 #define SFS_LIST         0x08
-#define SFS_PRIM         0X10
+#define SFS_PRIM         0X09
 
 
 #ifdef __cplusplus

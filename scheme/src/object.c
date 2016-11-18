@@ -43,7 +43,6 @@ object make_boolean( uint true_false  )
 {
 
     object t = make_object(SFS_BOOLEAN);
-    DEBUG_MSG("on lit un booléen\n");
     if(true_false == FALSE)
     {
         string chaine = "#f";
@@ -105,7 +104,6 @@ object make_string( string chaine)
 
 object make_pair(void)
 {
-    DEBUG_MSG("make_pair\n");
     object t = make_object(SFS_PAIR);
     t->this.pair.car = NULL;
     t->this.pair.cdr = NULL;

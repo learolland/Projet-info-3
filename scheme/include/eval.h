@@ -23,6 +23,7 @@ object valeur_symb (string nom);
 uint is_form(string forme, object input);
 object sfs_eval( object input);
 object set(object variable, object valeur);
+object define (object variable, object valeur);
 extern object liste_env;
 extern object nil;
 extern object boolean_false;

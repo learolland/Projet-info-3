@@ -42,7 +42,7 @@ void init_interpreter ( void )
     boolean_false = make_boolean(FALSE);
     nil      = make_nil();
     liste_env = make_pair();
-
+    creer_primitives();
 }
 
 int main ( int argc, char *argv[] ) {

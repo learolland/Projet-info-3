@@ -64,15 +64,19 @@ void sfs_print_pair( object o )
 		DEBUG_MSG("this.pair.car->type = %d",o->this.pair.car->type);
 
 		sfs_print(o->this.pair.car);
+		DEBUG_MSG("retour");
 
-
-		o = o->this.pair.cdr ;
-		DEBUG_MSG("2 :this.pair.car->type = %d",o->type);
-		if(o->type!=SFS_NIL)
+		if(o->this.pair.cdr != nil && o->this.pair.cdr != NULL)
 		{
-			printf(" ");
-			DEBUG_MSG("o : %d",o->this.pair.car->this.number.this.integer);
-			sfs_print_pair(o);
+			o = o->this.pair.cdr ;
+			DEBUG_MSG("2 :this.pair.car->type = %d",o->this.pair.car->type);
+
+			if(o->this.pair.car->type!=SFS_NIL)
+			{
+				printf(" ");
+				DEBUG_MSG("o : %d",o->this.pair.car->this.number.this.integer);
+				sfs_print_pair(o);
+			}
 		}
 	}
 
@@ -92,6 +96,5 @@ void sfs_print( object o )
     {
         sfs_print_atom( o );
     }
-
 
 }

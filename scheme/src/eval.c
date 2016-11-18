@@ -36,16 +36,15 @@ object ajout_env (object p)
 
 uint ajout_binding (object variable, object valeur)
 {
-    DEBUG_MSG("on entre dans ajout_binding");
-    /*if(valeur->type == SFS_SYMBOL)
-    {
-        if(chercher_symb(valeur->this.symbol)==1)
-        valeur = valeur_symb(valeur->this.symbol);
-    }*/
     object binding_ajout = make_pair();
     binding_ajout->this.pair.car = make_liste() ;
     strcpy(binding_ajout->this.pair.car->this.liste.nom,variable->this.symbol);
-    binding_ajout->this.pair.car->this.liste.val = sfs_eval(valeur);
+    if(valeur->type == SFS_PRIM)
+    {
+        binding_ajout->this.pair.car->this.liste.val = valeur;
+
+    }
+    else binding_ajout->this.pair.car->this.liste.val = sfs_eval(valeur);
 
 
 
@@ -54,7 +53,6 @@ uint ajout_binding (object variable, object valeur)
 
     if(binding == NULL || binding == nil)
     {
-        DEBUG_MSG("on n'a pas encore de binding -> création");
         binding = binding_ajout;
         binding->this.pair.cdr = nil;
         liste_env->this.pair.car = binding;
@@ -85,10 +83,12 @@ object valeur_symb (string nom)
                 DEBUG_MSG("on trouve une valeur de type : %d",valeur_binding->this.liste.val->type);
                 return valeur_binding->this.liste.val;
             }
+            DEBUG_MSG("on sort du deuxieme palier");
             binding = binding->this.pair.cdr;
         }
+        DEBUG_MSG("on sort du premier palier");
         env = (liste_env)->this.pair.cdr;
-        binding = env->this.pair.car;
+        if(env!= NULL && env != nil) binding = env->this.pair.car;
     }
     WARNING_MSG("Le programme n'a pas pu trouver la variable %s dans les environnements",nom);
     return NULL;
@@ -96,34 +96,24 @@ object valeur_symb (string nom)
 
 uint chercher_symb (string nom)
 {
-    DEBUG_MSG("entree dans chercher_symb");
     object env = liste_env;
     if(liste_env->this.pair.car == NULL)
         return 0;
     object binding = NULL;
     while(env != NULL)
     {
-        DEBUG_MSG("premier palier");
         binding = env->this.pair.car;
         while(binding != nil)
         {
-            DEBUG_MSG("deuxieme palier");
             object valeur_binding = binding->this.pair.car;
-            DEBUG_MSG("on a un valeur_binding : %s",valeur_binding->this.liste.nom);
             if(strcmp(valeur_binding->this.liste.nom, nom)==0)
             {
-                DEBUG_MSG("on trouve un correspondance");
                 return 1;
             }
             binding = binding->this.pair.cdr;
-            DEBUG_MSG("on change binding, %s",binding->this.pair.car->this.liste.nom);
         }
-        DEBUG_MSG("on sort du deuxieme palier");
         env = env->this.pair.cdr;
-        DEBUG_MSG("on change d'env");
-
     }
-    DEBUG_MSG("on a rien trouvé");
     return 0;
 }
 
@@ -180,10 +170,12 @@ object ajout_queue (object liste, object car)
 }
 
 
+
+
+
 /*** FORMES ****/
 object define (object variable, object valeur)
 {
-    DEBUG_MSG("on entre dans define");
     uint i = chercher_symb(variable->this.symbol);
     if (i == 1)
         return set(variable,valeur);
@@ -198,7 +190,6 @@ object define (object variable, object valeur)
 
 object set (object variable, object valeur)
 {
-    DEBUG_MSG("entree dans set");
     uint i = chercher_symb(variable->this.symbol);
     DEBUG_MSG("chercher_symb = %d",i);
     if(i==0)
@@ -250,16 +241,119 @@ object plus_p (object nums)
     DEBUG_MSG("on va faire un plus");
     uint somme = 0;
     object l = nums;
-    while (l->this.pair.cdr != nil && l->this.pair.cdr != nil)
+    for (;l != nil && l != NULL; l = l->this.pair.cdr)
     {
-        DEBUG_MSG("on entre dans le while");
+        DEBUG_MSG("on entre dans le while, %d",l->this.pair.car->this.number.this.integer);
         somme += l->this.pair.car->this.number.this.integer;
-        l = l->this.pair.cdr;
+        DEBUG_MSG("l = %d",somme);
     }
+    DEBUG_MSG("on sort du while ");
     object o_somme = make_integer(somme);
+    DEBUG_MSG("objet final : %d",o_somme->this.number.this.integer);
     return o_somme;
 }
 
+object moins_p (object nums)
+{
+    uint diff = nums->this.pair.car->this.number.this.integer;
+    object l = nums->this.pair.cdr;
+
+    for (;l != nil && l != NULL; l = l->this.pair.cdr)
+    {
+        DEBUG_MSG("on entre dans le while, %d",l->this.pair.car->this.number.this.integer);
+        diff -= l->this.pair.car->this.number.this.integer;
+        DEBUG_MSG("l = %d",diff);
+    }
+    DEBUG_MSG("on sort du while ");
+    object o_diff = make_integer(diff);
+    DEBUG_MSG("objet final : %d",o_diff->this.number.this.integer);
+    return o_diff;
+}
+
+object sup_p (object nums)
+{
+    object l = nums ;
+    if(l->this.pair.car->this.number.this.integer > l->this.pair.cdr->this.pair.car->this.number.this.integer)
+        return boolean_true ;
+    return NULL;
+}
+
+object inf_p (object nums)
+{
+    object l = nums ;
+    if(l->this.pair.car->this.number.this.integer < l->this.pair.cdr->this.pair.car->this.number.this.integer)
+        return boolean_true ;
+    return NULL;
+}
+
+object mult_p (object nums)
+{
+    object l = nums ;
+    uint mult = 1;
+    for (;l != nil && l != NULL; l = l->this.pair.cdr)
+    {
+        DEBUG_MSG("on entre dans le while, %d",l->this.pair.car->this.number.this.integer);
+        mult = mult *  l->this.pair.car->this.number.this.integer;
+        DEBUG_MSG("l = %d",mult);
+    }
+    object o_mult = make_integer(mult);
+    return o_mult;
+}
+
+object egal_p (object nums)
+{
+    object l = nums;
+    if(l->this.pair.car->type != SFS_NUMBER)
+    {
+        WARNING_MSG("attention, les arguments ne sont pas des nombres");
+        return NULL;
+    }
+    uint i = l->this.pair.car->this.number.this.integer;
+    l = l->this.pair.cdr;
+    while(l != nil && l != NULL)
+    {
+        if(l->this.pair.car->this.number.this.integer != i)
+            return boolean_false;
+        l = l->this.pair.cdr;
+    }
+    return boolean_true;
+}
+
+object boolean_p (object arg)
+{
+    if(arg->this.pair.cdr != NULL && arg->this.pair.cdr != nil)
+    {
+        WARNING_MSG("il y a trop d'arguments");
+        return NULL;
+    }
+    if(arg->this.pair.car->type == SFS_BOOLEAN)
+        return boolean_true;
+    return NULL;
+}
+
+object char_p (object arg)
+{
+    if(arg->this.pair.cdr != NULL && arg->this.pair.cdr != nil)
+    {
+        WARNING_MSG("il y a trop d'arguments");
+        return NULL;
+    }
+    if(arg->this.pair.car->type == SFS_CHARACTER)
+        return boolean_true;
+    return NULL;
+}
+
+object symbol_p (object arg)
+{
+    if(arg->this.pair.cdr != NULL && arg->this.pair.cdr != nil)
+    {
+        WARNING_MSG("il y a trop d'arguments");
+        return NULL;
+    }
+    if(arg->this.pair.car->type == SFS_SYMBOL)
+        return boolean_true;
+    return NULL;
+}
 
 /********** EVALUATION ***********/
 object evaluer_arg (object liste)
@@ -267,6 +361,7 @@ object evaluer_arg (object liste)
     DEBUG_MSG("evaluation des arguments");
     object liste_arg = make_pair();
     object ptr_liste = liste ;
+    uint i = 0;
     DEBUG_MSG("car de la liste : %d",ptr_liste->this.pair.car->this.number.this.integer);
     while(ptr_liste != NULL && ptr_liste != nil)
     {
@@ -274,12 +369,15 @@ object evaluer_arg (object liste)
         liste_arg = ajout_queue(liste_arg,sfs_eval(ptr_liste->this.pair.car));
         ptr_liste = ptr_liste->this.pair.cdr;
         DEBUG_MSG("on change le ptr_liste");
+        i++;
+        DEBUG_MSG("         i = %d",i);
+
     }
     DEBUG_MSG("on sort du while\n");
     return liste_arg;
 }
 
-object evaluer_prim (object input)
+/*object evaluer_prim (object input)
 {
     string signe;
     strcpy(signe,input->this.symbol);
@@ -288,141 +386,63 @@ object evaluer_prim (object input)
         DEBUG_MSG("on a un +");
         return plus_p;
     }
-    return NULL;
-}
-
-object evaluer_predicat (object input,string signe)
-{
-    num a, b;
-    object car = input->this.pair.cdr->this.pair.car;
-    DEBUG_MSG("car :%d",car->this.number.this.integer);
-    if(car->type==SFS_NUMBER)
-    {
-        DEBUG_MSG("on prend bien a = int");
-        a = car->this.number;
-    }
-    if(car->type == SFS_SYMBOL)
-    {
-        if(chercher_symb(car->this.symbol)==0)
-        {
-            WARNING_MSG("le symbole %s que vous cherchez à évaluer n'a pas été défini",car->this.symbol);
-            return NULL;
-        }
-        else
-        {
-            object o = valeur_symb(car->this.symbol);
-            if(o->type == SFS_NUMBER)
-                a = o->this.number;
-            else
-            {
-                WARNING_MSG("vous cherchez à comparer quelque chose qui n'est pas un nombre");
-                return NULL;
-            }
-        }
-    }
-    if(car->type != SFS_NUMBER && car->type != SFS_SYMBOL)
-    {
-        WARNING_MSG("vous cherchez à comparer des éléments qui ne sont ni des nombres, ou des symboles définis");
-        return NULL;
-    }
-
-    object cadr = input->this.pair.cdr->this.pair.cdr->this.pair.car;
-    if(cadr->type == SFS_NUMBER)
-    {
-        b = cadr->this.number;
-        DEBUG_MSG("on prend bien b = int");
-    }
-    if(cadr->type == SFS_SYMBOL)
-    {
-        if(chercher_symb(cadr->this.symbol)==0)
-        {
-            WARNING_MSG("le symbole %s que vous cherchez à évaluer n'a pas été défini",cadr->this.symbol);
-            return NULL;
-        }
-        else
-        {
-            object o = valeur_symb(cadr->this.symbol);
-            if(o->type == SFS_NUMBER)
-            b = o->this.number;
-            else
-            {
-                WARNING_MSG("vous cherchez à comparer quelque chose qui n'est pas un nombre");
-                return NULL;
-            }
-        }
-    }
-    if(cadr->type != SFS_NUMBER && cadr->type != SFS_SYMBOL)
-    {
-        WARNING_MSG("vous cherchez à comparer des éléments qui ne sont ni des nombres, ou des symboles définis");
-        return NULL;
-    }
-    if(strcmp(signe,"+")==0)
-    {
-        uint sum = a.this.integer+b.this.integer;
-        object s = make_integer(sum);
-        return s;
-    }
     if(strcmp(signe,"-")==0)
     {
-        uint dif = a.this.integer-b.this.integer;
-        object d = make_integer(dif);
-        return d;
+        DEBUG_MSG("on a un -");
+        return moins_p;
     }
     if(strcmp(signe,">")==0)
     {
-        if(a.this.integer>b.this.integer)
-            return boolean_true;
-        else return boolean_false;
+        return sup_p;
     }
     if(strcmp(signe,"<")==0)
     {
-        if(a.this.integer<b.this.integer)
-            return boolean_true;
-        else return boolean_false;
+        return inf_p;
     }
-    if(strcmp(signe,"=")==0)
-    {
-        if(a.this.integer==b.this.integer)
-            return boolean_true;
-        else return boolean_false;
-    }
-    if(strcmp(signe,"!=")==0)
-    {
-        if(a.this.integer!=b.this.integer)
-            return boolean_true;
-        else return boolean_false;
-    }
-    return input;
+    return NULL;
+}*/
+
+
+
+
+
+void creer_primitives(void)
+{
+    define(make_symbol("+"),make_primitive(plus_p));
+    define(make_symbol("-"),make_primitive(moins_p));
+    define(make_symbol(">"),make_primitive(sup_p));
+    define(make_symbol("<"),make_primitive(inf_p));
+    define(make_symbol("*"),make_primitive(mult_p));
+    define(make_symbol("="),make_primitive(egal_p));
+    define(make_symbol("boolean?"),make_primitive(boolean_p));
+    define(make_symbol("char?"),make_primitive(char_p));
+    define(make_symbol("symbol?"),make_primitive(symbol_p));
+
 }
-
-
-
-
-
 
 
 
 object sfs_eval( object input )
 {
     restart:
-    DEBUG_MSG("\n");
-    DEBUG_MSG("on entre dans eval");
 
-
+    DEBUG_MSG("EVAL");
     if(input->type == SFS_SYMBOL)
     {
+        DEBUG_MSG("on a un symbol");
         object p = valeur_symb(input->this.symbol);
         if(p!= NULL) return p;
         else return input;
     }
-
+    if(input->type == SFS_NUMBER)
+    {
+        DEBUG_MSG("on trouve un nb");
+        return input;
+    }
     object o = NULL;
     object input_bis = NULL;
     if(input->type == SFS_PAIR)
     {
-        DEBUG_MSG("input = pair");
-        DEBUG_MSG("input car type = %d",input->this.pair.car->type);
-
         o = input->this.pair.car;
         input_bis = input;
 
@@ -432,6 +452,7 @@ object sfs_eval( object input )
             DEBUG_MSG("on a une pair imbriquée");
             o = test_input->this.pair.car->this.pair.car;
             input_bis = test_input->this.pair.car;
+            test_input = test_input->this.pair.car;
         }
 
         if(o->type == SFS_BOOLEAN)
@@ -456,20 +477,15 @@ object sfs_eval( object input )
 
         if(o->type == SFS_SYMBOL)
         {
-            DEBUG_MSG("on a un car symbol : %s",o->this.symbol);
             if(is_form("define",o)==1)
             {
+                DEBUG_MSG("valeur : %s, type %d",input->this.pair.cdr->this.pair.car->this.symbol,input->this.pair.cdr->this.pair.car->type);
                 return define(input_bis->this.pair.cdr->this.pair.car,input_bis->this.pair.cdr->this.pair.cdr->this.pair.car);
             }
             if(is_form("set!",o)==1)
-            {
                 return set(input_bis->this.pair.cdr->this.pair.car,input_bis->this.pair.cdr->this.pair.cdr->this.pair.car);
-            }
             if(is_form("quote",o)==1)
-            {
                 return (input_bis->this.pair.cdr->this.pair.car);
-            }
-
             if(is_form("if",o))
             {
                 DEBUG_MSG("on a un if");
@@ -502,6 +518,7 @@ object sfs_eval( object input )
                         return sfs_eval(consequence);
                     }
                 }
+                alternative = NULL;
             }
             if(is_form("and",o))
             {
@@ -531,60 +548,23 @@ object sfs_eval( object input )
                 }
                 return boolean_false;
             }
-
             else
             {
-                if(chercher_symb(o->this.symbol)==1)
-                {
-                    return valeur_symb(o->this.symbol);
-                }
-
-                object p = make_primitive(evaluer_prim(o)) ;
-                DEBUG_MSG("on a créé la prim");
+                object p = valeur_symb(o->this.symbol) ;
+                DEBUG_MSG("on a créé la prim p type = %d",p->type);
                 object liste_arg = evaluer_arg(input_bis->this.pair.cdr);
                 DEBUG_MSG("on a une liste_arg");
-                return liste_arg;
-                return (p->this.prim.fonction)(liste_arg);
-            /*    if(strcmp(o->this.symbol,"+")==0)
-                {
-                    strcpy(signe ,"+");
-                    object liste_arg = evaluer_arg(input->this.pair.cdr);
-
-                    return evaluer_predicat (input,signe);
-                }
-                if(strcmp(o->this.symbol,"-")==0)
-                {
-                    strcpy(signe ,"-");
-                    return evaluer_predicat(input,signe);
-                }
-                if(strcmp(o->this.symbol,">")==0)
-                {
-                    strcpy(signe ,">");
-                    return evaluer_predicat(input,signe);
-                }
-                if(strcmp(o->this.symbol,"<")==0)
-                {
-                    strcpy(signe ,"<");
-                    return evaluer_predicat(input,signe);
-                }
-                if(strcmp(o->this.symbol,"=")==0)
-                {
-                    strcpy(signe ,"=");
-                    return evaluer_predicat(input,signe);
-                }
-                if(strcmp(o->this.symbol,"!=")==0)
-                {
-                    strcpy(signe ,"!=");
-                    return evaluer_predicat(input,signe);
-                }
-                else
-                {
-                    DEBUG_MSG("on retourne %s",o->this.symbol);
-                    return o;
+                /*{
+                    object tmp_liste = liste_arg ;
+                    while(tmp_liste!= NULL && tmp_liste != nil)
+                    {
+                        DEBUG_MSG("affichage : %d",tmp_liste->this.pair.car->this.number.this.integer);
+                        tmp_liste = tmp_liste->this.pair.cdr;
+                    }
                 }*/
+                return (p->this.prim.fonction)(liste_arg);
             }
         }
-
 
     }
     return input;
