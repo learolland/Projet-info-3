@@ -232,7 +232,28 @@ uint is_form(string forme, object input)
     else return 0;
 }
 
-
+uint partie_entiere (double nombre)
+{
+    double seuil = 0;
+    while(seuil<=nombre) seuil++;
+    double comp = seuil-0.5;
+    DEBUG_MSG("seuil : %lf",seuil);
+    if(comp==nombre)
+    {
+        DEBUG_MSG("0,5");
+        return (uint)seuil;
+    }
+    if(comp<=nombre)
+    {
+        DEBUG_MSG("dif : %lf",nombre-seuil);
+        return (uint)seuil;
+    }
+    else
+    {
+        DEBUG_MSG("dif : %lf",nombre-(seuil+0.5));
+        return (uint)seuil-1;
+    }
+}
 
 /*** PRIMITIVES ***/
 
@@ -300,6 +321,21 @@ object mult_p (object nums)
     return o_mult;
 }
 
+object quotient_p (object nums)
+{
+    double quotient = nums->this.pair.car->this.number.this.integer;
+    object l = nums->this.pair.cdr ;
+    for (;l != nil && l != NULL; l = l->this.pair.cdr)
+    {
+        quotient = quotient /  l->this.pair.car->this.number.this.integer;
+        DEBUG_MSG("l = %lf",quotient);
+    }
+    uint int_quotient = partie_entiere(quotient);  /* MANQUE UNE FONCTION */
+    DEBUG_MSG("int : %d, double : %lf",int_quotient,quotient);
+    object o_quotient = make_integer(int_quotient);
+    return o_quotient;
+}
+
 object egal_p (object nums)
 {
     object l = nums;
@@ -355,6 +391,70 @@ object symbol_p (object arg)
     return NULL;
 }
 
+object integer_p (object arg)
+{
+    if(arg->this.pair.cdr != NULL && arg->this.pair.cdr != nil)
+    {
+        WARNING_MSG("il y a trop d'arguments");
+        return NULL;
+    }
+    if(arg->this.pair.car->type == SFS_NUMBER)
+        return boolean_true;
+    return NULL;
+}
+
+object string_p (object arg)
+{
+    if(arg->this.pair.cdr != NULL && arg->this.pair.cdr != nil)
+    {
+        WARNING_MSG("il y a trop d'arguments");
+        return NULL;
+    }
+    if(arg->this.pair.car->type == SFS_STRING)
+        return boolean_true;
+    return NULL;
+}
+
+object pair_p (object arg)
+{
+    if(arg->this.pair.cdr != NULL && arg->this.pair.cdr != nil)
+    {
+        WARNING_MSG("il y a trop d'arguments");
+        return NULL;
+    }
+    if(arg->this.pair.car->type == SFS_PAIR)
+        return boolean_true;
+    return NULL;
+}
+
+object nil_p (object arg)
+{
+    if(arg->this.pair.cdr != NULL && arg->this.pair.cdr != nil)
+    {
+        WARNING_MSG("il y a trop d'arguments");
+        return NULL;
+    }
+    if(arg->this.pair.car->type == SFS_NIL)
+        return boolean_true;
+    return NULL;
+}
+
+
+object null_p (object arg)
+{
+    if(arg->this.pair.cdr != NULL && arg->this.pair.cdr != nil)
+    {
+        WARNING_MSG("il y a trop d'arguments");
+        return NULL;
+    }
+    if(arg->this.pair.car == NULL)
+        return boolean_true;
+    return NULL;
+}
+
+
+
+
 /********** EVALUATION ***********/
 object evaluer_arg (object liste)
 {
@@ -377,34 +477,6 @@ object evaluer_arg (object liste)
     return liste_arg;
 }
 
-/*object evaluer_prim (object input)
-{
-    string signe;
-    strcpy(signe,input->this.symbol);
-    if(strcmp(signe,"+")==0)
-    {
-        DEBUG_MSG("on a un +");
-        return plus_p;
-    }
-    if(strcmp(signe,"-")==0)
-    {
-        DEBUG_MSG("on a un -");
-        return moins_p;
-    }
-    if(strcmp(signe,">")==0)
-    {
-        return sup_p;
-    }
-    if(strcmp(signe,"<")==0)
-    {
-        return inf_p;
-    }
-    return NULL;
-}*/
-
-
-
-
 
 void creer_primitives(void)
 {
@@ -413,11 +485,16 @@ void creer_primitives(void)
     define(make_symbol(">"),make_primitive(sup_p));
     define(make_symbol("<"),make_primitive(inf_p));
     define(make_symbol("*"),make_primitive(mult_p));
+    define(make_symbol("quotient"),make_primitive(quotient_p));
     define(make_symbol("="),make_primitive(egal_p));
     define(make_symbol("boolean?"),make_primitive(boolean_p));
     define(make_symbol("char?"),make_primitive(char_p));
     define(make_symbol("symbol?"),make_primitive(symbol_p));
-
+    define(make_symbol("integer?"),make_primitive(integer_p));
+    define(make_symbol("string?"),make_primitive(string_p));
+    define(make_symbol("pair?"),make_primitive(pair_p));
+    define(make_symbol("nil?"),make_primitive(nil_p));
+    define(make_symbol("null?"),make_primitive(null_p));
 }
 
 

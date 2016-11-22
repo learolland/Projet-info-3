@@ -406,7 +406,7 @@ int string_to_integer(char *input, uint *here)
 
 
 
-string * input_to_string (char* input, uint *here)
+object input_to_string (char* input, uint *here)
 {
 	uint i = *here;
 	if(input[i]=='\''|| input[i]=='\"') i++;
@@ -420,13 +420,14 @@ string * input_to_string (char* input, uint *here)
 		DEBUG_MSG("%c",input[i]);
 	}
 	strncpy(chaine,tmp_chaine, i-*here-1);
-	return  &chaine;
+    object string = make_string(chaine);
+	return  string;
 }
 
 
 
 
-string* input_to_symbol (char* input, uint *here)
+object input_to_symbol (char* input, uint *here)
 {
 	uint i = *here;
 
@@ -439,7 +440,9 @@ string* input_to_symbol (char* input, uint *here)
 		i++;
 	}
 	strncpy(chaine,tmp_chaine, i-*here);
-	return &chaine;
+    DEBUG_MSG("%s", chaine);
+    object symbol = make_symbol(chaine);
+	return symbol;
 }
 
 
@@ -527,10 +530,10 @@ object sfs_read_atom( char *input, uint *here)
 
 		if(test_string(input,here)==1)
 		{
-			string chaine ;
-			strcpy(chaine, *input_to_string(input,here));
-			*here += taille_string(chaine)+2;
-			return make_string(chaine);
+            uint* string_here = here;
+            object string = input_to_string(input, string_here);
+			*here += taille_string(string->this.string)+2;
+			return string;
 		}
 
 		if(input[*here] > 32 && *here < strlen(input))
@@ -540,11 +543,10 @@ object sfs_read_atom( char *input, uint *here)
 				*here += 1;
 				return cons_pair(make_symbol("quote"),sfs_read(input,here));
 			}
-			string chaine_symbol;
-			strcpy(chaine_symbol,*input_to_symbol(input,here)) ;
-
-			*here += taille_string(chaine_symbol);
-			return make_symbol(chaine_symbol);
+            uint *symb_here = here;
+            object o = input_to_symbol(input,symb_here);
+            *here+= taille_string(o->this.symbol);
+			return o;
 		}
 	}
 	return NULL ;
@@ -594,7 +596,6 @@ uint next_char (char*input, uint *i)
 object sfs_read( char *input, uint *here )
 {
 	*here = next_char(input,here);
-
 	{
 		if(input[*here]<33)
 			(*here)++;
