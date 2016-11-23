@@ -432,16 +432,17 @@ object input_to_symbol (char* input, uint *here)
 	uint i = *here;
 
 	string tmp_chaine;
-	string chaine;
+	string * chaine = malloc(sizeof(chaine));
+    strcpy(*chaine,"\0");
 	strcpy(tmp_chaine,&input[i]) ;
 
-	while(input[i]!= 0 && input[i]!= 41 && input[i]>32)
+	while(input[i]!= 0 && input[i]!= 41 && input[i]>32 && input[i]!=32)
 	{
 		i++;
 	}
-	strncpy(chaine,tmp_chaine, i-*here);
-    DEBUG_MSG("%s", chaine);
-    object symbol = make_symbol(chaine);
+	strncpy(*chaine,tmp_chaine, i-*here);
+    DEBUG_MSG("%s",*chaine);
+    object symbol = make_symbol(*chaine);
 	return symbol;
 }
 

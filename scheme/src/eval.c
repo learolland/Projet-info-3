@@ -9,7 +9,7 @@
  */
 
 #include "eval.h"
-
+#include "math.h"
 
 
 
@@ -83,10 +83,10 @@ object valeur_symb (string nom)
                 DEBUG_MSG("on trouve une valeur de type : %d",valeur_binding->this.liste.val->type);
                 return valeur_binding->this.liste.val;
             }
-            DEBUG_MSG("on sort du deuxieme palier");
+            /*DEBUG_MSG("on sort du deuxieme palier");*/
             binding = binding->this.pair.cdr;
         }
-        DEBUG_MSG("on sort du premier palier");
+        /*DEBUG_MSG("on sort du premier palier");*/
         env = (liste_env)->this.pair.cdr;
         if(env!= NULL && env != nil) binding = env->this.pair.car;
     }
@@ -138,7 +138,7 @@ void afficher_env (void)
     }
 }
 
-object cons(object car, object cdr)
+/*object cons(object car, object cdr)
 {
     object o = make_pair() ;
     object p = make_pair() ;
@@ -147,16 +147,16 @@ object cons(object car, object cdr)
     o->this.pair.car = car;
     o->this.pair.cdr = p;
     return o ;
-}
+}*/
 
 object ajout_queue (object liste, object car)
 {
-    DEBUG_MSG("dans ajout_queue");
+    /*DEBUG_MSG("dans ajout_queue");*/
     if (liste->this.pair.car==nil || liste->this.pair.car == NULL)
     {
-        DEBUG_MSG("ajout_tete simple");
+        /*DEBUG_MSG("ajout_tete simple");*/
         liste->this.pair.car = car ;
-        DEBUG_MSG("on ajoute le car");
+        /*DEBUG_MSG("on ajoute le car");*/
         return liste ;
     }
 
@@ -232,10 +232,11 @@ uint is_form(string forme, object input)
     else return 0;
 }
 
-uint partie_entiere (double nombre)
+double partie_entiere (double nombre)
 {
     double seuil = 0;
-    while(seuil<=nombre) seuil++;
+    for(;seuil<nombre-1;seuil++);
+
     double comp = seuil-0.5;
     DEBUG_MSG("seuil : %lf",seuil);
     if(comp==nombre)
@@ -330,10 +331,40 @@ object quotient_p (object nums)
         quotient = quotient /  l->this.pair.car->this.number.this.integer;
         DEBUG_MSG("l = %lf",quotient);
     }
-    uint int_quotient = partie_entiere(quotient);  /* MANQUE UNE FONCTION */
+    uint int_quotient = partie_entiere(quotient);
     DEBUG_MSG("int : %d, double : %lf",int_quotient,quotient);
     object o_quotient = make_integer(int_quotient);
     return o_quotient;
+    /*double nb = nums->this.pair.car->this.number.this.integer;
+    object l = nums->this.pair.cdr ;
+    double dividende = l->this.pair.car->this.number.this.integer;
+    object quotient = NULL;
+    for (;l != nil && l != NULL; l = l->this.pair.cdr)
+    {
+        quotient = partie_entiere(nb/dividende);
+        DEBUG_MSG("l = %lf",quotient);
+    }*/
+}
+
+object remainder_p (object nums)
+{
+    double nb = nums->this.pair.car->this.number.this.integer;
+    object l = nums->this.pair.cdr ;
+    double dividende = l->this.pair.car->this.number.this.integer;
+    if(l->this.pair.cdr != NULL && l->this.pair.cdr != nil)
+    {
+        WARNING_MSG("il y a trop d'arguments");
+        return NULL;
+    }
+
+    double quotient = nb/dividende;
+    double seuil = 0;
+    while(seuil < fabs(quotient)-1) seuil++;
+    DEBUG_MSG("seuil = %lf, quotient %lf, fabs(dividende) : %lf", seuil,quotient,fabs(dividende));
+    uint reste = nb - seuil*fabs(dividende);
+    if (reste == dividende) reste = 0;
+     object o_reste = make_integer(reste);
+    return o_reste;
 }
 
 object egal_p (object nums)
@@ -354,6 +385,74 @@ object egal_p (object nums)
     }
     return boolean_true;
 }
+
+
+
+object char_integer_p (object arg)
+{
+    object l = arg->this.pair.car;
+    if(l->type != SFS_CHARACTER)
+    {
+        WARNING_MSG("il ne s'agit pas d'un caractere");
+        return NULL;
+    }
+    uint integer = (int)l->this.character ;
+    object o_integer = make_integer(integer);
+    return o_integer;
+}
+
+object integer_char_p (object arg)
+{
+    object l = arg->this.pair.car;
+    if(l->type != SFS_NUMBER)
+    {
+        WARNING_MSG("il ne s'agit pas d'un entier");
+        return NULL;
+    }
+    uint integer = l->this.number.this.integer;
+    string string_integer ;
+    sprintf(string_integer,"%d",integer);
+
+    char character = string_integer[0];
+    object o_character = make_character(character);
+    return o_character;
+}
+
+object number_string_p (object arg)
+{
+    object l = arg->this.pair.car;
+    if(l->type != SFS_NUMBER)
+    {
+        WARNING_MSG("il ne s'agit pas d'un entier");
+        return NULL;
+    }
+    uint integer = l->this.number.this.integer;
+    string string_integer ;
+    sprintf(string_integer,"%d",integer);
+
+    object o_string = make_string(string_integer);
+    return o_string;
+}
+
+object string_number_p (object arg)
+{
+    object l = arg->this.pair.car;
+    if(l->type != SFS_STRING)
+    {
+        WARNING_MSG("il ne s'agit pas d'un entier");
+        return NULL;
+    }
+    string chaine;
+    strcpy(chaine ,l->this.string);
+    uint number = atoi(chaine);
+    DEBUG_MSG("number : %d, %s",number,chaine);
+    object o_number = make_integer(number);
+    return o_number;
+}
+
+
+
+
 
 object boolean_p (object arg)
 {
@@ -452,7 +551,56 @@ object null_p (object arg)
     return NULL;
 }
 
+object cons_p (object arg)
+{
+    object l = arg;
+    object o = make_pair();
+    while(l!= NULL && l!= nil)
+    {
+        if(l->this.pair.car->type != SFS_PAIR)
+            o = ajout_queue(o,sfs_eval(l->this.pair.car));
+        else
+        {
+            object l_bis = l->this.pair.car;
+            while (l->this.pair.car->type == SFS_PAIR)
+            {
+                l_bis = l->this.pair.car;
+                l = l->this.pair.car;
+            }
+            o = ajout_queue(o,sfs_eval(l_bis->this.pair.car));
 
+        }
+        DEBUG_MSG("%d",l->this.pair.car->this.number.this.integer);
+        l = l->this.pair.cdr;
+    }
+    return o;
+
+}
+
+object car_p (object arg)
+{
+    object l = arg->this.pair.car;
+    DEBUG_MSG("type = %d",l->this.pair.car->type);
+    if(l->this.pair.car->type != SFS_PAIR)
+        return l->this.pair.car;
+    else
+    {
+        object l_bis = l->this.pair.car;
+        while (l->this.pair.car->type == SFS_PAIR)
+        {
+            l_bis = l->this.pair.car;
+            l = l->this.pair.car;
+        }
+        return l_bis;
+    }
+}
+
+object cdr_p (object arg)
+{
+    object l = arg->this.pair.car->this.pair.cdr ;
+
+    return l;
+}
 
 
 /********** EVALUATION ***********/
@@ -462,18 +610,13 @@ object evaluer_arg (object liste)
     object liste_arg = make_pair();
     object ptr_liste = liste ;
     uint i = 0;
-    DEBUG_MSG("car de la liste : %d",ptr_liste->this.pair.car->this.number.this.integer);
+    /*DEBUG_MSG("car de la liste : %d",ptr_liste->this.pair.car->this.number.this.integer);*/
     while(ptr_liste != NULL && ptr_liste != nil)
     {
-        DEBUG_MSG("dans le for de evaluer_arg");
         liste_arg = ajout_queue(liste_arg,sfs_eval(ptr_liste->this.pair.car));
         ptr_liste = ptr_liste->this.pair.cdr;
-        DEBUG_MSG("on change le ptr_liste");
         i++;
-        DEBUG_MSG("         i = %d",i);
-
     }
-    DEBUG_MSG("on sort du while\n");
     return liste_arg;
 }
 
@@ -486,7 +629,9 @@ void creer_primitives(void)
     define(make_symbol("<"),make_primitive(inf_p));
     define(make_symbol("*"),make_primitive(mult_p));
     define(make_symbol("quotient"),make_primitive(quotient_p));
+    define(make_symbol("remainder"),make_primitive(remainder_p));
     define(make_symbol("="),make_primitive(egal_p));
+
     define(make_symbol("boolean?"),make_primitive(boolean_p));
     define(make_symbol("char?"),make_primitive(char_p));
     define(make_symbol("symbol?"),make_primitive(symbol_p));
@@ -495,6 +640,17 @@ void creer_primitives(void)
     define(make_symbol("pair?"),make_primitive(pair_p));
     define(make_symbol("nil?"),make_primitive(nil_p));
     define(make_symbol("null?"),make_primitive(null_p));
+
+    define(make_symbol("char->integer"),make_primitive(char_integer_p));
+    define(make_symbol("integer->char"),make_primitive(integer_char_p));
+    define(make_symbol("number->string"),make_primitive(number_string_p));
+    define(make_symbol("string->number"),make_primitive(string_number_p));
+
+
+    define(make_symbol("cons"),make_primitive(cons_p));
+    define(make_symbol("car"),make_primitive(car_p));
+    define(make_symbol("cdr"),make_primitive(cdr_p));
+
 }
 
 
@@ -548,8 +704,7 @@ object sfs_eval( object input )
 
         if(o->type == SFS_NUMBER || o->type == SFS_CHAR_SPECIAL || o->type == SFS_CHARACTER || o->type == SFS_STRING)
         {
-
-            return o;
+            return input;
         }
 
         if(o->type == SFS_SYMBOL)
@@ -631,14 +786,17 @@ object sfs_eval( object input )
                 DEBUG_MSG("on a créé la prim p type = %d",p->type);
                 object liste_arg = evaluer_arg(input_bis->this.pair.cdr);
                 DEBUG_MSG("on a une liste_arg");
-                /*{
+                {
                     object tmp_liste = liste_arg ;
                     while(tmp_liste!= NULL && tmp_liste != nil)
                     {
+                        if(tmp_liste->this.pair.car->type == SFS_NUMBER)
                         DEBUG_MSG("affichage : %d",tmp_liste->this.pair.car->this.number.this.integer);
+                        else DEBUG_MSG("affichage : %s, type %d",tmp_liste->this.pair.car->this.symbol,tmp_liste->this.pair.car->type);
+
                         tmp_liste = tmp_liste->this.pair.cdr;
                     }
-                }*/
+                }
                 return (p->this.prim.fonction)(liste_arg);
             }
         }
