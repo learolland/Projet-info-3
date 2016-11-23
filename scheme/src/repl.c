@@ -140,11 +140,11 @@ int main ( int argc, char *argv[] ) {
         if ( NULL == sexpr )
         {
             /* si fichier alors on sort*/
-            if (mode == SCRIPT) {
+            /*if (mode == SCRIPT) {
                 fclose( fp );
-                /*macro ERROR_MSG : message d'erreur puis fin de programme ! */
-                ERROR_MSG("Invalid S-expression --- Aborts");
-            }
+                macro ERROR_MSG : message d'erreur puis fin de programme !
+                ERROR_MSG("Invalid S-expression --- Aborts");***********************
+            }*/
             /*sinon on rend la main à l'utilisateur*/
             continue ;
         }
@@ -152,11 +152,11 @@ int main ( int argc, char *argv[] ) {
         output = sfs_eval( sexpr);
         if( NULL == output) {
             /* si fichier alors on sort*/
-            if (mode == SCRIPT) {
-                fclose( fp );
+            /*if (mode == SCRIPT) {
+                fclose( fp );*/
                 /*macro ERROR_MSG : message d'erreur puis fin de programme ! */
-                ERROR_MSG("Error while evaluating input --- Aborts");
-            }
+                /*ERROR_MSG("Error while evaluating input --- Aborts");***********************
+            }*/
             /*sinon on rend la main à l'utilisateur*/
             continue ;
         }

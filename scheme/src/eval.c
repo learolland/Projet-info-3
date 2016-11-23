@@ -65,7 +65,6 @@ uint ajout_binding (object variable, object valeur)
     tmp_binding->this.pair.cdr = binding_ajout;
     binding_ajout->this.pair.cdr = binding;
     liste_env->this.pair.car = binding_ajout;
-    DEBUG_MSG("%s",liste_env->this.pair.car->this.pair.car->this.liste.nom);
     return 1;
 }
 
@@ -90,7 +89,7 @@ object valeur_symb (string nom)
         env = (liste_env)->this.pair.cdr;
         if(env!= NULL && env != nil) binding = env->this.pair.car;
     }
-    WARNING_MSG("Le programme n'a pas pu trouver la variable %s dans les environnements",nom);
+    WARNING_MSG("il n'y a pas de symbol %s dans l'environnement",nom);
     return NULL;
 }
 
@@ -235,9 +234,11 @@ uint is_form(string forme, object input)
 double partie_entiere (double nombre)
 {
     double seuil = 0;
-    for(;seuil<nombre-1;seuil++);
+    while (seuil <= nombre)
+        seuil ++;
 
     double comp = seuil-0.5;
+
     DEBUG_MSG("seuil : %lf",seuil);
     if(comp==nombre)
     {
@@ -295,17 +296,27 @@ object moins_p (object nums)
 object sup_p (object nums)
 {
     object l = nums ;
+    if(l->this.pair.cdr->this.pair.cdr != NULL && l->this.pair.cdr->this.pair.cdr != nil)
+    {
+        WARNING_MSG("il y a trop d'arguments");
+        return NULL;
+    }
     if(l->this.pair.car->this.number.this.integer > l->this.pair.cdr->this.pair.car->this.number.this.integer)
         return boolean_true ;
-    return NULL;
+    else return boolean_false;
 }
 
 object inf_p (object nums)
 {
     object l = nums ;
+    if(l->this.pair.cdr->this.pair.cdr != NULL && l->this.pair.cdr->this.pair.cdr != nil)
+    {
+        WARNING_MSG("il y a trop d'arguments");
+        return NULL;
+    }
     if(l->this.pair.car->this.number.this.integer < l->this.pair.cdr->this.pair.car->this.number.this.integer)
         return boolean_true ;
-    return NULL;
+    else return boolean_false;
 }
 
 object mult_p (object nums)
@@ -326,6 +337,11 @@ object quotient_p (object nums)
 {
     double quotient = nums->this.pair.car->this.number.this.integer;
     object l = nums->this.pair.cdr ;
+    if(l == NULL || l == nil)
+    {
+        quotient = 1/quotient;
+        DEBUG_MSG("l = %lf",quotient);
+    }
     for (;l != nil && l != NULL; l = l->this.pair.cdr)
     {
         quotient = quotient /  l->this.pair.car->this.number.this.integer;
@@ -450,12 +466,41 @@ object string_number_p (object arg)
     return o_number;
 }
 
+object symbol_string_p (object arg)
+{
+    object l = arg->this.pair.car;
+    if(l->type != SFS_SYMBOL)
+    {
+        WARNING_MSG("il ne s'agit pas d'un symbol");
+        return NULL;
+    }
+    string chaine;
+    strcpy(chaine ,l->this.symbol);
+    object o_string = make_string(chaine);
+    return o_string;
+}
+
+object string_symbol_p (object arg)
+{
+    object l = arg->this.pair.car;
+    if(l->type != SFS_STRING)
+    {
+        WARNING_MSG("il ne s'agit pas d'une chaine");
+        return NULL;
+    }
+    string chaine;
+    strcpy(chaine ,l->this.string);
+    object o_symbol = make_string(chaine);
+    return o_symbol;
+}
+
 
 
 
 
 object boolean_p (object arg)
 {
+
     if(arg->this.pair.cdr != NULL && arg->this.pair.cdr != nil)
     {
         WARNING_MSG("il y a trop d'arguments");
@@ -463,7 +508,7 @@ object boolean_p (object arg)
     }
     if(arg->this.pair.car->type == SFS_BOOLEAN)
         return boolean_true;
-    return NULL;
+    return boolean_false;
 }
 
 object char_p (object arg)
@@ -475,7 +520,7 @@ object char_p (object arg)
     }
     if(arg->this.pair.car->type == SFS_CHARACTER)
         return boolean_true;
-    return NULL;
+    return boolean_false;
 }
 
 object symbol_p (object arg)
@@ -487,7 +532,7 @@ object symbol_p (object arg)
     }
     if(arg->this.pair.car->type == SFS_SYMBOL)
         return boolean_true;
-    return NULL;
+    return boolean_false;
 }
 
 object integer_p (object arg)
@@ -499,7 +544,7 @@ object integer_p (object arg)
     }
     if(arg->this.pair.car->type == SFS_NUMBER)
         return boolean_true;
-    return NULL;
+    return boolean_false;
 }
 
 object string_p (object arg)
@@ -511,7 +556,7 @@ object string_p (object arg)
     }
     if(arg->this.pair.car->type == SFS_STRING)
         return boolean_true;
-    return NULL;
+    return boolean_false;
 }
 
 object pair_p (object arg)
@@ -523,7 +568,7 @@ object pair_p (object arg)
     }
     if(arg->this.pair.car->type == SFS_PAIR)
         return boolean_true;
-    return NULL;
+    return boolean_false;
 }
 
 object nil_p (object arg)
@@ -535,21 +580,25 @@ object nil_p (object arg)
     }
     if(arg->this.pair.car->type == SFS_NIL)
         return boolean_true;
-    return NULL;
+    return boolean_false;
 }
-
 
 object null_p (object arg)
 {
+    DEBUG_MSG("null_p");
     if(arg->this.pair.cdr != NULL && arg->this.pair.cdr != nil)
     {
         WARNING_MSG("il y a trop d'arguments");
         return NULL;
     }
-    if(arg->this.pair.car == NULL)
+    if(arg->this.pair.car == NULL || arg == NULL)
         return boolean_true;
-    return NULL;
+    return boolean_false;
 }
+
+
+
+
 
 object cons_p (object arg)
 {
@@ -645,7 +694,8 @@ void creer_primitives(void)
     define(make_symbol("integer->char"),make_primitive(integer_char_p));
     define(make_symbol("number->string"),make_primitive(number_string_p));
     define(make_symbol("string->number"),make_primitive(string_number_p));
-
+    define(make_symbol("symbol->string"),make_primitive(symbol_string_p));
+    define(make_symbol("string->symbol"),make_primitive(string_symbol_p));
 
     define(make_symbol("cons"),make_primitive(cons_p));
     define(make_symbol("car"),make_primitive(car_p));
@@ -783,21 +833,25 @@ object sfs_eval( object input )
             else
             {
                 object p = valeur_symb(o->this.symbol) ;
-                DEBUG_MSG("on a créé la prim p type = %d",p->type);
-                object liste_arg = evaluer_arg(input_bis->this.pair.cdr);
-                DEBUG_MSG("on a une liste_arg");
+                if (p!=NULL)
                 {
-                    object tmp_liste = liste_arg ;
-                    while(tmp_liste!= NULL && tmp_liste != nil)
-                    {
-                        if(tmp_liste->this.pair.car->type == SFS_NUMBER)
-                        DEBUG_MSG("affichage : %d",tmp_liste->this.pair.car->this.number.this.integer);
-                        else DEBUG_MSG("affichage : %s, type %d",tmp_liste->this.pair.car->this.symbol,tmp_liste->this.pair.car->type);
+                    DEBUG_MSG("on a créé la prim p type = %d",p->type);
+                    object liste_arg = evaluer_arg(input_bis->this.pair.cdr);
+                    DEBUG_MSG("on a une liste_arg");
+                    /*{
+                        object tmp_liste = liste_arg ;
+                        while(tmp_liste!= NULL && tmp_liste != nil)
+                        {
+                            if(tmp_liste->this.pair.car->type == SFS_NUMBER)
+                            DEBUG_MSG("affichage : %d",tmp_liste->this.pair.car->this.number.this.integer);
+                            else DEBUG_MSG("affichage : %s, type %d",tmp_liste->this.pair.car->this.symbol,tmp_liste->this.pair.car->type);
 
-                        tmp_liste = tmp_liste->this.pair.cdr;
-                    }
+                            tmp_liste = tmp_liste->this.pair.cdr;
+                        }
+                    }*/
+                    return (p->this.prim.fonction)(liste_arg);
                 }
-                return (p->this.prim.fonction)(liste_arg);
+                else return o;
             }
         }
 

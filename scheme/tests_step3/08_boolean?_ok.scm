@@ -8,7 +8,7 @@
 (boolean? (boolean? #t))
 (define a #t)
 (boolean? a)
-
+a
 (boolean? 2)
 (boolean? 'fkfrk')
 (boolean? '#t')

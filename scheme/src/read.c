@@ -412,28 +412,38 @@ object input_to_string (char* input, uint *here)
 	if(input[i]=='\''|| input[i]=='\"') i++;
 
 	string tmp_chaine;
-	string chaine;
+	string * chaine = malloc(sizeof(chaine));;
 	strcpy(tmp_chaine,&input[i]) ;
 
 	for( ; input[i]!='\"' && input[i]!='\'' ; i++)
 	{
-		DEBUG_MSG("%c",input[i]);
+		/*DEBUG_MSG("%c",input[i]);*/
 	}
-	strncpy(chaine,tmp_chaine, i-*here-1);
-    object string = make_string(chaine);
+	strncpy(*chaine,tmp_chaine, i-*here-1);
+    object string = make_string(*chaine);
 	return  string;
 }
 
 
 
 
-object input_to_symbol (char* input, uint *here)
+/*object input_to_symbol (char* input, uint *here)
 {
 	uint i = *here;
 
 	string tmp_chaine;
-	string * chaine = malloc(sizeof(chaine));
-    strcpy(*chaine,"\0");
+	string * chaine = NULL;
+    chaine = malloc(sizeof(chaine)-1);
+    memset (*chaine, 0, sizeof (*chaine));
+    DEBUG_MSG("chaine effacée");
+    if(strcmp(*chaine,"\0")!=0)
+    {
+        DEBUG_MSG("j'ai bien un probleme ici : %s",*chaine);
+        memset (*chaine, 0, sizeof (*chaine));
+        DEBUG_MSG("apres memset : %s",*chaine);
+
+    }
+
 	strcpy(tmp_chaine,&input[i]) ;
 
 	while(input[i]!= 0 && input[i]!= 41 && input[i]>32 && input[i]!=32)
@@ -444,9 +454,32 @@ object input_to_symbol (char* input, uint *here)
     DEBUG_MSG("%s",*chaine);
     object symbol = make_symbol(*chaine);
 	return symbol;
+}*/
+
+object input_to_symbol (char* input, uint *here)
+{
+	uint i = *here;
+
+	string tmp_chaine;
+	string  chaine ;
+    chaine[0]='\0';
+
+    if(strcmp(chaine,"\0")!=0)
+    {
+        DEBUG_MSG("j'ai bien un probleme ici : %s",chaine);
+    }
+
+	strcpy(tmp_chaine,&input[i]) ;
+
+	while(input[i]!= 0 && input[i]!= 41 && input[i]>32 && input[i]!=32)
+	{
+		i++;
+	}
+	strncpy(chaine,tmp_chaine, i-*here);
+    DEBUG_MSG("%s",chaine);
+    object symbol = make_symbol(chaine);
+	return symbol;
 }
-
-
 
 
 /******* FONCTIONS CONS, CAR ET CDR **********/
