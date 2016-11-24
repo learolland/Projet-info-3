@@ -637,7 +637,10 @@ object cons_p (object arg)
     while(l!= NULL && l!= nil)
     {
         if(l->this.pair.car->type != SFS_PAIR)
-            o = ajout_queue(o,sfs_eval(l->this.pair.car));
+        {
+            WARNING_MSG("erreur, utilisez plutôt list ");
+            return NULL;
+        }    /*o = ajout_queue(o,sfs_eval(l->this.pair.car));*/
         else
         {
             object l_bis = l->this.pair.car;
@@ -677,10 +680,63 @@ object car_p (object arg)
 object cdr_p (object arg)
 {
     object l = arg->this.pair.car->this.pair.cdr ;
-
+    if(l == NULL || l == nil)
+    {
+        WARNING_MSG("il n'y a pas de cdr");
+        return NULL;
+    }
     return l;
 }
 
+object liste_p (object arg)
+{
+    object l = arg;
+    object liste = make_pair();
+    while(l!=NULL && l!=nil)
+    {
+        liste = ajout_queue(liste,sfs_eval(l->this.pair.car));
+        l = l->this.pair.cdr;
+    }
+    return liste;
+}
+
+object set_car_p (object arg)
+{
+    object l = arg;
+    object var = l->this.pair.car;
+    if(l->this.pair.cdr->this.pair.car == NULL || l->this.pair.cdr->this.pair.car == nil)
+    {
+        WARNING_MSG("il manque des arguments");
+        return NULL;
+    }
+    object new_car = l->this.pair.cdr->this.pair.car;
+    if(var == NULL)
+    {
+        WARNING_MSG("cette variable n'a pas été définie");
+        return NULL;
+    }
+    var->this.pair.car = new_car;
+    return var;
+}
+
+object set_cdr_p (object arg)
+{
+    object l = arg;
+    object var = l->this.pair.car;
+    if(l->this.pair.cdr->this.pair.car == NULL || l->this.pair.cdr->this.pair.car == nil)
+    {
+        WARNING_MSG("il manque des arguments");
+        return NULL;
+    }
+    object new_cdr = l->this.pair.cdr->this.pair.car;
+    if(var == NULL)
+    {
+        WARNING_MSG("cette variable n'a pas été définie");
+        return NULL;
+    }
+    var->this.pair.cdr = new_cdr;
+    return var;
+}
 
 /********** EVALUATION ***********/
 object evaluer_arg (object liste)
@@ -730,6 +786,11 @@ void creer_primitives(void)
     define(make_symbol("cons"),make_primitive(cons_p));
     define(make_symbol("car"),make_primitive(car_p));
     define(make_symbol("cdr"),make_primitive(cdr_p));
+    define(make_symbol("list"),make_primitive(liste_p));
+
+    define(make_symbol("set-car!"),make_primitive(set_car_p));
+    define(make_symbol("set-cdr!"),make_primitive(set_cdr_p));
+
 
 }
 

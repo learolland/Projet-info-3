@@ -70,13 +70,20 @@ void sfs_print_pair( object o )
 		{
 			o = o->this.pair.cdr ;
 			DEBUG_MSG("2 :this.pair.car->type = %d",o->this.pair.car->type);
-
+			if(o->type != SFS_PAIR)
+			{
+				printf(" . ");
+				sfs_print_atom(o);
+			}
+			else
+			{
 			if(o->this.pair.car->type!=SFS_NIL)
 			{
 				printf(" ");
 				DEBUG_MSG("o : %d",o->this.pair.car->this.number.this.integer);
 				sfs_print_pair(o);
 			}
+		}
 		}
 	}
 
