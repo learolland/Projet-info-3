@@ -59,7 +59,7 @@ void sfs_print_pair( object o )
 {
     if (o!= NULL  && o->this.pair.car != nil)
     {
-
+		DEBUG_MSG("");
 		/*if(o->this.pair.cdr->type == 3)*/
 		DEBUG_MSG("this.pair.car->type = %d",o->this.pair.car->type);
 
@@ -69,7 +69,6 @@ void sfs_print_pair( object o )
 		if(o->this.pair.cdr != nil && o->this.pair.cdr != NULL)
 		{
 			o = o->this.pair.cdr ;
-			DEBUG_MSG("2 :this.pair.car->type = %d",o->this.pair.car->type);
 			if(o->type != SFS_PAIR)
 			{
 				printf(" . ");
@@ -77,13 +76,13 @@ void sfs_print_pair( object o )
 			}
 			else
 			{
-			if(o->this.pair.car->type!=SFS_NIL)
-			{
-				printf(" ");
-				DEBUG_MSG("o : %d",o->this.pair.car->this.number.this.integer);
-				sfs_print_pair(o);
+				if(o->this.pair.car->type!=SFS_NIL)
+				{
+					printf(" ");
+					DEBUG_MSG("o : %d",o->this.pair.car->this.number.this.integer);
+					sfs_print_pair(o);
+				}
 			}
-		}
 		}
 	}
 

@@ -632,23 +632,27 @@ object null_p (object arg)
 
 object cons_p (object arg)
 {
+    DEBUG_MSG("coucou");
     object l = arg;
     object o = make_pair();
     while(l!= NULL && l!= nil)
     {
-        if(l->this.pair.car->type != SFS_PAIR)
+        /*if(l->this.pair.car->type != SFS_PAIR)
         {
             WARNING_MSG("erreur, utilisez plutôt list ");
             return NULL;
-        }    /*o = ajout_queue(o,sfs_eval(l->this.pair.car));*/
-        else
+        }*/    /*o = ajout_queue(o,sfs_eval(l->this.pair.car));*/
+
         {
-            object l_bis = l->this.pair.car;
+            object l_bis = l;
+            DEBUG_MSG("l_bis : %d",l_bis->type);
             while (l->this.pair.car->type == SFS_PAIR)
             {
+                DEBUG_MSG("while");
                 l_bis = l->this.pair.car;
                 l = l->this.pair.car;
             }
+            DEBUG_MSG("l_bis car %d",l_bis->this.pair.car->type);
             o = ajout_queue(o,sfs_eval(l_bis->this.pair.car));
 
         }
@@ -704,12 +708,20 @@ object set_car_p (object arg)
 {
     object l = arg;
     object var = l->this.pair.car;
-    if(l->this.pair.cdr->this.pair.car == NULL || l->this.pair.cdr->this.pair.car == nil)
+    DEBUG_MSG("type = %d",var->type);
+    if(var->type != SFS_PAIR)
+    {
+        WARNING_MSG("la variable n'est pas définie");
+        return NULL;
+    }
+    if(l->this.pair.cdr == NULL || l->this.pair.cdr== nil)
     {
         WARNING_MSG("il manque des arguments");
         return NULL;
     }
+
     object new_car = l->this.pair.cdr->this.pair.car;
+    DEBUG_MSG("var: %s",var->this.symbol);
     if(var == NULL)
     {
         WARNING_MSG("cette variable n'a pas été définie");
@@ -723,7 +735,12 @@ object set_cdr_p (object arg)
 {
     object l = arg;
     object var = l->this.pair.car;
-    if(l->this.pair.cdr->this.pair.car == NULL || l->this.pair.cdr->this.pair.car == nil)
+    if(var->type != SFS_PAIR)
+    {
+        WARNING_MSG("la variable n'est pas définie");
+        return NULL;
+    }
+    if(l->this.pair.cdr == NULL || l->this.pair.cdr == nil)
     {
         WARNING_MSG("il manque des arguments");
         return NULL;
@@ -805,8 +822,14 @@ object sfs_eval( object input )
     {
         DEBUG_MSG("on a un symbol");
         object p = valeur_symb(input->this.symbol);
-        if(p!= NULL) return p;
-        else return input;
+        if(p!= NULL)
+        {
+            return p;
+        }
+        else
+        {
+            return input;
+        }
     }
     if(input->type == SFS_NUMBER)
     {
@@ -923,6 +946,7 @@ object sfs_eval( object input )
             }
             else
             {
+                DEBUG_MSG("primitive ?");
                 object p = valeur_symb(o->this.symbol) ;
                 if (p!=NULL)
                 {
@@ -942,7 +966,10 @@ object sfs_eval( object input )
                     }*/
                     return (p->this.prim.fonction)(liste_arg);
                 }
-                else return o;
+                else
+                {
+                    return o;
+                }
             }
         }
 
