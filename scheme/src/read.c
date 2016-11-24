@@ -456,29 +456,77 @@ object input_to_string (char* input, uint *here)
 	return symbol;
 }*/
 
-object input_to_symbol (char* input, uint *here)
+/*object input_to_symbol (char* input, uint *here)
 {
 	uint i = *here;
 
 	string tmp_chaine;
 	string  chaine ;
     chaine[0]='\0';
-
-    if(strcmp(chaine,"\0")!=0)
+    DEBUG_MSG("%s",chaine);
+    uint j = 0;
+    for(j=0; j<strlen(chaine);j++)
+    {if(chaine[j]!='\0')
     {
         DEBUG_MSG("j'ai bien un probleme ici : %s",chaine);
-    }
+    }}
 
 	strcpy(tmp_chaine,&input[i]) ;
 
 	while(input[i]!= 0 && input[i]!= 41 && input[i]>32 && input[i]!=32)
 	{
+        DEBUG_MSG("input : %c",input[i]);
+        chaine[i] = input[i];
+        DEBUG_MSG("chaine : %s",chaine);
 		i++;
+        DEBUG_MSG("i = %d",i);
 	}
-	strncpy(chaine,tmp_chaine, i-*here);
-    DEBUG_MSG("%s",chaine);
+
+    DEBUG_MSG("%s, %lu",chaine,strlen(chaine));
+    if(strlen(chaine)>i-*here)
+        DEBUG_MSG("PROBLEME");
     object symbol = make_symbol(chaine);
+    chaine[0]='\0';
 	return symbol;
+}*/
+
+object input_to_symbol (char* input, uint *here)
+{
+    uint i = *here;
+    uint j = 0;
+    char* chaine = malloc(sizeof(*chaine));
+    /*if(strcmp(chaine,"\0")!=0)
+    {
+        WARNING_MSG("PROBLEME");
+        return NULL;
+    }*/
+    for(;input[i]>32 && input[i]!= 41 && input[i]<127;i++, j++)
+    {
+        if(input[i]>32 && input[i]<65)
+        {
+            /*DEBUG_MSG("le caractere n'est pas une lettre");*/
+            chaine[j]=input[i];
+            chaine[j+1]='\0';
+        }
+        else
+        {
+            chaine[j] = input[i];
+        }
+        /*DEBUG_MSG("chaine, %c  tmp :%c",chaine[j], input[i]);
+        DEBUG_MSG("chaine = %s",chaine);*/
+
+    }
+    chaine[j]='\0';
+    DEBUG_MSG("chaine = %s, j = %d",chaine,j);
+    object symbol = make_symbol(chaine);
+    for(i=0;i!=j;i++)
+    {
+        chaine[i]='\0';
+        /*DEBUG_MSG("vidage : %c , %s",chaine[i],chaine);*/
+    }
+    /*DEBUG_MSG("%s chaine vidée",chaine);*/
+        return symbol;
+
 }
 
 
@@ -580,6 +628,7 @@ object sfs_read_atom( char *input, uint *here)
             uint *symb_here = here;
             object o = input_to_symbol(input,symb_here);
             *here+= taille_string(o->this.symbol);
+            DEBUG_MSG("lenght = %d",taille_string(o->this.symbol));
 			return o;
 		}
 	}

@@ -412,6 +412,11 @@ object char_integer_p (object arg)
         WARNING_MSG("il ne s'agit pas d'un caractere");
         return NULL;
     }
+    if(arg->this.pair.cdr != NULL  && arg->this.pair.cdr != nil)
+    {
+        WARNING_MSG("il y a trop d'arguments");
+        return NULL;
+    }
     uint integer = (int)l->this.character ;
     object o_integer = make_integer(integer);
     return o_integer;
@@ -423,6 +428,11 @@ object integer_char_p (object arg)
     if(l->type != SFS_NUMBER)
     {
         WARNING_MSG("il ne s'agit pas d'un entier");
+        return NULL;
+    }
+    if(arg->this.pair.cdr != NULL  && arg->this.pair.cdr != nil)
+    {
+        WARNING_MSG("il y a trop d'arguments");
         return NULL;
     }
     uint integer = l->this.number.this.integer;
@@ -442,6 +452,11 @@ object number_string_p (object arg)
         WARNING_MSG("il ne s'agit pas d'un entier");
         return NULL;
     }
+    if(arg->this.pair.cdr != NULL  && arg->this.pair.cdr != nil)
+    {
+        WARNING_MSG("il y a trop d'arguments");
+        return NULL;
+    }
     uint integer = l->this.number.this.integer;
     string string_integer ;
     sprintf(string_integer,"%d",integer);
@@ -456,6 +471,11 @@ object string_number_p (object arg)
     if(l->type != SFS_STRING)
     {
         WARNING_MSG("il ne s'agit pas d'un entier");
+        return NULL;
+    }
+    if(arg->this.pair.cdr != NULL  && arg->this.pair.cdr != nil)
+    {
+        WARNING_MSG("il y a trop d'arguments");
         return NULL;
     }
     string chaine;
@@ -474,6 +494,11 @@ object symbol_string_p (object arg)
         WARNING_MSG("il ne s'agit pas d'un symbol");
         return NULL;
     }
+    if(arg->this.pair.cdr != NULL  && arg->this.pair.cdr != nil)
+    {
+        WARNING_MSG("il y a trop d'arguments");
+        return NULL;
+    }
     string chaine;
     strcpy(chaine ,l->this.symbol);
     object o_string = make_string(chaine);
@@ -486,6 +511,11 @@ object string_symbol_p (object arg)
     if(l->type != SFS_STRING)
     {
         WARNING_MSG("il ne s'agit pas d'une chaine");
+        return NULL;
+    }
+    if(arg->this.pair.cdr != NULL  && arg->this.pair.cdr != nil)
+    {
+        WARNING_MSG("il y a trop d'arguments");
         return NULL;
     }
     string chaine;
