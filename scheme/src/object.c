@@ -16,6 +16,22 @@ object make_object( uint type )
     return t;
 }
 
+object make_message (string message)
+{
+    object o = make_object(SFS_PROBLEM);
+    strcpy(o->this.string,message);
+    return o;
+}
+
+object make_compound (void)
+{
+    object o = make_object(SFS_COMPOUND);
+    o->this.compound.parms = NULL;
+    o->this.compound.body = NULL;
+    o->this.compound.envt = NULL;
+    return o ;
+}
+
 object make_primitive (object (*p)(object))
 {
     object o = make_object(SFS_PRIM);
@@ -38,7 +54,6 @@ object make_nil( void ) 			/*make_empty_list ??*/
     return t;
 }
 
-
 object make_boolean( uint true_false  )
 {
 
@@ -57,7 +72,6 @@ object make_boolean( uint true_false  )
 
     return t;
 }
-
 
 object make_symbol( string symbol )
 {

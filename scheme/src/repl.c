@@ -34,7 +34,13 @@ object nil;
 object liste_env;
 object  boolean_true;
 object  boolean_false;
-
+object arg_plus;
+object arg_moins;
+object pb_type;
+object var_non_def;
+object cdr_pb;
+object set_pb;
+object define_pb;
 
 void init_interpreter ( void )
 {
@@ -43,6 +49,13 @@ void init_interpreter ( void )
     nil      = make_nil();
     liste_env = make_pair();
     creer_primitives();
+    arg_plus = make_message("il y a trop d'arguments");
+    arg_moins = make_message("il n'y a pas assez d'arguments");
+    pb_type = make_message("l'argument n'est pas du bon type");
+    var_non_def = make_message("la variable n'est pas définie");
+    cdr_pb = make_message("il n'y a pas de cdr");
+    set_pb = make_message(" ");
+    define_pb = make_message(" ");
 }
 
 int main ( int argc, char *argv[] ) {
@@ -140,11 +153,11 @@ int main ( int argc, char *argv[] ) {
         if ( NULL == sexpr )
         {
             /* si fichier alors on sort*/
-            /*if (mode == SCRIPT) {
+            if (mode == SCRIPT) {
                 fclose( fp );
-                macro ERROR_MSG : message d'erreur puis fin de programme !
-                ERROR_MSG("Invalid S-expression --- Aborts");***********************
-            }*/
+                /*macro ERROR_MSG : message d'erreur puis fin de programme !*/
+                ERROR_MSG("Invalid S-expression --- Aborts");
+            }
             /*sinon on rend la main à l'utilisateur*/
             continue ;
         }
@@ -152,11 +165,11 @@ int main ( int argc, char *argv[] ) {
         output = sfs_eval( sexpr);
         if( NULL == output) {
             /* si fichier alors on sort*/
-            /*if (mode == SCRIPT) {
-                fclose( fp );*/
+            if (mode == SCRIPT) {
+                fclose( fp );
                 /*macro ERROR_MSG : message d'erreur puis fin de programme ! */
-                /*ERROR_MSG("Error while evaluating input --- Aborts");***********************
-            }*/
+                ERROR_MSG("Error while evaluating input --- Aborts");
+            }
             /*sinon on rend la main à l'utilisateur*/
             continue ;
         }

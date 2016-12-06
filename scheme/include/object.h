@@ -46,7 +46,14 @@ typedef struct object_t {
         {
             struct object_t *(*fonction)(struct object_t *);
         } prim;
+        struct compound_t
+        {
+            struct object_t* parms ;
+            struct object_t* body ;
+            struct object_t* envt ;
+        }compound;
 
+        string             warning;
     } this;
 
 } *object;
@@ -70,6 +77,10 @@ object make_string( string chaine);
 object make_pair(void);
 object make_character_special(string chaine);
 object *make_env(void);
+object make_compound (void);
+object make_message (string message);
+
+
 void creer_primitives(void);
 
 void afficher_objet(object t);
@@ -85,6 +96,11 @@ void afficher_objet(object t);
 #define SFS_CHAR_SPECIAL 0x07
 #define SFS_LIST         0x08
 #define SFS_PRIM         0X09
+#define SFS_COMPOUND     0x0A
+#define SFS_PROBLEM      0x0B
+
+
+
 
 
 #ifdef __cplusplus

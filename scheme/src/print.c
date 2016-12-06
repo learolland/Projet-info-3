@@ -52,6 +52,11 @@ void sfs_print_atom( object p )
 			printf("%s",p->this.string);
 			return;
 		}
+		if(p->type == SFS_PROBLEM)
+		{
+			printf("%s",p->this.warning);
+			return;
+		}
     return;
 }
 
