@@ -520,7 +520,7 @@ object string_symbol_p (object arg)
     }
     string chaine;
     strcpy(chaine ,l->this.string);
-    object o_symbol = make_string(chaine);
+    object o_symbol = make_symbol(chaine);
     return o_symbol;
 }
 
@@ -887,9 +887,6 @@ object sfs_eval( object input )
                 DEBUG_MSG("on a un if");
                 object consequence = input->this.pair.cdr->this.pair.cdr;
                 object alternative = input->this.pair.cdr->this.pair.cdr->this.pair.cdr;
-                /*DEBUG_MSG("consequence = %s, type : %d",consequence->this.pair.car->this.string, consequence->this.pair.car->type);
-                DEBUG_MSG("alternative = %s",alternative->this.pair.car->this.string);*/
-
                 DEBUG_MSG("input car : %s",input->this.pair.car->this.symbol);
                 object input_if = input->this.pair.cdr;
 
@@ -943,6 +940,19 @@ object sfs_eval( object input )
                     else input_or = input_or->this.pair.cdr;
                 }
                 return boolean_false;
+            }
+            if(is_form("lambda",o))
+            {
+                object arg = sfs_eval(input->this.pair.cdr->this.pair.car);
+                object instructions = input->this.pair.cdr->this.pair.cdr->this.pair.car;
+                object p = valeur_symb(instructions->this.pair.car->this.symbol) ;
+                if (p!=NULL)
+                {
+                    DEBUG_MSG("on a créé la prim p dans lambda");
+                    object liste_arg = arg;
+                    return (p->this.prim.fonction)(liste_arg);
+                }
+
             }
             else
             {
