@@ -48,14 +48,14 @@ void init_interpreter ( void )
     boolean_false = make_boolean(FALSE);
     nil      = make_nil();
     liste_env = make_pair();
+
     creer_primitives();
+
     arg_plus = make_message("il y a trop d'arguments");
     arg_moins = make_message("il n'y a pas assez d'arguments");
     pb_type = make_message("l'argument n'est pas du bon type");
     var_non_def = make_message("la variable n'est pas définie");
     cdr_pb = make_message("il n'y a pas de cdr");
-    set_pb = make_message(" ");
-    define_pb = make_message(" ");
 }
 
 int main ( int argc, char *argv[] ) {
@@ -127,6 +127,8 @@ int main ( int argc, char *argv[] ) {
                 ERROR_MSG("Malformed S-expression --- Aborts");
             }
             /*sinon on rend la main à l'utilisateur*/
+            DEBUG_MSG("init");
+
             continue;
         }
 
@@ -162,7 +164,7 @@ int main ( int argc, char *argv[] ) {
             continue ;
         }
 
-        output = sfs_eval( sexpr);
+        output = sfs_eval( sexpr,liste_env);
         if( NULL == output) {
             /* si fichier alors on sort*/
             if (mode == SCRIPT) {
@@ -173,10 +175,17 @@ int main ( int argc, char *argv[] ) {
             /*sinon on rend la main à l'utilisateur*/
             continue ;
         }
-
-        printf( "==> " );
-        sfs_print( output );
-        printf( "\n" );
+        if(output->type == SFS_PROBLEM)
+        {
+            sfs_print( output );
+            printf( "\n" );
+        }
+        else
+        {
+            printf( "==> " );
+            sfs_print( output );
+            printf( "\n" );
+        }
     }
 
     if (mode == SCRIPT) {

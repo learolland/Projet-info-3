@@ -18,13 +18,12 @@ extern "C" {
 
 #include "object.h"
 
-uint chercher_symb (string nom);
-object valeur_symb (string nom);
+uint chercher_symb (string nom, object envt);
+object valeur_symb (string nom, object envt);
 uint is_form(string forme, object input);
-object sfs_eval( object input);
-object set(object variable, object valeur);
-object define (object variable, object valeur);
-double partie_entiere (double nombre);
+object sfs_eval( object input, object envt);
+void set(object variable, object valeur, object envt);
+void define (object variable, object valeur, object envt);
 object ajout_queue (object liste, object car);
 
 

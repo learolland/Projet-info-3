@@ -10,39 +10,69 @@
 
 void creer_primitives(void)
 {
-    define(make_symbol("+"),make_primitive(plus_p));
-    define(make_symbol("-"),make_primitive(moins_p));
-    define(make_symbol(">"),make_primitive(sup_p));
-    define(make_symbol("<"),make_primitive(inf_p));
-    define(make_symbol("*"),make_primitive(mult_p));
-    define(make_symbol("quotient"),make_primitive(quotient_p));
-    define(make_symbol("remainder"),make_primitive(remainder_p));
-    define(make_symbol("="),make_primitive(egal_p));
+    define(make_symbol("+"),make_primitive(plus_p),liste_env);
+    define(make_symbol("-"),make_primitive(moins_p),liste_env);
+    define(make_symbol(">"),make_primitive(sup_p),liste_env);
+    define(make_symbol("<"),make_primitive(inf_p),liste_env);
+    define(make_symbol("*"),make_primitive(mult_p),liste_env);
+    define(make_symbol("quotient"),make_primitive(quotient_p),liste_env);
+    define(make_symbol("remainder"),make_primitive(remainder_p),liste_env);
+    define(make_symbol("="),make_primitive(egal_p),liste_env);
 
-    define(make_symbol("boolean?"),make_primitive(boolean_p));
-    define(make_symbol("char?"),make_primitive(char_p));
-    define(make_symbol("symbol?"),make_primitive(symbol_p));
-    define(make_symbol("integer?"),make_primitive(integer_p));
-    define(make_symbol("string?"),make_primitive(string_p));
-    define(make_symbol("pair?"),make_primitive(pair_p));
-    define(make_symbol("nil?"),make_primitive(nil_p));
-    define(make_symbol("null?"),make_primitive(null_p));
+    define(make_symbol("boolean?"),make_primitive(boolean_p),liste_env);
+    define(make_symbol("char?"),make_primitive(char_p),liste_env);
+    define(make_symbol("symbol?"),make_primitive(symbol_p),liste_env);
+    define(make_symbol("integer?"),make_primitive(integer_p),liste_env);
+    define(make_symbol("string?"),make_primitive(string_p),liste_env);
+    define(make_symbol("pair?"),make_primitive(pair_p),liste_env);
+    define(make_symbol("nil?"),make_primitive(nil_p),liste_env);
+    define(make_symbol("null?"),make_primitive(null_p),liste_env);
 
-    define(make_symbol("char->integer"),make_primitive(char_integer_p));
-    define(make_symbol("integer->char"),make_primitive(integer_char_p));
-    define(make_symbol("number->string"),make_primitive(number_string_p));
-    define(make_symbol("string->number"),make_primitive(string_number_p));
-    define(make_symbol("symbol->string"),make_primitive(symbol_string_p));
-    define(make_symbol("string->symbol"),make_primitive(string_symbol_p));
+    define(make_symbol("char->integer"),make_primitive(char_integer_p),liste_env);
+    define(make_symbol("integer->char"),make_primitive(integer_char_p),liste_env);
+    define(make_symbol("number->string"),make_primitive(number_string_p),liste_env);
+    define(make_symbol("string->number"),make_primitive(string_number_p),liste_env);
+    define(make_symbol("symbol->string"),make_primitive(symbol_string_p),liste_env);
+    define(make_symbol("string->symbol"),make_primitive(string_symbol_p),liste_env);
 
-    define(make_symbol("cons"),make_primitive(cons_p));
-    define(make_symbol("car"),make_primitive(car_p));
-    define(make_symbol("cdr"),make_primitive(cdr_p));
-    define(make_symbol("list"),make_primitive(liste_p));
+    define(make_symbol("cons"),make_primitive(cons_p),liste_env);
+    define(make_symbol("car"),make_primitive(car_p),liste_env);
+    define(make_symbol("cdr"),make_primitive(cdr_p),liste_env);
+    define(make_symbol("list"),make_primitive(liste_p),liste_env);
 
-    define(make_symbol("set-car!"),make_primitive(set_car_p));
-    define(make_symbol("set-cdr!"),make_primitive(set_cdr_p));
+    define(make_symbol("set-car!"),make_primitive(set_car_p),liste_env);
+    define(make_symbol("set-cdr!"),make_primitive(set_cdr_p),liste_env);
 }
+
+
+double partie_entiere (double nombre)
+{
+    double seuil = 0;
+    while (seuil <= nombre)
+        seuil ++;
+
+    double comp = seuil-0.5;
+
+    DEBUG_MSG("seuil : %lf",seuil);
+    if(comp==nombre)
+    {
+        DEBUG_MSG("0,5");
+        return (uint)seuil;
+    }
+    if(comp<=nombre)
+    {
+        DEBUG_MSG("dif : %lf",nombre-seuil);
+        return (uint)seuil;
+    }
+    else
+    {
+        DEBUG_MSG("dif : %lf",nombre-(seuil+0.5));
+        return (uint)seuil-1;
+    }
+}
+
+
+
 
 object plus_p (object nums)
 {
@@ -51,6 +81,10 @@ object plus_p (object nums)
     object l = nums;
     for (;l != nil && l != NULL; l = l->this.pair.cdr)
     {
+        if(l->this.pair.car->type != SFS_NUMBER)
+        {
+            return pb_type;
+        }
         DEBUG_MSG("on entre dans le while, %d",l->this.pair.car->this.number.this.integer);
         somme += l->this.pair.car->this.number.this.integer;
         DEBUG_MSG("l = %d",somme);
@@ -68,6 +102,10 @@ object moins_p (object nums)
 
     for (;l != nil && l != NULL; l = l->this.pair.cdr)
     {
+        if(l->this.pair.car->type != SFS_NUMBER)
+        {
+            return pb_type;
+        }
         DEBUG_MSG("on entre dans le while, %d",l->this.pair.car->this.number.this.integer);
         diff -= l->this.pair.car->this.number.this.integer;
         DEBUG_MSG("l = %d",diff);
@@ -108,6 +146,10 @@ object mult_p (object nums)
     uint mult = 1;
     for (;l != nil && l != NULL; l = l->this.pair.cdr)
     {
+        if(l->this.pair.car->type != SFS_NUMBER)
+        {
+            return pb_type;
+        }
         DEBUG_MSG("on entre dans le while, %d",l->this.pair.car->this.number.this.integer);
         mult = mult *  l->this.pair.car->this.number.this.integer;
         DEBUG_MSG("l = %d",mult);
@@ -122,11 +164,19 @@ object quotient_p (object nums)
     object l = nums->this.pair.cdr ;
     if(l == NULL || l == nil)
     {
+        if(l->this.pair.car->type != SFS_NUMBER)
+        {
+            return pb_type;
+        }
         quotient = 1/quotient;
         DEBUG_MSG("l = %lf",quotient);
     }
     for (;l != nil && l != NULL; l = l->this.pair.cdr)
     {
+        if(l->this.pair.car->type != SFS_NUMBER)
+        {
+            return pb_type;
+        }
         quotient = quotient /  l->this.pair.car->this.number.this.integer;
         DEBUG_MSG("l = %lf",quotient);
     }
@@ -370,7 +420,7 @@ object cons_p (object arg)
                 l = l->this.pair.car;
             }
             DEBUG_MSG("l_bis car %d",l_bis->this.pair.car->type);
-            o = ajout_queue(o,sfs_eval(l_bis->this.pair.car));
+            o = ajout_queue(o,sfs_eval(l_bis->this.pair.car,liste_env));
 
         }
         DEBUG_MSG("%d",l->this.pair.car->this.number.this.integer);
@@ -409,7 +459,7 @@ object liste_p (object arg)
     object liste = make_pair();
     while(l!=NULL && l!=nil)
     {
-        liste = ajout_queue(liste,sfs_eval(l->this.pair.car));
+        liste = ajout_queue(liste,sfs_eval(l->this.pair.car,liste_env));
         l = l->this.pair.cdr;
     }
     return liste;

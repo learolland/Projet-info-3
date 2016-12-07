@@ -1,6 +1,9 @@
 
 
 void creer_primitives(void);
+double partie_entiere (double nombre);
+
+
 
 object plus_p (object nums);
 

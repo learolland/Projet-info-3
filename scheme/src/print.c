@@ -57,6 +57,11 @@ void sfs_print_atom( object p )
 			printf("%s",p->this.warning);
 			return;
 		}
+		if(p->type == SFS_COMPOUND)
+		{
+			printf("#<procedure>");
+			return;
+		}
     return;
 }
 

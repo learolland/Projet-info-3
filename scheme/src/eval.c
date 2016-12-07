@@ -13,14 +13,6 @@
 #include "prim.h"
 
 
-
-/********* ENVIRONNEMENT **********/
-object nil;
-
-
-
-
-
 /**** Fonctions utilitaires environnement ****/
 object ajout_env (void)
 {
@@ -38,28 +30,29 @@ object ajout_env (void)
     return liste_env;*/
 }
 
-uint ajout_binding (object variable, object valeur)
+uint ajout_binding (object variable, object valeur, object envt)
 {
     object binding_ajout = make_pair();
     binding_ajout->this.pair.car = make_liste() ;
     strcpy(binding_ajout->this.pair.car->this.liste.nom,variable->this.symbol);
+
     if(valeur->type == SFS_PRIM)
     {
         binding_ajout->this.pair.car->this.liste.val = valeur;
 
     }
-    else binding_ajout->this.pair.car->this.liste.val = sfs_eval(valeur);
+    else binding_ajout->this.pair.car->this.liste.val = sfs_eval(valeur,envt);
 
 
 
     object tmp_binding;
-    object binding = liste_env->this.pair.car;
+    object binding = envt->this.pair.car;
 
     if(binding == NULL || binding == nil)
     {
         binding = binding_ajout;
         binding->this.pair.cdr = nil;
-        liste_env->this.pair.car = binding;
+        envt->this.pair.car = binding;
         return 1;
     }
 
@@ -68,13 +61,13 @@ uint ajout_binding (object variable, object valeur)
 
     tmp_binding->this.pair.cdr = binding_ajout;
     binding_ajout->this.pair.cdr = binding;
-    liste_env->this.pair.car = binding_ajout;
+    envt->this.pair.car = binding_ajout;
     return 1;
 }
 
-object valeur_symb (string nom)
+object valeur_symb (string nom, object envt)
 {
-    object env = liste_env;
+    object env = envt;
     object binding = env->this.pair.car;
     while(env != NULL && env != nil)
     {
@@ -90,16 +83,16 @@ object valeur_symb (string nom)
             binding = binding->this.pair.cdr;
         }
         /*DEBUG_MSG("on sort du premier palier");*/
-        env = (liste_env)->this.pair.cdr;
+        env = envt->this.pair.cdr;
         if(env!= NULL && env != nil) binding = env->this.pair.car;
     }
     return var_non_def;
 }
 
-uint chercher_symb (string nom)
+uint chercher_symb (string nom, object envt)
 {
-    object env = liste_env;
-    if(liste_env->this.pair.car == NULL)
+    object env = envt;
+    if(envt->this.pair.car == NULL)
         return 0;
     object binding = NULL;
     while(env != NULL)
@@ -119,37 +112,6 @@ uint chercher_symb (string nom)
     return 0;
 }
 
-void afficher_env (void)
-{
-    DEBUG_MSG(" on entre dans afficher_env");
-    object env = liste_env;
-    object binding = NULL;
-    while(env != NULL)
-    {
-        binding = env->this.pair.car;
-        while(binding != nil)
-        {
-            object valeur_binding = binding->this.pair.car;
-            if(valeur_binding->this.liste.val->type == SFS_NUMBER)
-                DEBUG_MSG("variable : %s, valeur: %d",valeur_binding->this.liste.nom,valeur_binding->this.liste.val->this.number.this.integer);
-            if(valeur_binding->this.liste.val->type == SFS_SYMBOL)
-                DEBUG_MSG("variable : %s, valeur: %s",valeur_binding->this.liste.nom,valeur_binding->this.liste.val->this.symbol);
-            binding = binding->this.pair.cdr;
-        }
-        env = (liste_env)->this.pair.cdr;
-    }
-}
-
-/*object cons(object car, object cdr)
-{
-    object o = make_pair() ;
-    object p = make_pair() ;
-    p->this.pair.car = cdr;
-    p->this.pair.cdr = nil;
-    o->this.pair.car = car;
-    o->this.pair.cdr = p;
-    return o ;
-}*/
 
 object ajout_queue (object liste, object car)
 {
@@ -172,29 +134,28 @@ object ajout_queue (object liste, object car)
 }
 
 
-/*** FORMES ****/
-object define (object variable, object valeur)
+        /*** FORMES ****/
+
+
+void define (object variable, object valeur, object envt)
 {
-    uint i = chercher_symb(variable->this.symbol);
+    uint i = chercher_symb(variable->this.symbol,envt);
     if (i == 1)
-        return set(variable,valeur);
+        set(variable,valeur,envt);
     if(variable->type != SFS_SYMBOL)
     {
         WARNING_MSG("on ne peut pas définir une nouvelle valeur pour un nombre %d",variable->type);
-        return define_pb;
     }
-    ajout_binding(variable,valeur);
-    return variable;
+    ajout_binding(variable,valeur,envt);
 }
 
-object set (object variable, object valeur)
+void set (object variable, object valeur, object envt)
 {
-    uint i = chercher_symb(variable->this.symbol);
+    uint i = chercher_symb(variable->this.symbol,envt);
     DEBUG_MSG("chercher_symb = %d",i);
     if(i==0)
     {
         WARNING_MSG("La variable %s n'est pas initialisée : utilisez define",variable->this.symbol);
-        return set_pb;
     }
     else
     {
@@ -208,18 +169,13 @@ object set (object variable, object valeur)
                 object valeur_binding = binding->this.pair.car;
                 if(strcmp(valeur_binding->this.liste.nom, variable->this.symbol)==0)
                 {
-
-                            binding->this.pair.car->this.liste.val = sfs_eval(valeur);
-
-
+                    binding->this.pair.car->this.liste.val = sfs_eval(valeur,envt);
                 }
                 binding = binding->this.pair.cdr;
             }
             env = (liste_env)->this.pair.cdr;
         }
     }
-    afficher_env();
-    return variable;
 }
 
 uint is_form(string forme, object input)
@@ -231,35 +187,36 @@ uint is_form(string forme, object input)
     else return 0;
 }
 
-double partie_entiere (double nombre)
+object get (string cible, object input)
 {
-    double seuil = 0;
-    while (seuil <= nombre)
-        seuil ++;
+    if(strcmp(cible,car)==0)
+    {
+        return input->this.pair.car;
+    }
+    if(strcmp(cible,cdr)==0)
+    {
+        return input->this.pair.cdr;
+    }
+    if(strcmp(cible,cadr)==0)
+    {
+        return input->this.pair.cdr->this.pair.car;
+    }
+    if(strcmp(cible,caddr)==0)
+    {
+        return input->this.pair.cdr->this.pair.cdr->this.pair.car;
+    }
+    if(strcmp(cible,caar)==0)
+    {
+        return input->this.pair.car->this.pair.car;
+    }
 
-    double comp = seuil-0.5;
-
-    DEBUG_MSG("seuil : %lf",seuil);
-    if(comp==nombre)
-    {
-        DEBUG_MSG("0,5");
-        return (uint)seuil;
-    }
-    if(comp<=nombre)
-    {
-        DEBUG_MSG("dif : %lf",nombre-seuil);
-        return (uint)seuil;
-    }
-    else
-    {
-        DEBUG_MSG("dif : %lf",nombre-(seuil+0.5));
-        return (uint)seuil-1;
-    }
 }
 
 
 /********** EVALUATION ***********/
-object evaluer_arg (object liste)
+
+
+object evaluer_arg (object liste, object envt)
 {
     DEBUG_MSG("evaluation des arguments");
     object liste_arg = make_pair();
@@ -268,7 +225,23 @@ object evaluer_arg (object liste)
     /*DEBUG_MSG("car de la liste : %d",ptr_liste->this.pair.car->this.number.this.integer);*/
     while(ptr_liste != NULL && ptr_liste != nil)
     {
-        liste_arg = ajout_queue(liste_arg,sfs_eval(ptr_liste->this.pair.car));
+        liste_arg = ajout_queue(liste_arg,sfs_eval(ptr_liste->this.pair.car,envt));
+        ptr_liste = ptr_liste->this.pair.cdr;
+        i++;
+    }
+    return liste_arg;
+}
+
+object evaluer_parms (object liste)
+{
+    DEBUG_MSG("evaluation des arguments");
+    object liste_arg = make_pair();
+    object ptr_liste = liste ;
+    uint i = 0;
+    /*DEBUG_MSG("car de la liste : %d",ptr_liste->this.pair.car->this.number.this.integer);*/
+    while(ptr_liste != NULL && ptr_liste != nil)
+    {
+        liste_arg = ajout_queue(liste_arg,ptr_liste->this.pair.car);
         ptr_liste = ptr_liste->this.pair.cdr;
         i++;
     }
@@ -276,7 +249,7 @@ object evaluer_arg (object liste)
 }
 
 
-object sfs_eval( object input )
+object sfs_eval( object input, object envt)
 {
     restart:
 
@@ -284,14 +257,14 @@ object sfs_eval( object input )
     if(input->type == SFS_SYMBOL)
     {
         DEBUG_MSG("on a un symbol");
-        object p = valeur_symb(input->this.symbol);
+        object p = valeur_symb(input->this.symbol,envt);
         if(p!= NULL)
         {
             return p;
         }
         else
         {
-            return input;
+            return var_non_def;
         }
     }
     if(input->type == SFS_PROBLEM)
@@ -306,6 +279,7 @@ object sfs_eval( object input )
     }
     object o = NULL;
     object input_bis = NULL;
+
     if(input->type == SFS_PAIR)
     {
         o = input->this.pair.car;
@@ -322,7 +296,7 @@ object sfs_eval( object input )
 
         if(o->type == SFS_COMPOUND)
         {
-            return ;
+            return o;
         }
 
         if(o->type == SFS_PROBLEM)
@@ -357,10 +331,14 @@ object sfs_eval( object input )
             if(is_form("define",o)==1)
             {
                 DEBUG_MSG("valeur : %s, type %d",input->this.pair.cdr->this.pair.car->this.symbol,input->this.pair.cdr->this.pair.car->type);
-                return define(input_bis->this.pair.cdr->this.pair.car,input_bis->this.pair.cdr->this.pair.cdr->this.pair.car);
+                define(input_bis->this.pair.cdr->this.pair.car,input_bis->this.pair.cdr->this.pair.cdr->this.pair.car,envt);
+                return NULL;
             }
             if(is_form("set!",o)==1)
-                return set(input_bis->this.pair.cdr->this.pair.car,input_bis->this.pair.cdr->this.pair.cdr->this.pair.car);
+            {
+                set(input_bis->this.pair.cdr->this.pair.car,input_bis->this.pair.cdr->this.pair.cdr->this.pair.car,envt);
+                return NULL;
+            }
             if(is_form("quote",o)==1)
                 return (input_bis->this.pair.cdr->this.pair.car);
             if(is_form("if",o))
@@ -371,11 +349,11 @@ object sfs_eval( object input )
                 DEBUG_MSG("input car : %s",input->this.pair.car->this.symbol);
                 object input_if = input->this.pair.cdr;
 
-                if(strcmp(sfs_eval(input_if)->this.symbol,boolean_true->this.symbol)==0)
+                if(strcmp(sfs_eval(input_if,envt)->this.symbol,boolean_true->this.symbol)==0)
                 {
                     DEBUG_MSG("on a un if vrai");
                     DEBUG_MSG("then : %d",input->this.pair.cdr->this.pair.cdr->this.pair.car->type);
-                    return sfs_eval(consequence);
+                    return sfs_eval(consequence,envt);
                 }
                 else
                 {
@@ -389,7 +367,7 @@ object sfs_eval( object input )
                     else
                     {
                         WARNING_MSG("il manque une conséquence");
-                        return sfs_eval(consequence);
+                        return sfs_eval(consequence,envt);
                     }
                 }
                 alternative = NULL;
@@ -401,7 +379,7 @@ object sfs_eval( object input )
                 while(input_and != nil)
                 {
                     DEBUG_MSG("(and ...)");
-                    if(strcmp(boolean_false->this.symbol,sfs_eval(input_and->this.pair.cdr)->this.symbol)==0)
+                    if(strcmp(boolean_false->this.symbol,sfs_eval(input_and->this.pair.cdr,envt)->this.symbol)==0)
                         return boolean_false;
                     else input_and = input_and->this.pair.cdr;
                 }
@@ -416,7 +394,7 @@ object sfs_eval( object input )
                 while(input_or != nil)
                 {
                     DEBUG_MSG("(or ...)");
-                    if(strcmp(boolean_true->this.symbol,sfs_eval(input_or->this.pair.cdr)->this.symbol)==0)
+                    if(strcmp(boolean_true->this.symbol,sfs_eval(input_or->this.pair.cdr,envt)->this.symbol)==0)
                         return boolean_true;
                     else input_or = input_or->this.pair.cdr;
                 }
@@ -425,43 +403,68 @@ object sfs_eval( object input )
             if(is_form("lambda",o))
             {
                 object agregat = make_compound();
-                agregat->this.compound.parms = input->this.pair.cdr->this.pair.car;
+
+                agregat->this.compound.parms = evaluer_parms (input->this.pair.cdr->this.pair.car);
                 agregat->this.compound.body = input->this.pair.cdr->this.pair.cdr->this.pair.car;
                 agregat->this.compound.envt = ajout_env();
                 return agregat;
             }
             if(is_form("begin",o))
             {
-
+                object liste_begin = evaluer_arg(input_bis->this.pair.cdr,envt);
+                while(liste_begin->this.pair.cdr != NULL && liste_begin->this.pair.cdr !=nil)
+                    liste_begin = liste_begin->this.pair.cdr;
+                return liste_begin->this.pair.car;
             }
+
             else
             {
-                DEBUG_MSG("primitive ?");
-                object p = valeur_symb(o->this.symbol) ;
+                object p = valeur_symb(o->this.symbol,envt) ;
                 if (p!=NULL)
                 {
-                    DEBUG_MSG("on a créé la prim p type = %d",p->type);
-                    object liste_arg = evaluer_arg(input_bis->this.pair.cdr);
-                    DEBUG_MSG("on a une liste_arg");
-                    /*{
+                    if(p->type == SFS_PRIM)
+                    {
+                        DEBUG_MSG("on a créé la prim p type = %d",p->type);
+                        object liste_arg = evaluer_arg(input_bis->this.pair.cdr,envt);
+                        DEBUG_MSG("on a une liste_arg");
+                        /*
                         object tmp_liste = liste_arg ;
                         while(tmp_liste!= NULL && tmp_liste != nil)
                         {
-                            if(tmp_liste->this.pair.car->type == SFS_NUMBER)
-                            DEBUG_MSG("affichage : %d",tmp_liste->this.pair.car->this.number.this.integer);
-                            else DEBUG_MSG("affichage : %s, type %d",tmp_liste->this.pair.car->this.symbol,tmp_liste->this.pair.car->type);
+                        if(tmp_liste->this.pair.car->type == SFS_NUMBER)
+                        DEBUG_MSG("affichage : %d",tmp_liste->this.pair.car->this.number.this.integer);
+                        else DEBUG_MSG("affichage : %s, type %d",tmp_liste->this.pair.car->this.symbol,tmp_liste->this.pair.car->type);
 
-                            tmp_liste = tmp_liste->this.pair.cdr;
-                        }
-                    }*/
-                    DEBUG_MSG("on est la");
-                    return (p->this.prim.fonction)(liste_arg);
-                }
-                else
-                {
+                        tmp_liste = tmp_liste->this.pair.cdr;
+                        }*/
+
+                        DEBUG_MSG("on est la");
+                        return (p->this.prim.fonction)(liste_arg);
+                    }
+                    if(p->type == SFS_COMPOUND)
+                    {
+                        DEBUG_MSG("on a un agregat");
+                        object envt_c = ajout_env();
+                        DEBUG_MSG("ajout d'un envt");
+
+                        DEBUG_MSG("on prend les arguments du compound");
+                        object arg = p->this.compound.parms;
+                        DEBUG_MSG("arg : %s",arg->this.pair.car->this.symbol);
+
+                        DEBUG_MSG("on defini l'argument comme celui donné, %d",input_bis->this.pair.cdr->this.pair.car->this.number.this.integer);
+                        define(arg->this.pair.car,sfs_eval(input_bis->this.pair.cdr->this.pair.car,envt_c),envt_c);
+                        DEBUG_MSG("%s,%d",arg->this.pair.car->this.symbol, valeur_symb(arg->this.pair.car->this.symbol,envt_c)->this.number.this.integer);
+
+                        object resultat = sfs_eval(p->this.compound.body,envt_c);
+                        return resultat;
+                    }
                     return o;
                 }
             }
+        }
+        else
+        {
+            return o;
         }
 
     }
