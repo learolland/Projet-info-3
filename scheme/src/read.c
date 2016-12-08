@@ -517,7 +517,6 @@ object input_to_symbol (char* input, uint *here)
 
     }
     chaine[j]='\0';
-    DEBUG_MSG("chaine = %s, j = %d",chaine,j);
     object symbol = make_symbol(chaine);
     for(i=0;i!=j;i++)
     {
@@ -628,7 +627,6 @@ object sfs_read_atom( char *input, uint *here)
             uint *symb_here = here;
             object o = input_to_symbol(input,symb_here);
             *here+= taille_string(o->this.symbol);
-            DEBUG_MSG("lenght = %d",taille_string(o->this.symbol));
 			return o;
 		}
 	}
