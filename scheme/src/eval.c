@@ -220,6 +220,10 @@ object get (string cible, object input)
 
 }
 
+uint get_uint (object o)
+{
+    return o->this.number.this.integer;
+}
 
 /********** EVALUATION ***********/
 
@@ -258,34 +262,36 @@ object evaluer_parms (object liste)
 }
 
 
+
+
+/******************** EVAL *******************/
+
 object sfs_eval( object input, object envt)
 {
     restart:
 
     DEBUG_MSG("EVAL");
+
+    /****** EVALUATION TYPE HORS PAIR ********/
+    if(input == NULL) return input_vide;
+
     if(input->type == SFS_SYMBOL)
     {
         DEBUG_MSG("on a un symbol");
         object p = valeur_symb(input->this.symbol,envt);
-        if(p!= NULL)
-        {
-            return p;
-        }
+        if(p!= NULL) return p;
         else
-        {
             return var_non_def;
-        }
     }
+
     if(input->type == SFS_PROBLEM)
-    {
-        DEBUG_MSG("syntax_problem");
         return input;
-    }
+
     if(input->type == SFS_NUMBER)
-    {
-        DEBUG_MSG("on trouve un nb");
         return input;
-    }
+
+
+    /******************* TYPE PAIR *********************/
     object o = NULL;
     object input_bis = NULL;
 
@@ -302,34 +308,22 @@ object sfs_eval( object input, object envt)
             input_bis = test_input->this.pair.car;
             test_input = test_input->this.pair.car;
         }
-        if(o->type == SFS_PROBLEM)
-        {
-            DEBUG_MSG("syntax_problem");
-            return o;
-        }
+
+        if(o->type == SFS_PROBLEM)  return o;
+
         if(o->type == SFS_BOOLEAN)
         {
-            if(strcmp(o->this.symbol,"#t")==0)
-            {
-                DEBUG_MSG("boolean_true");
-                return boolean_true;
-            }
-            if(strcmp(o->this.symbol,"#f")==0)
-            {
-                DEBUG_MSG("boolean_false");
-                return boolean_false;
-            }
+            if(strcmp(o->this.symbol,"#t")==0) return boolean_true;
+            if(strcmp(o->this.symbol,"#f")==0) return boolean_false;
         }
 
-        if(o->type == SFS_NUMBER || o->type == SFS_CHAR_SPECIAL || o->type == SFS_CHARACTER || o->type == SFS_STRING)
-        {
-            DEBUG_MSG("on est dans une parier mais pas symbol");
-            return o;
-        }
+        if(o->type == SFS_NUMBER || o->type == SFS_CHAR_SPECIAL || o->type == SFS_CHARACTER || o->type == SFS_STRING) return o;
 
+        /*** SYMBOL DANS PAIR ***/
         if(o->type == SFS_SYMBOL)
         {
 
+            /**************** FORMES ****************/
             if(is_form("define",o)==1)
             {
                 DEBUG_MSG("valeur : %s, type %d",get("cadr",input)->this.symbol,get("cadr",input)->type);
@@ -402,6 +396,8 @@ object sfs_eval( object input, object envt)
                 }
                 return boolean_false;
             }
+
+            /************************ LAMBDA ********************/
             if(is_form("lambda",o))
             {
                 object agregat = make_compound();
@@ -411,7 +407,12 @@ object sfs_eval( object input, object envt)
                 agregat->this.compound.body = get("caddr",input_bis);
                 /*agregat->this.compound.envt = ajout_env();*/
 
-                if(get("cdddr",input) == NULL || get("cdddr",input) == nil)
+                /* probleme ici */
+                if(is_form("lambda",input->this.pair.car))
+                {
+                    return agregat;
+                }
+                else if(get("cdr",input) == NULL || get("cdr",input) == nil)
                 {
                     DEBUG_MSG("On n'a pas d'argument immédiat");
                     return agregat;
@@ -421,12 +422,13 @@ object sfs_eval( object input, object envt)
 
                 DEBUG_MSG("on prend les arguments du compound");
                 object arg = agregat->this.compound.parms;
-                object valeur_arg = input_bis->this.pair.cdr;
+                object valeur_arg = input->this.pair.cdr;
+
                 while(arg != NULL && arg != nil)
                 {
-                    DEBUG_MSG("on defini l'argument comme celui donné, %d",get("cadr",input)->this.number.this.integer);
+                    DEBUG_MSG("on defini l'argument %s comme celui donné, %d",arg->this.pair.car->this.symbol,get_uint(get("cadr",input)));
                     define(arg->this.pair.car,sfs_eval(valeur_arg->this.pair.car,envt_lambda),envt_lambda);
-                    DEBUG_MSG("%s,%d",arg->this.pair.car->this.symbol, valeur_symb(arg->this.pair.car->this.symbol,envt_lambda)->this.number.this.integer);
+                    DEBUG_MSG("%s,%d",arg->this.pair.car->this.symbol, get_uint(valeur_symb(arg->this.pair.car->this.symbol,envt_lambda)));
                     arg = arg->this.pair.cdr;
                     valeur_arg = valeur_arg->this.pair.cdr;
                 }
@@ -441,6 +443,8 @@ object sfs_eval( object input, object envt)
                 return liste_begin->this.pair.car;
             }
 
+
+            /************************ PRIMITIVES ***************************/
             else
             {
                 object p = valeur_symb(o->this.symbol,envt) ;
@@ -451,18 +455,6 @@ object sfs_eval( object input, object envt)
                         DEBUG_MSG("on a créé la prim p type = %d",p->type);
                         object liste_arg = evaluer_arg(input_bis->this.pair.cdr,envt);
                         DEBUG_MSG("on a une liste_arg");
-                        /*
-                        object tmp_liste = liste_arg ;
-                        while(tmp_liste!= NULL && tmp_liste != nil)
-                        {
-                        if(tmp_liste->this.pair.car->type == SFS_NUMBER)
-                        DEBUG_MSG("affichage : %d",tmp_liste->this.pair.car->this.number.this.integer);
-                        else DEBUG_MSG("affichage : %s, type %d",tmp_liste->this.pair.car->this.symbol,tmp_liste->this.pair.car->type);
-
-                        tmp_liste = tmp_liste->this.pair.cdr;
-                        }*/
-
-                        DEBUG_MSG("on est la");
                         return (p->this.prim.fonction)(liste_arg);
                     }
                     if(p->type == SFS_COMPOUND)
@@ -478,9 +470,9 @@ object sfs_eval( object input, object envt)
                         {
                             DEBUG_MSG("arg : %s",arg_f->this.pair.car->this.symbol);
 
-                            DEBUG_MSG("on defini l'argument comme celui donné, %d",valeur_arg_f->this.pair.car->this.number.this.integer);
+                            DEBUG_MSG("on defini l'argument comme celui donné, %d",get_uint(valeur_arg_f->this.pair.car));
                             define(arg_f->this.pair.car,sfs_eval(get("car",valeur_arg_f),envt_c),envt_c);
-                            DEBUG_MSG("%s,%d",arg_f->this.pair.car->this.symbol, valeur_symb(arg_f->this.pair.car->this.symbol,envt_c)->this.number.this.integer);
+                            DEBUG_MSG("%s,%d",arg_f->this.pair.car->this.symbol, get_uint(valeur_symb(arg_f->this.pair.car->this.symbol,envt_c)));
                             arg_f = arg_f->this.pair.cdr;
                             valeur_arg_f = valeur_arg_f->this.pair.cdr;
                         }

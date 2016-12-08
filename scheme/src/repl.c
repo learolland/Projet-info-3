@@ -41,6 +41,7 @@ object var_non_def;
 object cdr_pb;
 object set_pb;
 object define_pb;
+object input_vide;
 
 void init_interpreter ( void )
 {
@@ -56,6 +57,7 @@ void init_interpreter ( void )
     pb_type = make_message("l'argument n'est pas du bon type");
     var_non_def = make_message("la variable n'est pas définie");
     cdr_pb = make_message("il n'y a pas de cdr");
+    input_vide = make_message("input == NULL");
 }
 
 int main ( int argc, char *argv[] ) {
