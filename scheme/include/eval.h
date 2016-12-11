@@ -39,7 +39,7 @@ extern object cdr_pb;
 extern object set_pb;
 extern object define_pb;
 extern object input_vide;
-
+extern object return_define;
 
 #ifdef __cplusplus
 }

@@ -115,6 +115,7 @@ uint chercher_symb (string nom, object envt)
 object ajout_queue (object liste, object car)
 {
     /*DEBUG_MSG("dans ajout_queue");*/
+    DEBUG_MSG("car : %d",car->type);
     if (liste->this.pair.car==nil || liste->this.pair.car == NULL)
     {
         /*DEBUG_MSG("ajout_tete simple");*/
@@ -133,7 +134,8 @@ object ajout_queue (object liste, object car)
 }
 
 
-        /*** FORMES ****/
+
+/************** FORMES ***************/
 
 
 void define (object variable, object valeur, object envt)
@@ -277,11 +279,10 @@ object sfs_eval( object input, object envt)
 
     if(input->type == SFS_SYMBOL)
     {
-        DEBUG_MSG("on a un symbol");
+        DEBUG_MSG("on a un symbol, %s",input->this.symbol);
         object p = valeur_symb(input->this.symbol,envt);
-        if(p!= NULL) return p;
-        else
-            return var_non_def;
+        if(p->type != SFS_PROBLEM) return p;
+        else return input;
     }
 
     if(input->type == SFS_PROBLEM)
@@ -317,7 +318,7 @@ object sfs_eval( object input, object envt)
             if(strcmp(o->this.symbol,"#f")==0) return boolean_false;
         }
 
-        if(o->type == SFS_NUMBER || o->type == SFS_CHAR_SPECIAL || o->type == SFS_CHARACTER || o->type == SFS_STRING) return o;
+        if(o->type == SFS_NUMBER || o->type == SFS_CHAR_SPECIAL || o->type == SFS_CHARACTER || o->type == SFS_STRING) return input;
 
         /*** SYMBOL DANS PAIR ***/
         if(o->type == SFS_SYMBOL)
@@ -328,12 +329,12 @@ object sfs_eval( object input, object envt)
             {
                 DEBUG_MSG("valeur : %s, type %d",get("cadr",input)->this.symbol,get("cadr",input)->type);
                 define(get("cadr",input_bis),get("caddr",input_bis),envt);
-                return NULL;
+                return return_define;
             }
             if(is_form("set!",o)==1)
             {
                 set(get("cadr",input_bis),get("caddr",input_bis),envt);
-                return NULL;
+                return return_define;
             }
             if(is_form("quote",o)==1)
                 return (get("cadr",input_bis));
@@ -481,6 +482,8 @@ object sfs_eval( object input, object envt)
                     }
                     return o;
                 }
+                DEBUG_MSG("type : %d",o->type);
+                return o;
             }
         }
         else

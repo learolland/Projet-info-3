@@ -42,6 +42,8 @@ object cdr_pb;
 object set_pb;
 object define_pb;
 object input_vide;
+object return_define;
+
 
 void init_interpreter ( void )
 {
@@ -58,6 +60,7 @@ void init_interpreter ( void )
     var_non_def = make_message("la variable n'est pas définie");
     cdr_pb = make_message("il n'y a pas de cdr");
     input_vide = make_message("input == NULL");
+    return_define = make_message("");
 }
 
 int main ( int argc, char *argv[] ) {

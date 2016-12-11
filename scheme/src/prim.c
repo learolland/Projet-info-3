@@ -27,6 +27,7 @@ void creer_primitives(void)
     define(make_symbol("pair?"),make_primitive(pair_p),liste_env);
     define(make_symbol("nil?"),make_primitive(nil_p),liste_env);
     define(make_symbol("null?"),make_primitive(null_p),liste_env);
+    define(make_symbol("procedure?"),make_primitive(procedure_p),liste_env);
 
     define(make_symbol("char->integer"),make_primitive(char_integer_p),liste_env);
     define(make_symbol("integer->char"),make_primitive(integer_char_p),liste_env);
@@ -164,7 +165,8 @@ object quotient_p (object nums)
     object l = nums->this.pair.cdr ;
     if(l == NULL || l == nil)
     {
-        if(l->this.pair.car->type != SFS_NUMBER)
+        DEBUG_MSG("cdr null");
+        if(nums->this.pair.car->type != SFS_NUMBER)
         {
             return pb_type;
         }
@@ -343,6 +345,7 @@ object char_p (object arg)
 }
 object symbol_p (object arg)
 {
+    DEBUG_MSG("type %d",arg->this.pair.car->type);
     if(arg->this.pair.cdr != NULL && arg->this.pair.cdr != nil)
         return arg_plus;
 
@@ -370,6 +373,7 @@ object string_p (object arg)
 }
 object pair_p (object arg)
 {
+    DEBUG_MSG("type %d",arg->this.pair.car->type);
     if(arg->this.pair.cdr != NULL && arg->this.pair.cdr != nil)
         return arg_plus;
 
@@ -432,11 +436,16 @@ object cons_p (object arg)
 object car_p (object arg)
 {
     object l = arg->this.pair.car;
-    DEBUG_MSG("type = %d",l->this.pair.car->type);
-    if(l->this.pair.car->type != SFS_PAIR)
-        return l->this.pair.car;
+    DEBUG_MSG("type = %d",l->type);
+    if(l->type != SFS_PAIR)
+        {
+            DEBUG_MSG("oula ça bug");
+
+            return l->this.pair.car;
+        }
     else
     {
+
         object l_bis = l->this.pair.car;
         while (l->this.pair.car->type == SFS_PAIR)
         {
@@ -499,4 +508,14 @@ object set_cdr_p (object arg)
 
     var->this.pair.cdr = new_cdr;
     return var;
+}
+
+object procedure_p (object arg)
+{
+    if(arg->this.pair.cdr != NULL && arg->this.pair.cdr != nil)
+        return arg_plus;
+
+    if(arg->this.pair.car->type == SFS_COMPOUND)
+        return boolean_true;
+    return boolean_false;
 }

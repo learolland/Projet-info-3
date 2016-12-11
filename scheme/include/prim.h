@@ -51,6 +51,8 @@ object nil_p (object arg);
 
 object null_p (object arg);
 
+object procedure_p (object arg);
+
 
 
 object cons_p (object arg);

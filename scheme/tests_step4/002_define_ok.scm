@@ -7,7 +7,7 @@
 (f2 5)
 ( define f3 ( lambda (a b) (* a b) ) )
 (f3 5 8)
-( define f4 ( lambda (z) (- (+ z 2) 3 2) )
+( define f4 ( lambda (z) (- (+ z 2) 3 2) ))
 (f4 5)
 (procedure? f1)
 (procedure? f2)

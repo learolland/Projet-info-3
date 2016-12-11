@@ -54,6 +54,11 @@ void sfs_print_atom( object p )
 		}
 		if(p->type == SFS_PROBLEM)
 		{
+			if(p == return_define)
+			{
+				DEBUG_MSG("return define");
+				return;
+			}
 			printf("%s",p->this.warning);
 			return;
 		}
