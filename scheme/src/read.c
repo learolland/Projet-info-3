@@ -409,19 +409,29 @@ int string_to_integer(char *input, uint *here)
 object input_to_string (char* input, uint *here)
 {
 	uint i = *here;
+    uint j = 0;
+    char* chaine = malloc(sizeof(*chaine));
+
 	if(input[i]=='\''|| input[i]=='\"') i++;
 
-	string tmp_chaine;
-	string * chaine = malloc(sizeof(chaine));;
-	strcpy(tmp_chaine,&input[i]) ;
-
-	for( ; input[i]!='\"' && input[i]!='\'' ; i++)
+	for( ; input[i]!='\"' && input[i]!='\'' ; i++,j++)
 	{
+        chaine[j] = input[i];
+
 		/*DEBUG_MSG("%c",input[i]);*/
 	}
-	strncpy(*chaine,tmp_chaine, i-*here-1);
-    object string = make_string(*chaine);
-	return  string;
+    chaine[j]='\0';
+
+    object o_string = make_string(chaine);
+    for(i=0;i!=j;i++)
+    {
+        chaine[i]='\0';
+        /*DEBUG_MSG("vidage : %c , %s",chaine[i],chaine);*/
+    }
+    /*DEBUG_MSG("%s chaine vidée",chaine);*/
+    return o_string;
+
+
 }
 
 
@@ -622,6 +632,7 @@ object sfs_read_atom( char *input, uint *here)
 			if(input[*here]=='\'')
 			{
 				*here += 1;
+                DEBUG_MSG("on fait quote");
 				return cons_pair(make_symbol("quote"),sfs_read(input,here));
 			}
             uint *symb_here = here;

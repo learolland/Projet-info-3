@@ -102,7 +102,6 @@ void afficher_objet(object t);
 
 
 
-
 #ifdef __cplusplus
 }
 #endif

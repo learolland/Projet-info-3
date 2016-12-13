@@ -1,8 +1,4 @@
 
-==> 7
-
-==> 22
-
-==> "bonjour"
-
+==> 3
+==> 8
 la variable n'est pas définie

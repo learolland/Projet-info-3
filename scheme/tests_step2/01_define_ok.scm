@@ -6,7 +6,7 @@
 (define c ())
 (define e #t)
 (define g #f)
-(define h (10 22))
+(define h '(10 22))
 a
 b
 c

@@ -7,8 +7,8 @@ x
 y
 (if x (define x "if juste") (define y "if faux"))
 x
-(if y (define x "if ne fonctionne pas avec un predicat faux") (define y "if fonctionne avec un predicat faux"))
+(if y (define x "if ne fonctionne pas") (define y "if fonctionne"))
 y
-(if (and #t #f) (set! x "if fonctionne mal avec and") (set! y "if fonctionne avec and") )
+(if (and #t #f) (set! x "if fonctionne mal") (set! y "if fonctionne") )
 y
-(if #t (quote "genial ca marche !") (quote "ca me fatigue..."))
+(if #t (quote "ca marche !") (quote "ca me fatigue..."))
