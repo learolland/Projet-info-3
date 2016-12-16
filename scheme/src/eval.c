@@ -20,14 +20,14 @@ object ajout_env (object env_present)
     o->this.pair.cdr = env_present;
     return o;
 
-    /*object o = liste_env;
+    /*object o = top_level;
     while(o->this.pair.cdr!=nil && o->this.pair.cdr!=NULL)
     {
-        o = (liste_env)->this.pair.cdr;
+        o = (top_level)->this.pair.cdr;
     }
     p->this.pair.cdr = NULL;
     o->this.pair.cdr = p ;
-    return liste_env;*/
+    return top_level;*/
 }
 
 uint ajout_binding (object variable, object valeur, object envt)
@@ -75,7 +75,7 @@ object valeur_symb (string nom, object envt)
     while(env != NULL)
     {
         binding = env->this.pair.car;
-        while(binding!=nil)
+        while(binding!=nil && binding !=NULL)
         {
             object valeur_binding = binding->this.pair.car;
             if(strcmp(valeur_binding->this.liste.nom, nom)==0)
@@ -101,7 +101,7 @@ uint chercher_symb (string nom, object envt)
     while(env != NULL)
     {
         binding = env->this.pair.car;
-        while(binding != nil)
+        while(binding != nil && binding != NULL)
         {
             object valeur_binding = binding->this.pair.car;
             if(strcmp(valeur_binding->this.liste.nom, nom)==0)
@@ -111,6 +111,7 @@ uint chercher_symb (string nom, object envt)
             binding = binding->this.pair.cdr;
         }
         env = env->this.pair.cdr;
+
     }
     return 0;
 }
@@ -119,7 +120,7 @@ uint chercher_symb (string nom, object envt)
 object ajout_queue (object liste, object car)
 {
     /*DEBUG_MSG("dans ajout_queue");*/
-    DEBUG_MSG("car : %d",car->type);
+    /*DEBUG_MSG("car : %d",car->type);*/
     if (liste->this.pair.car==nil || liste->this.pair.car == NULL)
     {
         /*DEBUG_MSG("ajout_tete simple");*/
@@ -145,6 +146,7 @@ object ajout_queue (object liste, object car)
 void define (object variable, object valeur, object envt)
 {
     uint i = chercher_symb(variable->this.symbol,envt);
+
     if (i == 1)
         set(variable,valeur,envt);
     if(variable->type != SFS_SYMBOL)
@@ -204,9 +206,18 @@ object get (string cible, object input)
     {
         return input->this.pair.cdr;
     }
+    if(strcmp(cible,"caar")==0)
+    {
+        return input->this.pair.car->this.pair.car;
+    }
     if(strcmp(cible,"cadr")==0)
     {
         return input->this.pair.cdr->this.pair.car;
+    }
+    if(strcmp(cible,"cadar")==0)
+    {
+        /*DEBUG_MSG("type du cadar : %d, valeur %d",input->this.pair.car->this.pair.cdr->this.pair.car->type,input->this.pair.car->this.pair.cdr->this.pair.car->this.number.this.integer);*/
+        return input->this.pair.car->this.pair.cdr->this.pair.car;
     }
     if(strcmp(cible,"caddr")==0)
     {
@@ -223,6 +234,10 @@ object get (string cible, object input)
     if(strcmp(cible,"cdddr")==0)
     {
         return input->this.pair.cdr->this.pair.cdr->this.pair.cdr;
+    }
+    if(strcmp(cible,"caaar")==0)
+    {
+        return input->this.pair.car->this.pair.car->this.pair.car;
     }
     if(strcmp(cible,"cadddr")==0)
     {
@@ -445,11 +460,16 @@ object sfs_eval( object input, object envt)
 
                 while(arg != NULL && arg != nil)
                 {
-                    DEBUG_MSG("on defini l'argument %s comme celui donné, %d",arg->this.pair.car->this.symbol,get_uint(get("cadr",input)));
+                    /*if(get("cadr",input)->type == SFS_NUMBER)
+                        DEBUG_MSG("on defini l'argument %s comme celui donné, %d",arg->this.pair.car->this.symbol,get_uint(get("caddr",input)));*/
+
+                    DEBUG_MSG("valeur_arg : %d",valeur_arg->this.pair.car->this.number.this.integer);
                     define(arg->this.pair.car,sfs_eval(valeur_arg->this.pair.car,env_lambda),env_lambda);
                     DEBUG_MSG("%s,%d",arg->this.pair.car->this.symbol, get_uint(valeur_symb(arg->this.pair.car->this.symbol,env_lambda)));
+
                     arg = arg->this.pair.cdr;
                     valeur_arg = valeur_arg->this.pair.cdr;
+                    /*DEBUG_MSG("%d",valeur_arg->this.pair.car->this.number.this.integer);*/
                 }
                 /*object body = evaluer_parms(agregat->this.compound.body);
                 return sfs_eval(body,env_lambda);*/
@@ -474,6 +494,43 @@ object sfs_eval( object input, object envt)
                 return liste_begin->this.pair.car;
             }
 
+            if(is_form("let",o))
+            {
+                DEBUG_MSG("let");
+                object env_let = ajout_env(envt);
+                object input_let = make_pair();
+                input_let->this.pair.car = make_symbol("lambda");
+
+                object arg_let = get("cadr",input_bis);
+                object input_let_arg = make_pair();
+                object input_let_val = make_pair();
+
+                object tmp_arg = NULL;
+                object tmp_valeur_arg = NULL;
+
+                while (arg_let != NULL && arg_let != nil)
+                {
+                    tmp_arg = get("caar",arg_let);
+                    input_let_arg = ajout_queue(input_let_arg,tmp_arg);
+                    DEBUG_MSG("arg : %s",tmp_arg->this.symbol);
+
+                    tmp_valeur_arg = sfs_eval(get("cadar",arg_let),env_let);
+                    input_let_val = ajout_queue(input_let_val,tmp_valeur_arg);
+                    DEBUG_MSG("val : %d",tmp_valeur_arg->this.number.this.integer);
+
+                    arg_let = arg_let->this.pair.cdr;
+                }
+
+                input_let = ajout_queue(input_let,input_let_arg);
+                input_let->this.pair.cdr->this.pair.cdr = make_pair();
+                input_let = ajout_queue(input_let,get("cddr",input_bis));
+
+                object input_total = make_pair();
+                input_total->this.pair.car = input_let;
+                input_total->this.pair.cdr = input_let_val;
+
+                return sfs_eval(input_total,env_let);
+            }
             /*if(is_form("eval",o))
             {
 
@@ -538,7 +595,6 @@ object sfs_eval( object input, object envt)
                     }
                     return o;
                 }
-                DEBUG_MSG("type : %d",o->type);
                 return o;
             }
         }

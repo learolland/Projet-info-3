@@ -10,39 +10,39 @@
 
 void creer_primitives(void)
 {
-    define(make_symbol("+"),make_primitive(plus_p),liste_env);
-    define(make_symbol("-"),make_primitive(moins_p),liste_env);
-    define(make_symbol(">"),make_primitive(sup_p),liste_env);
-    define(make_symbol("<"),make_primitive(inf_p),liste_env);
-    define(make_symbol("*"),make_primitive(mult_p),liste_env);
-    define(make_symbol("quotient"),make_primitive(quotient_p),liste_env);
-    define(make_symbol("remainder"),make_primitive(remainder_p),liste_env);
-    define(make_symbol("="),make_primitive(egal_p),liste_env);
+    define(make_symbol("+"),make_primitive(plus_p),top_level);
+    define(make_symbol("-"),make_primitive(moins_p),top_level);
+    define(make_symbol(">"),make_primitive(sup_p),top_level);
+    define(make_symbol("<"),make_primitive(inf_p),top_level);
+    define(make_symbol("*"),make_primitive(mult_p),top_level);
+    define(make_symbol("quotient"),make_primitive(quotient_p),top_level);
+    define(make_symbol("remainder"),make_primitive(remainder_p),top_level);
+    define(make_symbol("="),make_primitive(egal_p),top_level);
 
-    define(make_symbol("boolean?"),make_primitive(boolean_p),liste_env);
-    define(make_symbol("char?"),make_primitive(char_p),liste_env);
-    define(make_symbol("symbol?"),make_primitive(symbol_p),liste_env);
-    define(make_symbol("integer?"),make_primitive(integer_p),liste_env);
-    define(make_symbol("string?"),make_primitive(string_p),liste_env);
-    define(make_symbol("pair?"),make_primitive(pair_p),liste_env);
-    define(make_symbol("nil?"),make_primitive(nil_p),liste_env);
-    define(make_symbol("null?"),make_primitive(null_p),liste_env);
-    define(make_symbol("procedure?"),make_primitive(procedure_p),liste_env);
+    define(make_symbol("boolean?"),make_primitive(boolean_p),top_level);
+    define(make_symbol("char?"),make_primitive(char_p),top_level);
+    define(make_symbol("symbol?"),make_primitive(symbol_p),top_level);
+    define(make_symbol("integer?"),make_primitive(integer_p),top_level);
+    define(make_symbol("string?"),make_primitive(string_p),top_level);
+    define(make_symbol("pair?"),make_primitive(pair_p),top_level);
+    define(make_symbol("nil?"),make_primitive(nil_p),top_level);
+    define(make_symbol("null?"),make_primitive(null_p),top_level);
+    define(make_symbol("procedure?"),make_primitive(procedure_p),top_level);
 
-    define(make_symbol("char->integer"),make_primitive(char_integer_p),liste_env);
-    define(make_symbol("integer->char"),make_primitive(integer_char_p),liste_env);
-    define(make_symbol("number->string"),make_primitive(number_string_p),liste_env);
-    define(make_symbol("string->number"),make_primitive(string_number_p),liste_env);
-    define(make_symbol("symbol->string"),make_primitive(symbol_string_p),liste_env);
-    define(make_symbol("string->symbol"),make_primitive(string_symbol_p),liste_env);
+    define(make_symbol("char->integer"),make_primitive(char_integer_p),top_level);
+    define(make_symbol("integer->char"),make_primitive(integer_char_p),top_level);
+    define(make_symbol("number->string"),make_primitive(number_string_p),top_level);
+    define(make_symbol("string->number"),make_primitive(string_number_p),top_level);
+    define(make_symbol("symbol->string"),make_primitive(symbol_string_p),top_level);
+    define(make_symbol("string->symbol"),make_primitive(string_symbol_p),top_level);
 
-    define(make_symbol("cons"),make_primitive(cons_p),liste_env);
-    define(make_symbol("car"),make_primitive(car_p),liste_env);
-    define(make_symbol("cdr"),make_primitive(cdr_p),liste_env);
-    define(make_symbol("list"),make_primitive(liste_p),liste_env);
+    define(make_symbol("cons"),make_primitive(cons_p),top_level);
+    define(make_symbol("car"),make_primitive(car_p),top_level);
+    define(make_symbol("cdr"),make_primitive(cdr_p),top_level);
+    define(make_symbol("list"),make_primitive(liste_p),top_level);
 
-    define(make_symbol("set-car!"),make_primitive(set_car_p),liste_env);
-    define(make_symbol("set-cdr!"),make_primitive(set_cdr_p),liste_env);
+    define(make_symbol("set-car!"),make_primitive(set_car_p),top_level);
+    define(make_symbol("set-cdr!"),make_primitive(set_cdr_p),top_level);
 }
 
 
@@ -424,7 +424,7 @@ object cons_p (object arg)
                 l = l->this.pair.car;
             }
             DEBUG_MSG("l_bis car %d",l_bis->this.pair.car->type);
-            o = ajout_queue(o,sfs_eval(l_bis->this.pair.car,liste_env));
+            o = ajout_queue(o,sfs_eval(l_bis->this.pair.car,top_level));
 
         }
         DEBUG_MSG("%d",l->this.pair.car->this.number.this.integer);
@@ -468,7 +468,7 @@ object liste_p (object arg)
     object liste = make_pair();
     while(l!=NULL && l!=nil)
     {
-        liste = ajout_queue(liste,sfs_eval(l->this.pair.car,liste_env));
+        liste = ajout_queue(liste,sfs_eval(l->this.pair.car,top_level));
         l = l->this.pair.cdr;
     }
     return liste;

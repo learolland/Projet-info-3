@@ -42,7 +42,7 @@ uint next_char (char*input, uint *i);
 
 object cons_pair (object car, object cdr);
 
-extern object liste_env;
+extern object top_level;
 extern object nil;
 extern object boolean_false;
 extern object boolean_true;

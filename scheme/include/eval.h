@@ -27,7 +27,7 @@ void define (object variable, object valeur, object envt);
 object ajout_queue (object liste, object car);
 
 
-extern object liste_env;
+extern object top_level;
 extern object nil;
 extern object boolean_false;
 extern object boolean_true;

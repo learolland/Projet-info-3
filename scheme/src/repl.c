@@ -31,7 +31,7 @@ void usage_error( char *command ) {
 
 
 object nil;
-object liste_env;
+object top_level;
 object  boolean_true;
 object  boolean_false;
 object arg_plus;
@@ -50,7 +50,7 @@ void init_interpreter ( void )
     boolean_true = make_boolean(TRUE);
     boolean_false = make_boolean(FALSE);
     nil      = make_nil();
-    liste_env = make_pair();
+    top_level = make_pair();
 
     creer_primitives();
 
@@ -169,7 +169,7 @@ int main ( int argc, char *argv[] ) {
             continue ;
         }
 
-        output = sfs_eval( sexpr,liste_env);
+        output = sfs_eval( sexpr,top_level);
         if( NULL == output) {
             /* si fichier alors on sort*/
             if (mode == SCRIPT) {
@@ -183,7 +183,8 @@ int main ( int argc, char *argv[] ) {
         if(output->type == SFS_PROBLEM)
         {
             sfs_print( output );
-            printf( "\n" );
+            if(output != return_define)
+                printf( "\n" );
         }
         else
         {
